@@ -5,6 +5,8 @@
  * @format
  */
 
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {NavigationContainer} from '@react-navigation/native';
 import type {PropsWithChildren} from 'react';
 import React from 'react';
 import {
@@ -16,10 +18,7 @@ import {
   useColorScheme,
   View,
 } from 'react-native';
-
-import {NavigationContainer} from '@react-navigation/native';
-
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {Button, Provider as PaperProvider} from 'react-native-paper'; //https://reactnativepaper.com/
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   Colors,
@@ -116,8 +115,23 @@ function Profile() {
 
 function Notifications() {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Notifications!</Text>
+    <View style={{flex: 1}}>
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <Button
+          icon="camera"
+          mode="outlined"
+          onPress={() => console.log('Pressed')}>
+          Press me
+        </Button>
+      </View>
+      <View style={{flex: 9}}>
+        <Button
+          icon="camera"
+          mode="outlined"
+          onPress={() => console.log('Pressed')}>
+          Press me
+        </Button>
+      </View>
     </View>
   );
 }
@@ -129,10 +143,10 @@ function MyTabs() {
     <Tab.Navigator
       initialRouteName="Feed"
       screenOptions={{
-        tabBarActiveTintColor: '#e91e63',
+        tabBarActiveTintColor: '#00a9a9',
       }}>
       <Tab.Screen
-        name="Homex"
+        name="EversPass"
         component={Home}
         options={{
           tabBarLabel: 'Home',
@@ -146,10 +160,10 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Notifications"
+        name="Browse"
         component={Notifications}
         options={{
-          tabBarLabel: 'Updates',
+          tabBarLabel: 'Browse',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="dots-grid"
@@ -160,10 +174,10 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
-        name="Profile"
+        name="Tools"
         component={Profile}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: 'Tools',
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons name="tools" color={color} size={size} />
           ),
@@ -185,7 +199,9 @@ function MyTabs() {
 function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <MyTabs />
+      <PaperProvider>
+        <MyTabs />
+      </PaperProvider>
     </NavigationContainer>
   );
 }
