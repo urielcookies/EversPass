@@ -27,7 +27,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import {Button, Provider as PaperProvider} from 'react-native-paper'; //https://reactnativepaper.com/
+import {Button, Provider as PaperProvider, useTheme} from 'react-native-paper'; //https://reactnativepaper.com/
 import Themes from './src/Configs/Themes/Themes';
 import Home from './src/Components/Home/Home';
 import { useNavigation } from '@react-navigation/native';
@@ -118,7 +118,7 @@ function HomeScreen() {
         <Button
           mode="outlined"
           onPress={updateThemeState}>
-          Turn Dark mode {themeState.darkMode ? 'off' : 'on'}
+          Dark mode is currently {themeState.darkMode ? 'on' : 'off'}
         </Button>
         </View>
       </ScrollView>
@@ -159,11 +159,20 @@ function Notifications() {
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
+  const { colors } = useTheme();
   return (
     <Tab.Navigator
       initialRouteName="Home"
       screenOptions={{
-        tabBarActiveTintColor: '#00a9a9',
+        headerStyle: { backgroundColor: colors.background},
+        headerTitleStyle: {
+          color: colors.secondary,
+          fontSize: 20,
+        },
+        tabBarActiveTintColor: colors.primary,
+        tabBarStyle: {
+          backgroundColor: colors.background
+        }
       }}>
       <Tab.Screen
         name="EversPass"
@@ -252,3 +261,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
+// - On new Screen
+//   - Add search 
+//   - Add button to go back
+// - filter based on state on search

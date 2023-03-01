@@ -4,6 +4,8 @@ import {
   Provider as PaperProvider,
 } from 'react-native-paper';
 import { ThemesContext } from '../../Context/ThemesContext';
+
+// #00f0f0
 import lightTheme from './lightColors.json';
 import darkTheme from './darkColors.json';
 
@@ -16,9 +18,9 @@ const Themes = ({ children }: ThemesProps) => {
   const activeTheme = themeState.darkMode ? darkTheme : lightTheme;
   const theme = {
     ...DefaultTheme,
-    ...activeTheme
+    ...activeTheme,
+    roundness: 8,
   };
-  
   return (
     <PaperProvider theme={theme}>
       {children}
