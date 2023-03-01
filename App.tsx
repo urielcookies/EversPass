@@ -1,3 +1,9 @@
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -5,20 +11,14 @@
  * @format
  */
 
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
-import type {PropsWithChildren} from 'react';
-import React from 'react';
+import {PropsWithChildren, useContext} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   useColorScheme,
-  View,
 } from 'react-native';
-import {Button, Provider as PaperProvider} from 'react-native-paper'; //https://reactnativepaper.com/
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   Colors,
@@ -27,6 +27,27 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {Button, Provider as PaperProvider} from 'react-native-paper'; //https://reactnativepaper.com/
+import Themes from './src/Configs/Themes/Themes';
+import Home from './src/Components/Home/Home';
+import { useNavigation } from '@react-navigation/native';
+import ThemeProvider, { ThemesContext } from './src/Context/ThemesContext';
+
+function TestScreen() {
+  const navigation = useNavigation();
+
+  const gotoTestStackScreen = () => {
+		navigation.navigate("EversPass");
+	};
+	return (
+		<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>TEST!</Text>
+        <Button onPress={gotoTestStackScreen}>Back Home</Button>
+      </View>
+		</View>
+	);
+}
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -58,6 +79,7 @@ function Section({children, title}: SectionProps): JSX.Element {
   );
 }
 function HomeScreen() {
+  const { themeState, updateThemeState } = useContext(ThemesContext);
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -92,16 +114,15 @@ function HomeScreen() {
           </Section>
           <LearnMoreLinks />
         </View>
+        <View>
+        <Button
+          mode="outlined"
+          onPress={updateThemeState}>
+          Turn Dark mode {themeState.darkMode ? 'off' : 'on'}
+        </Button>
+        </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function Home() {
-  return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Home</Text>
-    </View>
   );
 }
 
@@ -135,13 +156,12 @@ function Notifications() {
     </View>
   );
 }
-
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Feed"
+      initialRouteName="Home"
       screenOptions={{
         tabBarActiveTintColor: '#00a9a9',
       }}>
@@ -149,7 +169,7 @@ function MyTabs() {
         name="EversPass"
         component={Home}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: 'Home', 
           tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
               name="home-outline"
@@ -196,14 +216,22 @@ function MyTabs() {
     </Tab.Navigator>
   );
 }
-function App(): JSX.Element {
-  return (
-    <NavigationContainer>
-      <PaperProvider>
-        <MyTabs />
-      </PaperProvider>
-    </NavigationContainer>
-  );
+
+const Stack = createStackNavigator();
+
+export default function App() {
+  return(
+		<NavigationContainer>
+      <ThemeProvider>
+        <Themes>
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Tabs">
+            <Stack.Screen name="Test" component={TestScreen} />
+            <Stack.Screen name="Tabs" component={MyTabs} />
+          </Stack.Navigator>
+        </Themes>
+      </ThemeProvider>
+		</NavigationContainer>
+	);
 }
 
 const styles = StyleSheet.create({
@@ -224,5 +252,3 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
-
-export default App;
