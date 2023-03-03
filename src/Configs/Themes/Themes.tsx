@@ -19,7 +19,7 @@ const Themes = ({ children }: ThemesProps) => {
   const theme = {
     ...DefaultTheme,
     ...activeTheme,
-    roundness: 8,
+    roundness: 5,
   };
   return (
     <PaperProvider theme={theme}>
