@@ -1,6 +1,7 @@
 import { ReactNode, useContext } from "react";
 import {
-  MD3LightTheme as DefaultTheme,
+  MD3DarkTheme,
+  MD3LightTheme,
   Provider as PaperProvider,
 } from 'react-native-paper';
 import { ThemesContext } from '../../Context/ThemesContext';
@@ -13,16 +14,24 @@ type ThemesProps = {
   children: ReactNode;
 };
 
+export const colorThemes = {
+  light: {
+    ...MD3LightTheme,
+    ...lightTheme,
+    roundness: 5,
+  },
+  dark: {
+    ...MD3DarkTheme,
+    ...darkTheme,
+    roundness: 5,
+  },
+}
+
 const Themes = ({ children }: ThemesProps) => {
   const { themeState } = useContext(ThemesContext);
-  const activeTheme = themeState.darkMode ? darkTheme : lightTheme;
-  const theme = {
-    ...DefaultTheme,
-    ...activeTheme,
-    roundness: 5,
-  };
+  const activeTheme = themeState.darkMode ? colorThemes["dark"] : colorThemes["light"];
   return (
-    <PaperProvider theme={theme}>
+    <PaperProvider theme={activeTheme}>
       {children}
     </PaperProvider>
   );

@@ -2,7 +2,7 @@
   "colors": {
     "primary": "rgb(0, 106, 106)",
     "onPrimary": "rgb(255, 255, 255)",
-    "primaryContainer": "rgb(44, 251, 251)",
+    "primaryContainer": "rgb(0, 251, 251)",
     "onPrimaryContainer": "rgb(0, 32, 32)",
     "secondary": "rgb(74, 99, 99)",
     "onSecondary": "rgb(255, 255, 255)",

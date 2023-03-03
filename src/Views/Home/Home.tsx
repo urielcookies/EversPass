@@ -1,13 +1,14 @@
-import { View, Text, TouchableWithoutFeedback, FlatList } from "react-native";
+import { View, TouchableWithoutFeedback, FlatList } from "react-native";
 import { useTheme } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
-import { List, Divider } from 'react-native-paper';
+import { List, Divider, Text, } from 'react-native-paper';
 import { sortBy, upperCase } from "lodash";
 import { useRef } from "react";
+import ViewWrapper from "../../Components/ViewWrapper/ViewWrapper";
 
 const Home = () => {
   const { colors } = useTheme();
@@ -38,6 +39,9 @@ const Home = () => {
         <List.Item
           titleStyle={styles.ListItem}
           title={name}
+          left={() => (
+            <MaterialCommunityIcons style={styles.threeDotIcon} name="image-outline" size={25} />
+          )}
           right={() => (
             <MaterialCommunityIcons style={styles.threeDotIcon} name="dots-vertical" size={25} />
           )}
@@ -47,7 +51,7 @@ const Home = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ViewWrapper>
       <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
         <View  style={styles.searchBar}>
           <MaterialCommunityIcons style={styles.icon} name="magnify" size={30} />
@@ -64,14 +68,10 @@ const Home = () => {
           keyExtractor={(item) => item.id.toString()}
         />
       </View>
-    </View>
+    </ViewWrapper>
   );
 }
 const themeStyle = (colors: MD3Colors) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background
-  },
   searchBar: {
     flex: 1,
     justifyContent: 'center',
@@ -82,7 +82,6 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: colors.secondaryContainer,
     elevation: 8,
-    // shadowColor: "grey",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,
@@ -101,16 +100,13 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   },
   ListSubHeader: {
     fontSize: 15,
-    borderBottomColor: 'red',
-    color: colors.primary,
   },
   ListItem: {
     fontSize: 25,
-    color: colors.secondary,
   },
   threeDotIcon: {
     fontSize: 32,
-    color: colors.secondary,
+    color: colors.onSecondaryContainer,
   }
 });
 
