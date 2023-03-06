@@ -1,5 +1,5 @@
-import { View, TouchableWithoutFeedback, FlatList } from "react-native";
-import { useTheme } from 'react-native-paper';
+import { View, TouchableWithoutFeedback, FlatList, Dimensions, Modal } from "react-native";
+import { Avatar, FAB, useTheme } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet } from "react-native";
@@ -7,7 +7,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import { List, Divider, Text, } from 'react-native-paper';
 import { sortBy, upperCase } from "lodash";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import ViewWrapper from "../../Components/ViewWrapper/ViewWrapper";
 
 const Home = () => {
@@ -15,10 +15,23 @@ const Home = () => {
   const navigation = useNavigation();
   const styles = themeStyle(colors);
 
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  
+  const handleOpenBottomSheet = () => {
+    setIsBottomSheetOpen(true);
+  };
+  
+  // Function to close the bottom sheet
+  const handleCloseBottomSheet = () => {
+    setIsBottomSheetOpen(false);
+  };
+
 	const gotoTestStackScreen = () => {
 		navigation.navigate('Test');
 	};
 
+  const windowHeight = Dimensions.get('window').height;
+  
   const prevChar = useRef('');
   const Item = ({ name, index }: any) => {
     const currentChar = name.charAt(0);
@@ -40,10 +53,17 @@ const Home = () => {
           titleStyle={styles.ListItem}
           title={name}
           left={() => (
-            <MaterialCommunityIcons style={styles.threeDotIcon} name="image-outline" size={25} />
+            <Avatar.Image
+              style={styles.avatar}
+              size={40}
+              source={require('../../Assets/avatar.png')}
+            />
           )}
           right={() => (
-            <MaterialCommunityIcons style={styles.threeDotIcon} name="dots-vertical" size={25} />
+            <MaterialCommunityIcons
+              style={[styles.threeDotIcon, styles.avatar]}
+              name="dots-vertical"
+              size={40} />
           )}
       />
       </List.Section>
@@ -68,6 +88,38 @@ const Home = () => {
           keyExtractor={(item) => item.id.toString()}
         />
       </View>
+
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={handleOpenBottomSheet}
+      />
+
+      {/* <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isBottomSheetOpen}
+        onRequestClose={handleCloseBottomSheet}>
+          <TouchableWithoutFeedback onPressOut={handleCloseBottomSheet}>
+            <View style={[styles.bottomSheet, { height: windowHeight * 0.3 }]}>
+              <Text>Bottom Drawer</Text>
+            </View>
+          </TouchableWithoutFeedback>
+      </Modal> */}
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isBottomSheetOpen}
+        onRequestClose={handleCloseBottomSheet}>
+        <TouchableWithoutFeedback onPressOut={handleCloseBottomSheet}>
+          <View style={styles.centeredView}>
+            <View style={[styles.bottomSheet, { height: windowHeight * 0.35 }]}>
+              <Text>Bottom Drawer</Text>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </ViewWrapper>
   );
 }
@@ -105,8 +157,34 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     fontSize: 25,
   },
   threeDotIcon: {
-    fontSize: 32,
     color: colors.onSecondaryContainer,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+    backgroundColor: colors.secondaryContainer,
+  },
+  avatar: {
+    margin: 8,
+  },
+  centeredView: {
+    flex: 1,
+  },
+  bottomSheet: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    backgroundColor: colors.secondaryContainer,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    paddingVertical: 23,
+    paddingHorizontal: 25,
+    bottom: 0,
+    borderWidth: 1,
   }
 });
 
