@@ -1,11 +1,11 @@
-import { Divider, List, Searchbar, Text, useTheme } from 'react-native-paper';
-import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import { useNavigation } from '@react-navigation/native';
+import { filter, includes, isEmpty, isEqual, sortBy, toLower, upperCase } from 'lodash';
 import { useRef, useState } from "react";
 import { FlatList, StyleSheet, View } from 'react-native';
-import ViewWrapper from '../ViewWrapper/ViewWrapper';
-import {  filter, isEqual, includes, sortBy, upperCase, toLower, isEmpty } from 'lodash';
+import { Divider, List, Searchbar, Text, useTheme } from 'react-native-paper';
+import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ViewWrapper from '../ViewWrapper/ViewWrapper';
 
 const SearchList = () => {
   const navigation = useNavigation();

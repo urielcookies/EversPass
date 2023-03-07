@@ -1,13 +1,13 @@
-import { View, TouchableWithoutFeedback, FlatList, Dimensions } from "react-native";
-import { Avatar, FAB, useTheme } from 'react-native-paper';
+import { FlatList, Image, TouchableWithoutFeedback, View } from "react-native";
+import { FAB, useTheme } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
-import { StyleSheet } from "react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { MD3Colors } from "react-native-paper/lib/typescript/types";
-import { List, Divider, Text, } from 'react-native-paper';
 import { sortBy, upperCase } from "lodash";
 import { useRef, useState } from "react";
+import { StyleSheet } from "react-native";
+import { Divider, List, Text } from 'react-native-paper';
+import { MD3Colors } from "react-native-paper/lib/typescript/types";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewWrapper from "../../Components/ViewWrapper/ViewWrapper";
 
 import BottomDrawer from '../../Components/BottomDrawer/BottomDrawer';
@@ -23,17 +23,19 @@ const Home = () => {
     setIsBottomSheetOpen(true);
   };
   
-  // Function to close the bottom sheet
   const handleCloseBottomSheet = () => {
     setIsBottomSheetOpen(false);
   };
 
 	const gotoTestStackScreen = () => {
-		navigation.navigate('Test');
+		navigation.navigate('searchList');
+	};
+  
+	const gotoTestScreen = () => {
+		handleCloseBottomSheet();
+		navigation.navigate('TestScreen');
 	};
 
-  const windowHeight = Dimensions.get('window').height;
-  
   const prevChar = useRef('');
   const Item = ({ name, index }: any) => {
     const currentChar = name.charAt(0);
@@ -55,15 +57,14 @@ const Home = () => {
           titleStyle={styles.ListItem}
           title={name}
           left={() => (
-            <Avatar.Image
+            <Image
               style={styles.avatar}
-              size={40}
               source={require('../../Assets/avatar.png')}
-            />
+              defaultSource={require('../../Assets/avatar.png')} />
           )}
           right={() => (
             <MaterialCommunityIcons
-              style={[styles.threeDotIcon, styles.avatar]}
+              style={[styles.threeDotIcon]}
               name="dots-vertical"
               size={40} />
           )}
@@ -97,28 +98,68 @@ const Home = () => {
         onPress={handleOpenBottomSheet}
       />
 
-      {/* <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isBottomSheetOpen}
-        onRequestClose={handleCloseBottomSheet}>
-        <TouchableWithoutFeedback onPressOut={handleCloseBottomSheet}>
-          <View style={styles.centeredView}>
-            <View style={[styles.bottomSheet, { height: windowHeight * 0.35 }]}>
-              <Text>Bottom Drawer</Text>
-            </View>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal> */}
-
       {isBottomSheetOpen && (
         <BottomDrawer
           handleCloseBottomSheet={handleCloseBottomSheet}
           height={0.35}
           children={(
-            <View style={styles.addNewDrawer}>
-              <Text variant="headlineSmall">Add New</Text>
-            </View>
+						<View style={styles.bottomDrawerContent}>
+							<View>
+								<Text style={styles.bottomDrawerTitle} variant="headlineSmall">Add New</Text>
+							</View>
+
+							<View style={styles.bottomDrawerOptions}>
+								<TouchableWithoutFeedback onPress={gotoTestScreen}>
+									<View style={styles.bottomDrawerOption}>
+										<MaterialCommunityIcons
+											name="form-textbox-password"
+											style={styles.bottomDrawerOptionIcons}
+											size={25} />
+										<Text variant="titleMedium">&nbsp;Password</Text>
+									</View>
+								</TouchableWithoutFeedback>
+
+								<TouchableWithoutFeedback onPress={gotoTestScreen}>
+									<View style={styles.bottomDrawerOption}>
+										<MaterialCommunityIcons
+											name="note-text-outline"
+											style={styles.bottomDrawerOptionIcons}
+											size={25} />
+										<Text variant="titleMedium">&nbsp;Secure Note</Text>
+									</View>
+								</TouchableWithoutFeedback>
+
+								<TouchableWithoutFeedback onPress={gotoTestScreen}>
+									<View style={styles.bottomDrawerOption}>
+										<MaterialCommunityIcons
+											name="credit-card-outline"
+											style={styles.bottomDrawerOptionIcons}
+											size={25} />
+										<Text variant="titleMedium">&nbsp;Credit Card</Text>
+									</View>
+								</TouchableWithoutFeedback>
+
+								<TouchableWithoutFeedback onPress={gotoTestScreen}>
+									<View style={styles.bottomDrawerOption}>
+										<MaterialCommunityIcons
+											name="badge-account-horizontal-outline"
+											style={styles.bottomDrawerOptionIcons}
+											size={25} />
+										<Text variant="titleMedium">&nbsp;Personal Info</Text>
+									</View>
+								</TouchableWithoutFeedback>
+
+								<TouchableWithoutFeedback onPress={gotoTestScreen}>
+									<View style={styles.bottomDrawerOption}>
+										<MaterialCommunityIcons
+											name="folder-outline"
+											style={styles.bottomDrawerOptionIcons}
+											size={25} />
+										<Text variant="titleMedium">&nbsp;Folder</Text>
+									</View>
+								</TouchableWithoutFeedback>
+							</View>
+						</View>
           )} />
       )}
     </ViewWrapper>
@@ -158,6 +199,7 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     fontSize: 25,
   },
   threeDotIcon: {
+    margin: 8,
     color: colors.onSecondaryContainer,
   },
   fab: {
@@ -169,27 +211,37 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   },
   avatar: {
     margin: 8,
+		width: 45, height: 45, borderRadius: 400 / 2,
   },
-  addNewDrawer: {
-    // alignItems: 'center',
+	bottomDrawerContent: {
+		// flex: 1,
+		height: '90%',
+		// backgroundColor: 'blue',
+		justifyContent: "space-between"
+	},
+	bottomDrawerTitle: {
+		// height: '20%',
+		// width: '90%',
+		// backgroundColor: 'yellow'
+	},
+	bottomDrawerOptions: {
+		justifyContent: "space-evenly",
+		// flex: 1,
+		height: '80%',
+		// width: '90%',
+		// backgroundColor: 'red'
+	},
+	bottomDrawerOption: {
+    flexDirection: 'row',
+		// alignItems: ""
+		// justifyContent: "space-evenly"
+		// height: '90%',
+    // paddingVertical: 8,
+    // paddingHorizontal: 16,
   },
-  centeredView: {
-    flex: 1,
+		bottomDrawerOptionIcons: {
+			color: colors.onSecondaryContainer,
   },
-  bottomSheet: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    backgroundColor: colors.secondaryContainer,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    paddingVertical: 23,
-    paddingHorizontal: 25,
-    bottom: 0,
-    borderWidth: 1,
-  }
 });
 
 export default Home;
