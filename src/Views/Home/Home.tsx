@@ -1,4 +1,4 @@
-import { View, TouchableWithoutFeedback, FlatList, Dimensions, Modal } from "react-native";
+import { View, TouchableWithoutFeedback, FlatList, Dimensions } from "react-native";
 import { Avatar, FAB, useTheme } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
@@ -9,6 +9,8 @@ import { List, Divider, Text, } from 'react-native-paper';
 import { sortBy, upperCase } from "lodash";
 import { useRef, useState } from "react";
 import ViewWrapper from "../../Components/ViewWrapper/ViewWrapper";
+
+import BottomDrawer from '../../Components/BottomDrawer/BottomDrawer';
 
 const Home = () => {
   const { colors } = useTheme();
@@ -73,7 +75,7 @@ const Home = () => {
   return (
     <ViewWrapper>
       <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
-        <View  style={styles.searchBar}>
+        <View style={styles.searchBar}>
           <MaterialCommunityIcons style={styles.icon} name="magnify" size={30} />
           <Text style={styles.searchText}>Search</Text>
         </View>
@@ -100,18 +102,6 @@ const Home = () => {
         transparent={true}
         visible={isBottomSheetOpen}
         onRequestClose={handleCloseBottomSheet}>
-          <TouchableWithoutFeedback onPressOut={handleCloseBottomSheet}>
-            <View style={[styles.bottomSheet, { height: windowHeight * 0.3 }]}>
-              <Text>Bottom Drawer</Text>
-            </View>
-          </TouchableWithoutFeedback>
-      </Modal> */}
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isBottomSheetOpen}
-        onRequestClose={handleCloseBottomSheet}>
         <TouchableWithoutFeedback onPressOut={handleCloseBottomSheet}>
           <View style={styles.centeredView}>
             <View style={[styles.bottomSheet, { height: windowHeight * 0.35 }]}>
@@ -119,7 +109,18 @@ const Home = () => {
             </View>
           </View>
         </TouchableWithoutFeedback>
-      </Modal>
+      </Modal> */}
+
+      {isBottomSheetOpen && (
+        <BottomDrawer
+          handleCloseBottomSheet={handleCloseBottomSheet}
+          height={0.35}
+          children={(
+            <View style={styles.addNewDrawer}>
+              <Text variant="headlineSmall">Add New</Text>
+            </View>
+          )} />
+      )}
     </ViewWrapper>
   );
 }
@@ -168,6 +169,9 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   },
   avatar: {
     margin: 8,
+  },
+  addNewDrawer: {
+    // alignItems: 'center',
   },
   centeredView: {
     flex: 1,
