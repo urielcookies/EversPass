@@ -57,7 +57,7 @@ const SearchList = () => {
   }
 
 	return (
-    <ViewWrapper>
+    <ViewWrapper notchProtection>
 			<View style={styles.topContainer}>
 				<Searchbar
 					autoFocus

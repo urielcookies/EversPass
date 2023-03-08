@@ -10,7 +10,7 @@ const TestScreen = () => {
 	};
 
 	return (
-    <ViewWrapper>
+    <ViewWrapper notchProtection>
 			<Button onPress={gotoTestStackScreen}>GO BACK</Button>
     </ViewWrapper>
 	);

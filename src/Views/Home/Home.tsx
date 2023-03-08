@@ -10,29 +10,27 @@ import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewWrapper from "../../Components/ViewWrapper/ViewWrapper";
 
-import BottomDrawer from '../../Components/BottomDrawer/BottomDrawer';
+import CreatePassDrawer from "../../Components/CreatePass/CreatePassDrawer";
 
 const Home = () => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const styles = themeStyle(colors);
 
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [isCreateActive, setIsCreateActive] = useState(false);
   
-  const handleOpenBottomSheet = () => {
-    setIsBottomSheetOpen(true);
-  };
-  
-  const handleCloseBottomSheet = () => {
-    setIsBottomSheetOpen(false);
-  };
+	const createPassDrawerCloseHandler = () =>
+		setIsCreateActive(false);
+
+	const createPassDrawerOpenHandler = () =>
+		setIsCreateActive(true);
 
 	const gotoTestStackScreen = () => {
 		navigation.navigate('searchList');
 	};
   
 	const gotoTestScreen = () => {
-		handleCloseBottomSheet();
+		createPassDrawerCloseHandler()
 		navigation.navigate('TestScreen');
 	};
 
@@ -67,8 +65,7 @@ const Home = () => {
               style={[styles.threeDotIcon]}
               name="dots-vertical"
               size={40} />
-          )}
-      />
+          )} />
       </List.Section>
     )
   }
@@ -88,79 +85,18 @@ const Home = () => {
           renderItem={({ item, index }) => (
             <Item name={item.name} index={index} />
           )}
-          keyExtractor={(item) => item.id.toString()}
-        />
+          keyExtractor={(item) => item.id.toString()} />
       </View>
 
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={handleOpenBottomSheet}
-      />
+        onPress={createPassDrawerOpenHandler} />
 
-      {isBottomSheetOpen && (
-        <BottomDrawer
-          handleCloseBottomSheet={handleCloseBottomSheet}
-          height={0.35}
-          children={(
-						<View style={styles.bottomDrawerContent}>
-							<View>
-								<Text style={styles.bottomDrawerTitle} variant="headlineSmall">Add New</Text>
-							</View>
-
-							<View style={styles.bottomDrawerOptions}>
-								<TouchableWithoutFeedback onPress={gotoTestScreen}>
-									<View style={styles.bottomDrawerOption}>
-										<MaterialCommunityIcons
-											name="form-textbox-password"
-											style={styles.bottomDrawerOptionIcons}
-											size={25} />
-										<Text variant="titleMedium">&nbsp;Password</Text>
-									</View>
-								</TouchableWithoutFeedback>
-
-								<TouchableWithoutFeedback onPress={gotoTestScreen}>
-									<View style={styles.bottomDrawerOption}>
-										<MaterialCommunityIcons
-											name="note-text-outline"
-											style={styles.bottomDrawerOptionIcons}
-											size={25} />
-										<Text variant="titleMedium">&nbsp;Secure Note</Text>
-									</View>
-								</TouchableWithoutFeedback>
-
-								<TouchableWithoutFeedback onPress={gotoTestScreen}>
-									<View style={styles.bottomDrawerOption}>
-										<MaterialCommunityIcons
-											name="credit-card-outline"
-											style={styles.bottomDrawerOptionIcons}
-											size={25} />
-										<Text variant="titleMedium">&nbsp;Credit Card</Text>
-									</View>
-								</TouchableWithoutFeedback>
-
-								<TouchableWithoutFeedback onPress={gotoTestScreen}>
-									<View style={styles.bottomDrawerOption}>
-										<MaterialCommunityIcons
-											name="badge-account-horizontal-outline"
-											style={styles.bottomDrawerOptionIcons}
-											size={25} />
-										<Text variant="titleMedium">&nbsp;Personal Info</Text>
-									</View>
-								</TouchableWithoutFeedback>
-
-								<TouchableWithoutFeedback onPress={gotoTestScreen}>
-									<View style={styles.bottomDrawerOption}>
-										<MaterialCommunityIcons
-											name="folder-outline"
-											style={styles.bottomDrawerOptionIcons}
-											size={25} />
-										<Text variant="titleMedium">&nbsp;Folder</Text>
-									</View>
-								</TouchableWithoutFeedback>
-							</View>
-						</View>
-          )} />
+      {isCreateActive && (
+        <CreatePassDrawer
+					closeDrawer={createPassDrawerCloseHandler}
+					gotoTestScreen={gotoTestScreen} />
       )}
     </ViewWrapper>
   );

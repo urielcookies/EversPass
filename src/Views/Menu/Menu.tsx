@@ -1,6 +1,6 @@
 import { PropsWithChildren, useContext } from "react";
-import { useColorScheme, View, Text, SafeAreaView, StatusBar, ScrollView, StyleSheet } from "react-native";
-import { Header, Colors, ReloadInstructions, DebugInstructions, LearnMoreLinks } from "react-native/Libraries/NewAppScreen";
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from "react-native";
+import { Colors, DebugInstructions, Header, LearnMoreLinks, ReloadInstructions } from "react-native/Libraries/NewAppScreen";
 import { ThemesContext } from '../../Context/ThemesContext';
 
 import { Button } from "react-native-paper";
@@ -54,6 +54,13 @@ function HomeScreen() {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
+					<View>
+						<Button
+							mode="outlined"
+							onPress={updateThemeState}>
+							Dark mode is currently {themeState.darkMode ? 'on' : 'off'}
+						</Button>
+					</View>
           <Section title="Step One">
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
@@ -68,13 +75,6 @@ function HomeScreen() {
             Read the docs to discover what to do next:
           </Section>
           <LearnMoreLinks />
-        </View>
-        <View>
-        <Button
-          mode="outlined"
-          onPress={updateThemeState}>
-          Dark mode is currently {themeState.darkMode ? 'on' : 'off'}
-        </Button>
         </View>
       </ScrollView>
     </SafeAreaView>

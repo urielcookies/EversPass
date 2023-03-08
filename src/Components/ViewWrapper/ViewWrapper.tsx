@@ -1,20 +1,21 @@
 import { ReactNode } from 'react';
 import { StyleSheet, View } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+// import DeviceInfo from 'react-native-device-info';
 
 type Props = {
-  children: ReactNode
-	// PASS A BOOLEAN TO KNOW TO USE NOTCH SETTINGSS!!!!!
+  children: ReactNode,
+	notchProtection?: boolean,
 }
 
-const ViewWrapper = ({children}: Props) => {
+const ViewWrapper = (props: Props) => {
+	const { children, notchProtection } = props;
   const theme = useTheme();
 	const safeAreaInsets = useSafeAreaInsets()
 
-	const hasNotch = DeviceInfo.hasNotch();
-	const notchSettings = hasNotch
+	// const hasNotch = DeviceInfo.hasNotch();
+	const notchSettings = notchProtection
 	? {
 		paddingTop: safeAreaInsets.top,
 		// paddingBottom: safeAreaInsets.bottom,
