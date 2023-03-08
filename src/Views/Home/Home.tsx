@@ -3,31 +3,50 @@ import { FAB, useTheme } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
 import { sortBy, upperCase } from "lodash";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import { Divider, List, Text } from 'react-native-paper';
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import ViewWrapper from "../../Components/ViewWrapper/ViewWrapper";
+import fakeData from '../../Configs/constants/fakeData';
 
-import CreatePassDrawer from "../../Components/CreatePass/CreatePassDrawer";
+import CreatePassDrawer from "../../Components/PassEditor/CreatePassDrawer";
+import UpdatePassDrawer from "../../Components/PassEditor/UpdatePassDrawer";
 
 const Home = () => {
   const { colors } = useTheme();
   const navigation = useNavigation();
   const styles = themeStyle(colors);
 
+  const [data, setData] = useState<any>([]);
   const [isCreateActive, setIsCreateActive] = useState(false);
+  const [isEditActive, setIsEditActive] = useState(false);
   
+	useEffect(() => {
+		const fetchData = async () => {
+			const data = await mockApi();
+			setData(data);
+		};
+		fetchData();
+	}, []);
+
 	const createPassDrawerCloseHandler = () =>
 		setIsCreateActive(false);
 
 	const createPassDrawerOpenHandler = () =>
 		setIsCreateActive(true);
 
-	const gotoTestStackScreen = () => {
-		navigation.navigate('searchList');
-	};
+	const updatePassDrawerCloseHandler = () =>
+		setIsEditActive(false);
+
+	const updatePassDrawerOpenHandler = () =>
+		setIsEditActive(true);
+	
+	const gotoTestStackScreen = () =>
+		navigation.navigate('searchList', {
+			data
+		});
   
 	const gotoTestScreen = () => {
 		createPassDrawerCloseHandler()
@@ -35,8 +54,8 @@ const Home = () => {
 	};
 
   const prevChar = useRef('');
-  const Item = ({ name, index }: any) => {
-    const currentChar = name.charAt(0);
+  const Item = ({ title, index }: any) => {
+    const currentChar = title.charAt(0);
     const showSubHeader = currentChar !== prevChar.current
     if (showSubHeader) prevChar.current = currentChar;
 
@@ -53,7 +72,7 @@ const Home = () => {
         )}
         <List.Item
           titleStyle={styles.ListItem}
-          title={name}
+          title={title}
           left={() => (
             <Image
               style={styles.avatar}
@@ -64,7 +83,8 @@ const Home = () => {
             <MaterialCommunityIcons
               style={[styles.threeDotIcon]}
               name="dots-vertical"
-              size={40} />
+              size={40}
+							onPress={updatePassDrawerOpenHandler}/>
           )} />
       </List.Section>
     )
@@ -81,9 +101,9 @@ const Home = () => {
 
       <View style={{ flex: 13 }}>
         <FlatList
-          data={sortBy(data, ['name'])}
+          data={sortBy(data, ['title'])}
           renderItem={({ item, index }) => (
-            <Item name={item.name} index={index} />
+            <Item title={item.title} index={index} />
           )}
           keyExtractor={(item) => item.id.toString()} />
       </View>
@@ -96,6 +116,12 @@ const Home = () => {
       {isCreateActive && (
         <CreatePassDrawer
 					closeDrawer={createPassDrawerCloseHandler}
+					gotoTestScreen={gotoTestScreen} />
+      )}
+
+			{isEditActive && (
+        <UpdatePassDrawer
+					closeDrawer={updatePassDrawerCloseHandler}
 					gotoTestScreen={gotoTestScreen} />
       )}
     </ViewWrapper>
@@ -148,146 +174,15 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   avatar: {
     margin: 8,
 		width: 45, height: 45, borderRadius: 400 / 2,
-  },
-	bottomDrawerContent: {
-		// flex: 1,
-		height: '90%',
-		// backgroundColor: 'blue',
-		justifyContent: "space-between"
-	},
-	bottomDrawerTitle: {
-		// height: '20%',
-		// width: '90%',
-		// backgroundColor: 'yellow'
-	},
-	bottomDrawerOptions: {
-		justifyContent: "space-evenly",
-		// flex: 1,
-		height: '80%',
-		// width: '90%',
-		// backgroundColor: 'red'
-	},
-	bottomDrawerOption: {
-    flexDirection: 'row',
-		// alignItems: ""
-		// justifyContent: "space-evenly"
-		// height: '90%',
-    // paddingVertical: 8,
-    // paddingHorizontal: 16,
-  },
-		bottomDrawerOptionIcons: {
-			color: colors.onSecondaryContainer,
-  },
+  }, 
 });
 
+const mockApi = () => {
+  return new Promise(resolve => {
+    // Mock API call response
+    const data = fakeData;
+    resolve(data);
+  });
+};
+
 export default Home;
-
-
-
-const data = [
-  {
-    id: 1,
-    name: 'John',
-    age: 25,
-    email: 'john@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 2,
-    name: 'Jane',
-    age: 30,
-    email: 'jane@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 3,
-    name: 'Bob',
-    age: 40,
-    email: 'bob@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 4,
-    name: 'Alice',
-    age: 35,
-    email: 'alice@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 5,
-    name: 'David',
-    age: 28,
-    email: 'david@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 6,
-    name: 'Emily',
-    age: 32,
-    email: 'emily@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 7,
-    name: 'Mark',
-    age: 27,
-    email: 'mark@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 8,
-    name: 'Sarah',
-    age: 45,
-    email: 'sarah@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 9,
-    name: 'Tom',
-    age: 36,
-    email: 'tom@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 10,
-    name: 'Karen',
-    age: 31,
-    email: 'karen@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 11,
-    name: 'Tim',
-    age: 42,
-    email: 'tim@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 12,
-    name: 'Linda',
-    age: 55,
-    email: 'linda@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 13,
-    name: 'Sam',
-    age: 29,
-    email: 'sam@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 14,
-    name: 'Rachel',
-    age: 37,
-    email: 'rachel@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 15,
-    name: 'Peter',
-    age: 33,
-    email: 'peter@example.com',
-    phone: '555-555-5555'
-  },
-]

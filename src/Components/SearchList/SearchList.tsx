@@ -7,7 +7,9 @@ import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 
-const SearchList = () => {
+const SearchList = ({ route }: any) => {
+	const { data } = route.params;
+
   const navigation = useNavigation();
   const [search, setSearch] = useState<string>('');
   const [filteredList, setFilteredList] = useState<any[]>([]);
@@ -19,15 +21,15 @@ const SearchList = () => {
 	};
 
 	const searchHandler = (fieldValue: string) => {
+		const filtered = filter(data, ({ title }) => includes(toLower(title), toLower(fieldValue)));
+
 		setSearch(fieldValue);
-		const filtered = filter(data, ({ name, email }) =>
-			includes(toLower(name), toLower(fieldValue)) || includes(toLower(name), toLower(email)));
 		setFilteredList(filtered);
 	};
 
 	const prevChar = useRef('');
-  const Item = ({ name, index }: any) => {
-    const currentChar = name.charAt(0);
+  const Item = ({ title, index }: any) => {
+    const currentChar = title.charAt(0);
     const showSubHeader = currentChar !== prevChar.current
     if (showSubHeader) prevChar.current = currentChar && currentChar !== prevChar.current;
 
@@ -44,14 +46,13 @@ const SearchList = () => {
         )}
         <List.Item
           titleStyle={styles.ListItem}
-          title={name}
+          title={title}
           left={() => (
             <MaterialCommunityIcons style={styles.threeDotIcon} name="image-outline" size={25} />
           )}
           right={() => (
             <MaterialCommunityIcons style={styles.threeDotIcon} name="dots-vertical" size={25} />
-          )}
-      />
+          )}/>
       </List.Section>
     )
   }
@@ -66,8 +67,7 @@ const SearchList = () => {
 					value={search}
 					onIconPress={gotoTestStackScreen}
 					icon={{ source: 'arrow-left', direction: 'auto' }}
-					style={styles.searchbar}
-				/>
+					style={styles.searchbar} />
 			</View>
 
 			{isEmpty(filteredList) && (
@@ -81,12 +81,11 @@ const SearchList = () => {
 			{!isEmpty(filteredList) && (
 				<View style={styles.bottomContainerResults}>
 					<FlatList
-						data={sortBy(filteredList, ['name'])}
+						data={sortBy(filteredList, ['title'])}
 						renderItem={({ item, index }) => (
-							<Item name={item.name} index={index} />
+							<Item title={item.title} index={index} />
 						)}
-						keyExtractor={(item) => item.id.toString()}
-					/>
+						keyExtractor={(item) => item.id.toString()} />
 				</View>
 			)}
     </ViewWrapper>
@@ -133,116 +132,3 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
 });
 
 export default SearchList;
-
-const data = [
-  {
-    id: 1,
-    name: 'John',
-    age: 25,
-    email: 'john@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 2,
-    name: 'Jane',
-    age: 30,
-    email: 'jane@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 3,
-    name: 'Bob',
-    age: 40,
-    email: 'bob@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 4,
-    name: 'Alice',
-    age: 35,
-    email: 'alice@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 5,
-    name: 'David',
-    age: 28,
-    email: 'david@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 6,
-    name: 'Emily',
-    age: 32,
-    email: 'emily@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 7,
-    name: 'Mark',
-    age: 27,
-    email: 'mark@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 8,
-    name: 'Sarah',
-    age: 45,
-    email: 'sarah@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 9,
-    name: 'Tom',
-    age: 36,
-    email: 'tom@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 10,
-    name: 'Karen',
-    age: 31,
-    email: 'karen@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 11,
-    name: 'Tim',
-    age: 42,
-    email: 'tim@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 12,
-    name: 'Linda',
-    age: 55,
-    email: 'linda@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 13,
-    name: 'Sam',
-    age: 29,
-    email: 'sam@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 14,
-    name: 'Rachel',
-    age: 37,
-    email: 'rachel@example.com',
-    phone: '555-555-5555'
-  },
-  {
-    id: 15,
-    name: 'Peter',
-    age: 33,
-    email: 'peter@example.com',
-    phone: '555-555-5555'
-  },
-]
-
-// - On new Screen
-//   - Add search 
-//   - Add button to go back
-// - filter based on state on search
