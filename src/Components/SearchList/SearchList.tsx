@@ -24,7 +24,9 @@ const SearchList = ({ route }: any) => {
 		const filtered = filter(data, ({ title }) => includes(toLower(title), toLower(fieldValue)));
 
 		setSearch(fieldValue);
-		setFilteredList(filtered);
+
+    if (isEqual(fieldValue, '')) setFilteredList([]);
+		else setFilteredList(filtered);
 	};
 
 	const prevChar = useRef('');

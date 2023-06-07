@@ -1,5 +1,5 @@
 import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Divider, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomDrawer from '../BottomDrawer/BottomDrawer';
@@ -20,58 +20,70 @@ const CreatePassDrawer = (props: Props) => {
 			handleCloseBottomSheet={closeDrawer}
 			height={0.65}>
 			<View style={styles.bottomDrawerContent}>
-				<View>
-					<Text style={styles.bottomDrawerTitle} variant="headlineSmall">UPDATE</Text>
+				<View style={styles.bottomDrawerTitle}>
+					<Text style={styles.bottomDrawerTitleText} variant="headlineSmall">UPDATE</Text>
 				</View>
 
 				<View style={styles.bottomDrawerOptions}>
 					<TouchableWithoutFeedback onPress={gotoTestScreen}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
-								name="form-textbox-password"
+								name="arrow-top-right-bold-box-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Password</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Launch Website</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
 					<TouchableWithoutFeedback onPress={gotoTestScreen}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
-								name="note-text-outline"
+								name="email-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Secure Note</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Copy Username</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
 					<TouchableWithoutFeedback onPress={gotoTestScreen}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
-								name="credit-card-outline"
+								name="asterisk"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Credit Card</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Copy Password</Text>
+						</View>
+					</TouchableWithoutFeedback>
+
+					<Divider bold />
+
+					<TouchableWithoutFeedback onPress={gotoTestScreen}>
+						<View style={styles.bottomDrawerOption}>
+							<MaterialCommunityIcons
+								name="pencil-outline"
+								style={styles.bottomDrawerOptionIcons}
+								size={25} />
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Edit</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
 					<TouchableWithoutFeedback onPress={gotoTestScreen}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
-								name="badge-account-horizontal-outline"
+								name="paperclip"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Personal Info</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Attach File</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
 					<TouchableWithoutFeedback onPress={gotoTestScreen}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
-								name="folder-outline"
+								name="delete-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Folder</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Move to Trash</Text>
 						</View>
 					</TouchableWithoutFeedback>
 				</View>
@@ -82,34 +94,36 @@ const CreatePassDrawer = (props: Props) => {
 
 const themeStyle = (colors: MD3Colors) => StyleSheet.create({
 	bottomDrawerContent: {
-		// flex: 1,
-		height: '90%',
+		height: '100%',
+		justifyContent: "space-between",
 		// backgroundColor: 'blue',
-		justifyContent: "space-between"
 	},
 	bottomDrawerTitle: {
-		// height: '20%',
-		// width: '90%',
+		height: '10%',
 		// backgroundColor: 'yellow'
+	},
+	bottomDrawerTitleText: {
+		fontSize: 25,
+		fontWeight: 'bold',
 	},
 	bottomDrawerOptions: {
 		justifyContent: "space-evenly",
-		// flex: 1,
-		height: '80%',
-		// width: '90%',
+		height: '90%',
 		// backgroundColor: 'red'
 	},
 	bottomDrawerOption: {
     flexDirection: 'row',
-		// alignItems: ""
-		// justifyContent: "space-evenly"
-		// height: '90%',
-    // paddingVertical: 8,
-    // paddingHorizontal: 16,
   },
 		bottomDrawerOptionIcons: {
 			color: colors.onSecondaryContainer,
   },
+	bottomDrawerOptionFont: {
+		fontSize: 22.5
+	},
+	divider: {
+		// color: colors.onSecondaryContainer,
+		color: 'red'
+	}
 });
 
 export default CreatePassDrawer;
