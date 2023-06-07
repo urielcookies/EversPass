@@ -20,8 +20,8 @@ const CreatePassDrawer = (props: Props) => {
 			handleCloseBottomSheet={closeDrawer}
 			height={0.35}>
 			<View style={styles.bottomDrawerContent}>
-				<View>
-					<Text style={styles.bottomDrawerTitle} variant="headlineSmall">Add New</Text>
+				<View style={styles.bottomDrawerTitle}>
+					<Text style={styles.bottomDrawerTitleText} variant="headlineSmall">Add New</Text>
 				</View>
 
 				<View style={styles.bottomDrawerOptions}>
@@ -31,7 +31,7 @@ const CreatePassDrawer = (props: Props) => {
 								name="form-textbox-password"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Password</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Password</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -41,7 +41,7 @@ const CreatePassDrawer = (props: Props) => {
 								name="note-text-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Secure Note</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Secure Note</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -51,7 +51,7 @@ const CreatePassDrawer = (props: Props) => {
 								name="credit-card-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Credit Card</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Credit Card</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -61,7 +61,7 @@ const CreatePassDrawer = (props: Props) => {
 								name="badge-account-horizontal-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Personal Info</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Personal Info</Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -71,7 +71,7 @@ const CreatePassDrawer = (props: Props) => {
 								name="folder-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium">&nbsp;Folder</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Folder</Text>
 						</View>
 					</TouchableWithoutFeedback>
 				</View>
@@ -82,34 +82,31 @@ const CreatePassDrawer = (props: Props) => {
 
 const themeStyle = (colors: MD3Colors) => StyleSheet.create({
 	bottomDrawerContent: {
-		// flex: 1,
-		height: '90%',
-		// backgroundColor: 'blue',
-		justifyContent: "space-between"
+		height: '100%',
+		// backgroundColor: 'blue'
 	},
 	bottomDrawerTitle: {
-		// height: '20%',
-		// width: '90%',
+		height: '20%',
 		// backgroundColor: 'yellow'
+	},
+	bottomDrawerTitleText: {
+		fontSize: 25,
+		fontWeight: 'bold',
 	},
 	bottomDrawerOptions: {
 		justifyContent: "space-evenly",
-		// flex: 1,
 		height: '80%',
-		// width: '90%',
 		// backgroundColor: 'red'
 	},
 	bottomDrawerOption: {
-    flexDirection: 'row',
-		// alignItems: ""
-		// justifyContent: "space-evenly"
-		// height: '90%',
-    // paddingVertical: 8,
-    // paddingHorizontal: 16,
+    flexDirection: 'row'
   },
 		bottomDrawerOptionIcons: {
-			color: colors.onSecondaryContainer,
+			color: colors.onSecondaryContainer
   },
+	bottomDrawerOptionFont: {
+		fontSize: 22.5
+	},
 });
 
 export default CreatePassDrawer;
