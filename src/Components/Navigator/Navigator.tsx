@@ -1,3 +1,4 @@
+import { ComponentType } from 'react';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useTheme } from 'react-native-paper';
@@ -8,6 +9,7 @@ import Menu from "../../Views/Menu/Menu";
 import Tools from "../../Views/Tools/Tools";
 import SearchList from "../SearchList/SearchList";
 import TestScreen from "../TestScreen";
+import PassCodeContent from "../PassCodeContent/PassCodeContent";
 
 const Navigator = () => {
   const Tab = createBottomTabNavigator();
@@ -29,7 +31,7 @@ const Navigator = () => {
           }
         }}>
         <Tab.Screen
-          name="EversPass"
+          name="Home"
           component={Home}
           options={{
             tabBarLabel: 'Home', 
@@ -86,6 +88,7 @@ const Navigator = () => {
       <Stack.Screen name="searchList" component={SearchList} />
       <Stack.Screen name="Tabs" component={MyTabs} />
       <Stack.Screen name="TestScreen" component={TestScreen} />
+      <Stack.Screen name="PassCodeContent" component={PassCodeContent as ComponentType} /> {/* Screen takes props */}
     </Stack.Navigator>
   );
 }

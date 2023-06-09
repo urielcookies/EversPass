@@ -14,12 +14,13 @@ import fakeData from '../../Configs/constants/fakeData';
 import CreatePassDrawer from "../../Components/PassEditor/CreatePassDrawer";
 import UpdatePassDrawer from "../../Components/PassEditor/UpdatePassDrawer";
 
+
 const Home = () => {
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<Nav>();
   const styles = themeStyle(colors);
 
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<PassCodeProps[]>([]);
   const [isCreateActive, setIsCreateActive] = useState(false);
   const [isEditActive, setIsEditActive] = useState(false);
   
@@ -48,14 +49,19 @@ const Home = () => {
 			data
 		});
   
+  const gotoPassCodeConentStackScreen = (data: PassCodeProps) =>
+    navigation.navigate('PassCodeContent', {
+      data
+    });
+
 	const gotoTestScreen = () => {
 		createPassDrawerCloseHandler()
 		navigation.navigate('TestScreen');
 	};
 
   const prevChar = useRef('');
-  const Item = ({ title, index }: any) => {
-    const currentChar = title.charAt(0);
+  const Item = ({ data }: { data: PassCodeProps }) => {
+    const currentChar = data.title.charAt(0);
     const showSubHeader = currentChar !== prevChar.current
     if (showSubHeader) prevChar.current = currentChar;
 
@@ -63,16 +69,16 @@ const Home = () => {
       <List.Section>
         {showSubHeader && (
           <>
-            <List.Subheader
-              style={styles.ListSubHeader}>
-                {upperCase(currentChar)}
+            <List.Subheader style={styles.ListSubHeader}>
+              {upperCase(currentChar)}
             </List.Subheader>
             <Divider />
           </>
         )}
         <List.Item
+          onPress={() => gotoPassCodeConentStackScreen(data)}
           titleStyle={styles.ListItem}
-          title={title}
+          title={data.title}
           left={() => (
             <Image
               style={styles.avatar}
@@ -102,8 +108,8 @@ const Home = () => {
       <View style={{ flex: 13 }}>
         <FlatList
           data={sortBy(data, ['title'])}
-          renderItem={({ item, index }) => (
-            <Item title={item.title} index={index} />
+          renderItem={({ item }) => (
+            <Item data={item} />
           )}
           keyExtractor={(item) => item.id.toString()} />
       </View>
@@ -177,12 +183,44 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   }, 
 });
 
-const mockApi = () => {
+const mockApi = (): Promise<PassCodeProps[]> => {
   return new Promise(resolve => {
     // Mock API call response
-    const data = fakeData;
+    const data: PassCodeProps[] = fakeData;
     resolve(data);
   });
 };
+
+interface PassCodeProps {
+  id: number;
+  securityType: string;
+  title: string;
+  passData: PassData;
+}
+
+interface PassData {
+  firstName?: string;
+  lastName?: string;
+  username?: string;
+  password?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  note?: string;
+  cardholder?: string;
+  cardNumber?: string;
+  expirationDate?: string;
+  CVV?: string;
+  zipCode?: string;
+  customFields?: CustomField[];
+}
+
+interface CustomField {
+  [key: string]: string;
+}
+
+type Nav = {
+  navigate: (value: string, data?: { data: PassCodeProps } | { data: PassCodeProps[] }) => void;
+}
 
 export default Home;
