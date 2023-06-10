@@ -88,7 +88,8 @@ const Navigator = () => {
       <Stack.Screen name="searchList" component={SearchList} />
       <Stack.Screen name="Tabs" component={MyTabs} />
       <Stack.Screen name="TestScreen" component={TestScreen} />
-      <Stack.Screen name="PassCodeContent" component={PassCodeContent as ComponentType} /> {/* Screen takes props */}
+      {/* Screen takes props */}
+      <Stack.Screen name="PassCodeContent" component={PassCodeContent as ComponentType} />
     </Stack.Navigator>
   );
 }

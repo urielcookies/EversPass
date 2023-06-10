@@ -17,7 +17,7 @@ const SearchList = ({ route }: any) => {
 	const styles = themeStyle(colors);
 
   const gotoTestStackScreen = () => {
-		navigation.navigate("EversPass");
+		navigation.navigate("Home");
 	};
 
 	const searchHandler = (fieldValue: string) => {
