@@ -179,7 +179,9 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   },
   avatar: {
     margin: 8,
-		width: 45, height: 45, borderRadius: 400 / 2,
+		width: 45,
+    height: 45, 
+    borderRadius: 400 / 2,
   }, 
 });
 

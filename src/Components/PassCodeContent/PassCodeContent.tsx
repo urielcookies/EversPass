@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
-import { Button, MD3Colors, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
+import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import { FC } from 'react';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const PassCodeContent: FC<PassCodeContentProps> = (props) => {
@@ -18,21 +20,33 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
 	};
 
 	console.log('props->', props);
-	console.log('data->', data);
+	console.log('data->', data)
 
 	return (
     <ViewWrapper notchProtection>
       <View style={styles.navIcons}>
-        <Text>Navigation Icons</Text>
-        <Button onPress={gotoTestStackScreen}>PASS CODE CONTENT</Button>
+        <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
+          <View style={styles.navIcons.back}>
+            <MaterialCommunityIcons name="arrow-left" size={30} color={colors.onSecondaryContainer} />
+          </View>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
+          <View style={styles.navIcons.edit}>
+            <MaterialCommunityIcons name="pencil-outline" size={30} color={colors.onSecondaryContainer} />
+          </View>
+        </TouchableWithoutFeedback>
       </View>
 
       <View style={styles.logoIcon}>
-        <Text>Logo</Text>
+        <Image
+          style={styles.logoIcon.logo}
+          source={require('../../Assets/amex.jpeg')}
+          defaultSource={require('../../Assets/amex.jpeg')} />
       </View>
 
       <View style={styles.title}>
-        <Text>Title</Text>
+        <Text variant="headlineLarge">{data.title}</Text>
       </View>
 
       <View style={styles.actionButtons}>
@@ -53,32 +67,52 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
 const themeStyle = (colors: MD3Colors) => StyleSheet.create({
 	navIcons: {
 		flex: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     // backgroundColor: 'red',
-    backgroundColor: colors.onPrimary,
     borderRadius: 10,
     marginLeft: 10,
     marginRight: 10,
     marginBottom: 7.5,
+    back: {
+      // width: '50%'
+      height:30
+    },
+    edit: {
+      height:30
+      // width: '50%'
+    }
 	},
   logoIcon: {
 		flex: 3,
     // backgroundColor: 'blue',
-    backgroundColor: colors.onPrimary,
+    // backgroundColor: colors.onPrimary,
     borderRadius: 10,
     marginLeft: 10,
     marginRight: 10,
     marginTop: 7.5,
     marginBottom: 7.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    logo: {
+      width: undefined,
+      height: '100%',
+      aspectRatio: 1,
+      borderRadius: 10,
+    }
   },
   title: {
 		flex: 2,
     // backgroundColor: 'yellow',
-    backgroundColor: colors.onPrimary,
+    // backgroundColor: colors.onPrimary,
     borderRadius: 10,
     marginLeft: 10,
     marginRight: 10,
     marginTop: 7.5,
     marginBottom: 7.5,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionButtons: {
 		flex: 3.5,
