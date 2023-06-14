@@ -50,7 +50,30 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
       </View>
 
       <View style={styles.actionButtons}>
-        <Text>Action Buttons</Text>
+        <View>
+          <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
+            <View style={styles.actionButton}>
+              <MaterialCommunityIcons name="attachment" size={30} color={colors.onSecondaryContainer} />
+              <Text>Attach File</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+        <View>
+          <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
+            <View style={styles.actionButton}>
+              <MaterialCommunityIcons name="account-plus-outline" size={30} color={colors.onSecondaryContainer} />
+              <Text>Share</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
+        <View>
+          <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
+            <View style={styles.actionButton}>
+              <MaterialCommunityIcons name="dots-vertical" size={30} color={colors.onSecondaryContainer} />
+              <Text>More</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
 
       <View style={styles.content}>
@@ -105,7 +128,6 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   title: {
 		flex: 2,
     // backgroundColor: 'yellow',
-    // backgroundColor: colors.onPrimary,
     borderRadius: 10,
     marginLeft: 10,
     marginRight: 10,
@@ -115,14 +137,25 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     justifyContent: 'center',
   },
   actionButtons: {
-		flex: 3.5,
-    // backgroundColor: 'brown',
-    backgroundColor: colors.onPrimary,
+		flex: 2.8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // backgroundColor: colors.onPrimary,
     borderRadius: 10,
     marginLeft: 10,
     marginRight: 10,
     marginTop: 7.5,
     marginBottom: 7.5,
+  },
+  actionButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.onPrimary,
+    height: '100%',
+    width: 125,
+    fontSize: '20px',
+    borderRadius: 10,
+    gap: 10,
   },
   content: {
 		flex: 10,
@@ -143,6 +176,10 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     marginRight: 10,
     marginTop: 7.5,
   },
+  icon: {
+    color: colors.onSecondaryContainer,
+    fontSize: 20,
+  }
 });
 
 type RootStackParamList = {
