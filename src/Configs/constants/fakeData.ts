@@ -216,6 +216,7 @@ export default [
       expirationDate: '09/27',
 			CVV: '123',
 			zipCode: '87123',
+      website: 'amex.com',
       customFields: [
         {
           cardType: 'Amex'

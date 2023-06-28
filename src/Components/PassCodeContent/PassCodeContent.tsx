@@ -1,10 +1,11 @@
 import { Image, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
-import { Text, useTheme } from 'react-native-paper';
+import { List, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import { FC } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import PassCodeFields from './PassCodeFields';
 
 
 const PassCodeContent: FC<PassCodeContentProps> = (props) => {
@@ -12,7 +13,14 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
   const navigation = useNavigation<Nav>();
 
   const { colors } = useTheme();
-	const styles = themeStyle(colors);
+
+  const numberofFields: { [key: string]: number } = {
+    PASSWORD: 6,
+    CREDITCARD: 12,
+    SECURENOTE: 7
+  };
+  
+	const styles = themeStyle(colors, numberofFields[data.securityType]);
 
 
   const gotoTestStackScreen = () => {
@@ -77,17 +85,22 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
       </View>
 
       <View style={styles.content}>
-        <Text>Action Buttons</Text>
+        <PassCodeFields data={data}/>
       </View>
 
-      <View style={styles.webApp}>
-        <Text>Web App</Text>
+      {Boolean(data.passData.website) && <View style={styles.webApp}>
+        <List.Item
+          titleStyle={{ fontSize: 15, color: 'grey' }}
+          descriptionStyle={{ fontSize: 15 }}
+          title="Website or App Name"
+          description={data.passData.website} />
       </View>
+      }  
     </ViewWrapper>
 	);
 }
 
-const themeStyle = (colors: MD3Colors) => StyleSheet.create({
+const themeStyle = (colors: MD3Colors, totalFields: number) => StyleSheet.create({
 	navIcons: {
 		flex: 2,
     flexDirection: 'row',
@@ -158,7 +171,7 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     gap: 10,
   },
   content: {
-		flex: 10,
+		flex: totalFields,
     // backgroundColor: 'pink',
     backgroundColor: colors.onPrimary,
     borderRadius: 10,
@@ -168,7 +181,7 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     marginBottom: 7.5,
   },
   webApp: {
-		flex: 5,
+		flex: 2,
     // backgroundColor: 'green',
     backgroundColor: colors.onPrimary,
     borderRadius: 10,
@@ -197,7 +210,7 @@ type Nav = {
   navigate: (value: string) => void;
 }
 
-interface PassCodeProps {
+export interface PassCodeProps {
   id: number;
   securityType: string;
   title: string;
