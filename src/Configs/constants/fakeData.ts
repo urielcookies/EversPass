@@ -10,7 +10,8 @@ export default [
       note: 'No Comment Here',
       customFields: [
         {
-          alternativeEmail: 'whatup@ever.com'
+          name: 'alternativeEmail',
+          value: 'whatup@ever.com'
         }
       ]
     }
@@ -26,7 +27,8 @@ export default [
       note: 'Remember to logout',
       customFields: [
         {
-          birthday: '1985-05-21'
+          name: 'birthday',
+          value: '1985-05-21'
         }
       ]
     }
@@ -39,7 +41,8 @@ export default [
       note: 'I love pizza',
       customFields: [
         {
-          category: 'Food'
+          name: 'category',
+          value: 'Food'
         }
       ]
     }
@@ -56,7 +59,8 @@ export default [
 			zipCode: '87144',
       customFields: [
         {
-          cardType: 'Visa'
+          name: 'card type',
+          value: 'Visa'
         }
       ]
     }
@@ -72,7 +76,8 @@ export default [
       phone: '123-456-7890',
       customFields: [
         {
-          gender: 'Male'
+          name: 'gender',
+          value: 'Male'
         }
       ]
     }
@@ -94,7 +99,8 @@ export default [
       note: 'Don\'t share with anyone',
       customFields: [
         {
-          storageCapacity: '2 TB'
+          name: 'storage capacity',
+          value: '2 TB'
         }
       ]
     }
@@ -110,7 +116,8 @@ export default [
       note: 'Enable 2FA',
       customFields: [
         {
-          emailAlias: 'john.doe@gmail.com'
+          name: 'emailA alias',
+          value: 'john.doe@gmail.com'
         }
       ]
     }
@@ -123,7 +130,8 @@ export default [
       note: 'Dear Diary...',
       customFields: [
         {
-          category: 'Personal'
+          name: 'category',
+          value: 'Personal'
         }
       ]
     }
@@ -140,7 +148,8 @@ export default [
 			zipCode: '91331',
       customFields: [
         {
-          cardType: 'Mastercard'
+          name: 'card type',
+          value: 'Mastercard'
         }
       ]
     }
@@ -156,7 +165,8 @@ export default [
       note: 'Tweet responsibly',
       customFields: [
         {
-          followers: '1000+'
+          name: 'card type',
+          value: '1000+'
         }
       ]
     }
@@ -172,7 +182,8 @@ export default [
       note: 'Keep profile updated',
       customFields: [
         {
-          industry: 'IT'
+          name: 'industry',
+          value: 'IT'
         }
       ]
     }
@@ -188,7 +199,8 @@ export default [
       phone: '123-456-7890',
       customFields: [
         {
-          skills: 'JavaScript, React, Node.js'
+          name: 'skills',
+          value: 'JavaScript, React, Node.js'
         }
       ]
     }
@@ -201,7 +213,8 @@ export default [
       note: 'Today was a good day',
       customFields: [
         {
-          category: 'Personal'
+          name: 'category',
+          value: 'Personal'
         }
       ]
     }
@@ -217,10 +230,32 @@ export default [
 			CVV: '123',
 			zipCode: '87123',
       website: 'amex.com',
+      note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Et netus et malesuada fames ac turpis. Proin fermentum leo vel orci porta non pulvinar. Velit scelerisque in dictum non. A scelerisque purus semper eget duis at. Ipsum a arcu cursus vitae congue. Vestibulum morbi blandit cursus risus at ultrices mi tempus imperdiet. Mattis ullamcorper velit sed ullamcorper. Pellentesque eu tincidunt tortor aliquam nulla facilisi cras fermentum. Orci sagittis eu volutpat odio facilisis mauris sit amet massa. Diam donec adipiscing tristique risus nec feugiat in. Ut tellus elementum sagittis vitae et. Pharetra diam sit amet nisl suscipit adipiscing bibendum. Elementum integer enim neque volutpat ac. Egestas maecenas pharetra convallis posuere morbi leo. Sed augue lacus viverra vitae congue eu. Est ante in nibh mauris cursus mattis molestie a iaculis. Ut morbi tincidunt augue interdum velit. Eu turpis egestas pretium aenean. Sed faucibus turpis in eu mi bibendum neque egestas congue. Id eu nisl nunc mi ipsum faucibus vitae aliquet nec. Eleifend mi in nulla posuere sollicitudin aliquam ultrices. Magna fringilla urna porttitor rhoncus dolor purus. Ut tortor pretium viverra suspendisse potenti nullam. Congue nisi vitae suscipit tellus mauris a. Malesuada fames ac turpis egestas sed tempus. Elementum facilisis leo vel fringilla. Vulputate mi sit amet mauris commodo quis imperdiet massa. Netus et malesuada fames ac turpis egestas integer eget.',
       customFields: [
         {
-          cardType: 'Amex'
-        }
+          name: 'card type',
+          value: 'Amex'
+        },
+        {
+          name: 'test1',
+          value: 'value 1'
+        },
+        {
+          name: 'test2',
+          value: 'value 2'
+        },
+        {
+          name: 'test3',
+          value: 'value 3'
+        },
+        {
+          name: 'test4',
+          value: 'value 4'
+        },
+        {
+          name: 'test5',
+          value: 'value 5'
+        },
       ]
     }
   },
@@ -235,7 +270,8 @@ export default [
       note: 'Push code daily',
       customFields: [
         {
-          publicRepos: '10+'
+          name: 'publicRepos',
+          value: '10+'
         }
       ]
     }
@@ -251,7 +287,8 @@ export default [
       note: 'Post photos occasionally',
       customFields: [
         {
-          followers: '500+'
+          name: 'followers',
+          value: '500+'
         }
       ]
     }
@@ -273,7 +310,8 @@ export default [
       note: 'Use prime for free shipping',
       customFields: [
         {
-          wishList: 'Books, Gadgets'
+          name: 'wishList',
+          value: 'Books, Gadgets'
         }
       ]
     }
@@ -290,7 +328,8 @@ export default [
 			zipCode: '91234',
       customFields: [
         {
-          cardType: 'Visa'
+          name: 'card type',
+          value: 'Visa'
         }
       ]
     }
@@ -303,7 +342,8 @@ export default [
       note: '1 cup sugar, 2 cups flour, 3 eggs...',
       customFields: [
         {
-          category: 'Recipes'
+          name: 'category',
+          value: 'Recipes'
         }
       ]
     }
@@ -319,7 +359,8 @@ export default [
       note: 'Sync files across devices',
       customFields: [
         {
-          storageSpace: '2TB'
+          name: 'storageSpace',
+          value: '2TB'
         }
       ]
     }
@@ -335,7 +376,8 @@ export default [
       note: 'Collaborate with team members',
       customFields: [
         {
-          channels: 'general, random'
+          name: 'channels',
+          value: 'general, random'
         }
       ]
     }
@@ -351,7 +393,8 @@ export default [
       note: 'Binge-watch on weekends',
       customFields: [
         {
-          plan: 'Premium'
+          name: 'plan',
+          value: 'Premium'
         }
       ]
     }

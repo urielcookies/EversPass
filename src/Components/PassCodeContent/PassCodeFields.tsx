@@ -67,19 +67,6 @@ const PassCodeFields: FC<IPassCodeFields> = ({ data }) => {
             description={data.passData.zipCode} />
         </>
       )}
-
-      {isEqual(data.securityType, 'SECURENOTE') && (
-        <View>
-          <ScrollView>       
-            <List.Item
-              titleStyle={{ fontSize: 15, color: 'grey' }}
-              descriptionStyle={{ fontSize: 15 }}
-              descriptionNumberOfLines={10000}
-              title="Note"
-              description={data.passData.note} />   
-          </ScrollView>
-        </View>
-      )}
     </>
   )
 }
