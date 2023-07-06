@@ -67,6 +67,34 @@ const PassCodeFields: FC<IPassCodeFields> = ({ data }) => {
             description={data.passData.zipCode} />
         </>
       )}
+
+      {isEqual(data.securityType, 'PERSONALINFO') && (
+        <>
+          <List.Item
+            titleStyle={{ fontSize: 15, color: 'grey' }}
+            descriptionStyle={{ fontSize: 15 }}
+            title="First Name"
+            description={data.passData.firstName} />
+          <Divider />
+          <List.Item
+            titleStyle={{ fontSize: 15, color: 'grey' }}
+            descriptionStyle={{ fontSize: 15 }}
+            title="Last Name"
+            description={data.passData.lastName} />
+          <Divider />
+          <List.Item
+            titleStyle={{ fontSize: 15, color: 'grey' }}
+            descriptionStyle={{ fontSize: 15 }}
+            title="Email"
+            description={data.passData.email} />
+          <Divider />
+          <List.Item
+            titleStyle={{ fontSize: 15, color: 'grey' }}
+            descriptionStyle={{ fontSize: 15 }}
+            title="Phone"
+            description={data.passData.phone} />
+        </>
+      )}
     </>
   )
 }

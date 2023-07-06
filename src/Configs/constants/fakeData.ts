@@ -74,6 +74,7 @@ export default [
       lastName: 'Doe',
       email: 'john@example.com',
       phone: '123-456-7890',
+      note: 'Fat Love',
       customFields: [
         {
           name: 'gender',

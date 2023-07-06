@@ -6,7 +6,7 @@ import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import { FC, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PassCodeFields from './PassCodeFields';
-import { isEmpty, isEqual, isUndefined, map } from 'lodash';
+import { isEmpty, isUndefined, map } from 'lodash';
 
 
 const PassCodeContent: FC<PassCodeContentProps> = (props) => {
@@ -19,6 +19,7 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
   const numberofFields: { [key: string]: number } = {
     PASSWORD: 210,
     CREDITCARD: 350,
+    // PERSONALINFO: 0
     // SECURENOTE: 0
   };
   
