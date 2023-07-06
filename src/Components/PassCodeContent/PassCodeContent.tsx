@@ -1,4 +1,4 @@
-import { Image, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
 import { List, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
@@ -32,7 +32,11 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
 		navigation.navigate("Home");
 	};
 
-  const onScrollHandler = (event: any) => {
+  const gotoEditorStackScreen = () => {
+		navigation.navigate("PassCodeContentEditor", { data });
+	};
+
+  const onScrollHandler = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     if (event.nativeEvent.contentOffset.y > 200) {
       setShowTitle(true);
       setNavBarStyles({
@@ -49,10 +53,8 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
       setNavBarStyles(styles.navIcons)
     }
   }
-	console.log('props->', props);
-	console.log('data->', data)
 
-	return (
+  return (
     <ViewWrapper notchProtection>
       <ScrollView stickyHeaderIndices={[ 0 ]} onScroll={onScrollHandler}>
         <View>
@@ -69,7 +71,7 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
               </View>
             )}
 
-            <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
+            <TouchableWithoutFeedback onPress={gotoEditorStackScreen}>
               <View style={styles.edit}>
                 <MaterialCommunityIcons name="pencil-outline" size={30} color={colors.onSecondaryContainer} />
               </View>
@@ -297,7 +299,7 @@ interface PassCodeContentProps {
 }
 
 type Nav = {
-  navigate: (value: string) => void;
+  navigate: (value: string, data?: { data: PassCodeProps }) => void;
 }
 
 export interface PassCodeProps {

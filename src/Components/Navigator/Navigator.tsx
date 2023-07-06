@@ -10,6 +10,7 @@ import Tools from "../../Views/Tools/Tools";
 import SearchList from "../SearchList/SearchList";
 import TestScreen from "../TestScreen";
 import PassCodeContent from "../PassCodeContent/PassCodeContent";
+import PassCodeContentEditor from '../PassCodeContentEditor/PassCodeContentEditor';
 
 const Navigator = () => {
   const Tab = createBottomTabNavigator();
@@ -90,6 +91,7 @@ const Navigator = () => {
       <Stack.Screen name="TestScreen" component={TestScreen} />
       {/* Screen takes props */}
       <Stack.Screen name="PassCodeContent" component={PassCodeContent as ComponentType} />
+      <Stack.Screen name="PassCodeContentEditor" component={PassCodeContentEditor as ComponentType} />
     </Stack.Navigator>
   );
 }
