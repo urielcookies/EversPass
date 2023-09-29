@@ -19,10 +19,10 @@ const PassCodeContent: FC<PassCodeContentProps> = (props) => {
   const numberofFields: { [key: string]: number } = {
     PASSWORD: 210,
     CREDITCARD: 350,
-    // PERSONALINFO: 0
-    // SECURENOTE: 0
+    PERSONALINFO: 280,
+    SECURENOTE: 0
   };
-  
+
 	const styles = themeStyle(colors, numberofFields[data.securityType]);
 
   const [navBarStyles, setNavBarStyles] = useState(styles.navIcons);
