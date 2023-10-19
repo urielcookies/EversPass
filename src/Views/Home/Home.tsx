@@ -87,9 +87,8 @@ const Home = () => {
           )}
           right={() => (
             <MaterialCommunityIcons
-              style={[styles.threeDotIcon]}
+              style={styles.threeDotIcon}
               name="dots-vertical"
-              size={40}
 							onPress={updatePassDrawerOpenHandler}/>
           )} />
       </List.Section>
@@ -167,6 +166,7 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     fontSize: 25,
   },
   threeDotIcon: {
+		fontSize: 30,
     margin: 8,
     color: colors.onSecondaryContainer,
   },
