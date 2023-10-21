@@ -161,13 +161,14 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   },
   ListSubHeader: {
     fontSize: 15,
+    paddingVertical: 5
   },
   ListItem: {
-    fontSize: 25,
+    fontSize: 18,
   },
   threeDotIcon: {
-		fontSize: 30,
-    margin: 8,
+		fontSize: 25,
+    marginTop: 8,
     color: colors.onSecondaryContainer,
   },
   fab: {
@@ -178,9 +179,10 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     backgroundColor: colors.secondaryContainer,
   },
   avatar: {
-    margin: 8,
-		width: 45,
-    height: 45, 
+    marginTop: 8,
+    marginLeft: 10,
+		width: 23.5,
+    height: 23.5,
     borderRadius: 400 / 2,
   }, 
 });
