@@ -1,11 +1,12 @@
 import React, { FC, useState } from 'react';
 import { ScrollView, View, TouchableWithoutFeedback, NativeScrollEvent, NativeSyntheticEvent, StyleSheet } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { Text, TextInput, useTheme } from 'react-native-paper';
 import { NavigationProp, RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MD3Colors } from "react-native-paper/lib/typescript/types";
 
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
+import PassCodeFields from './PassCodeFields';
 
 const PassCodeContentEditor: FC<PassCodeContentProps> = (props) => {
   const { data } = props.route.params;
@@ -17,6 +18,16 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = (props) => {
 
   const [navBarStyles, setNavBarStyles] = useState(styles.navIcons);
   const [showTitle, setShowTitle] = useState(false);
+  const [form, setForm] = useState({
+    title: data.title,
+    username: data.passData.username
+  });
+
+  const formHandler = (field: string, value: string) =>
+    setForm((prevForm) => ({
+      ...prevForm,
+      [field]: value
+    }));
 
   const gotoPassCodeConentStackScreen = () =>
     navigation.goBack();
@@ -42,6 +53,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = (props) => {
       setNavBarStyles(styles.navIcons)
     }
   }
+
   return (
     <ViewWrapper notchProtection>
       <ScrollView stickyHeaderIndices={[ 0 ]} onScroll={onScrollHandler}>
@@ -69,6 +81,19 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = (props) => {
 
         <View style={styles.title}>
           <Text variant="headlineLarge">{data.title}</Text>
+        </View>
+
+        <View style={styles.content}>
+          <TextInput
+            label="Title"
+            value={form.title}
+            onChangeText={(value) => formHandler('title', value)} />
+
+          <PassCodeFields
+            form={form}
+            formHandler={formHandler}
+            securityType={data.securityType}
+            />
         </View>
       </ScrollView>
     </ViewWrapper>
@@ -149,7 +174,7 @@ export interface PassCodeProps {
 interface PassData {
   firstName?: string;
   lastName?: string;
-  username?: string;
+  username: string;
   password?: string;
   phone?: string;
   email?: string;

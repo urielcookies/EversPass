@@ -312,7 +312,7 @@ export interface PassCodeProps {
 interface PassData {
   firstName?: string;
   lastName?: string;
-  username?: string;
+  username: string;
   password?: string;
   phone?: string;
   email?: string;
