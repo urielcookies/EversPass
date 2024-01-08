@@ -1,18 +1,13 @@
 import { isEqual } from 'lodash';
-import React, { FC } from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { List, Divider, TextInput, Text, useTheme } from 'react-native-paper';
+import React, { FC } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { TextInput, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
-import TranspBgrViewProps from '../../RenderProps/TranspBgrView'
+import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 
-
-const PassCodeFields: FC<IPassCodeFields> = (props) => {
-  const {
-    form,
-    formHandler,
-    securityType
-  } = props;
+const PassCodeFields: FC<IPassCodeFields> = props => {
+  const { form, formHandler, securityType } = props;
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
@@ -20,7 +15,9 @@ const PassCodeFields: FC<IPassCodeFields> = (props) => {
   return (
     <View>
       <TranspBgrViewProps paddingVertical={10} />
-      <Text style={styles.transpBgrView} variant="titleMedium">Login Details</Text>
+      <Text style={styles.transpBgrView} variant="titleMedium">
+        Login Details
+      </Text>
       <TranspBgrViewProps paddingVertical={5} />
 
       {isEqual(securityType, 'PASSWORD') && (
@@ -28,7 +25,8 @@ const PassCodeFields: FC<IPassCodeFields> = (props) => {
           <TextInput
             label="Title"
             value={form.username}
-            onChangeText={(value) => formHandler('title', value)} />
+            onChangeText={value => formHandler('title', value)}
+          />
         </View>
       )}
 
@@ -95,27 +93,28 @@ const PassCodeFields: FC<IPassCodeFields> = (props) => {
         </>
       )} */}
     </View>
-  )
-}
+  );
+};
 
-const themeStyle = (colors: MD3Colors) => StyleSheet.create({
-  divider: {
-    paddingVertical: 10
-  },
-  minDivider: {
-    paddingVertical: 5
-  },
-  transpBgrView: {
-    backgroundColor: colors.background,
-  }
-});
+const themeStyle = (colors: MD3Colors) =>
+  StyleSheet.create({
+    divider: {
+      paddingVertical: 10,
+    },
+    minDivider: {
+      paddingVertical: 5,
+    },
+    transpBgrView: {
+      backgroundColor: colors.background,
+    },
+  });
 
 interface IPassCodeFields {
   formHandler: (field: string, value: string) => void;
-	form: {
+  form: {
     title: string;
     username: string;
-  }
+  };
   securityType: string;
 }
 
