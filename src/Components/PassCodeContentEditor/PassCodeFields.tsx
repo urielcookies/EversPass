@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TextInput, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
@@ -12,21 +12,81 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
   const { colors } = useTheme();
   const styles = themeStyle(colors);
 
+  const [passwordVisibility, setPasswordVisibility] = useState(false);
+  const togglePasswordVisibility = () =>
+    setPasswordVisibility(!passwordVisibility);
+
+  const checkPasswordStrength = (password: string) => {
+    // Define criteria for different strength levels
+    const strongRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+    const mediumRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]/;
+
+    if (strongRegex.test(password)) {
+      return 'STRONG';
+    } else if (mediumRegex.test(password)) {
+      return 'MEDIUM';
+    } else {
+      return 'WEAK';
+    }
+  };
+
   return (
     <View>
-      <TranspBgrViewProps paddingVertical={10} />
-      <Text style={styles.transpBgrView} variant="titleMedium">
-        Login Details
-      </Text>
-      <TranspBgrViewProps paddingVertical={5} />
-
       {isEqual(securityType, 'PASSWORD') && (
         <View>
+          <TranspBgrViewProps paddingVertical={10} />
+          <Text style={styles.transpBgrView} variant="titleMedium">
+            Login Details
+          </Text>
+          <TranspBgrViewProps paddingVertical={5} />
+
           <TextInput
-            label="Title"
+            label="Email or Username"
             value={form.username}
-            onChangeText={value => formHandler('title', value)}
+            onChangeText={value => formHandler('username', value)}
           />
+
+          <TranspBgrViewProps paddingVertical={5} />
+
+          <TextInput
+            label="Email or Username"
+            value={form.password}
+            onChangeText={value => formHandler('password', value)}
+            secureTextEntry={!passwordVisibility}
+            right={
+              <TextInput.Icon
+                icon={passwordVisibility ? 'eye' : 'eye-off'}
+                onPress={togglePasswordVisibility}
+              />
+            }
+          />
+
+          {isEqual(
+            checkPasswordStrength(form.password as string),
+            'STRONG',
+          ) && (
+            <Text
+              variant="titleSmall"
+              style={styles.passwordStrengthTextSTRONG}>
+              Strong Password
+            </Text>
+          )}
+          {isEqual(
+            checkPasswordStrength(form.password as string),
+            'MEDIUM',
+          ) && (
+            <Text
+              variant="titleSmall"
+              style={styles.passwordStrengthTextMEDIUM}>
+              Medium Password
+            </Text>
+          )}
+          {isEqual(checkPasswordStrength(form.password as string), 'WEAK') && (
+            <Text variant="titleSmall" style={styles.passwordStrengthTextWEAK}>
+              Weak Password
+            </Text>
+          )}
         </View>
       )}
 
@@ -107,15 +167,49 @@ const themeStyle = (colors: MD3Colors) =>
     transpBgrView: {
       backgroundColor: colors.background,
     },
+    passwordStrengthTextSTRONG: {
+      color: 'green',
+      backgroundColor: colors.background,
+    },
+    passwordStrengthTextMEDIUM: {
+      color: 'yellow',
+      backgroundColor: colors.background,
+    },
+    passwordStrengthTextWEAK: {
+      color: 'red',
+      backgroundColor: colors.background,
+    },
   });
 
 interface IPassCodeFields {
   formHandler: (field: string, value: string) => void;
-  form: {
-    title: string;
-    username: string;
-  };
+  form: ExtendedPassData;
   securityType: string;
+}
+
+interface ExtendedPassData extends PassData {
+  title?: string;
+}
+
+interface PassData {
+  firstName?: string;
+  lastName?: string;
+  username: string;
+  password?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  note?: string;
+  cardholder?: string;
+  cardNumber?: string;
+  expirationDate?: string;
+  CVV?: string;
+  zipCode?: string;
+  customFields?: CustomField[];
+}
+
+interface CustomField {
+  [key: string]: string;
 }
 
 export default PassCodeFields;
