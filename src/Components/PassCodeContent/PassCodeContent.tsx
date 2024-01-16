@@ -272,7 +272,7 @@ const themeStyle = (colors: MD3Colors, totalFields: number) =>
       justifyContent: 'center',
       backgroundColor: colors.onPrimary,
       height: '100%',
-      width: 125,
+      width: 118.5,
       fontSize: '20px',
       borderRadius: 10,
       gap: 10,

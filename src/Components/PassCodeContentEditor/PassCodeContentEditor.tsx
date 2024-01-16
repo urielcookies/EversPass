@@ -7,7 +7,15 @@ import {
   NativeSyntheticEvent,
   StyleSheet,
 } from 'react-native';
-import { HelperText, Text, TextInput, useTheme } from 'react-native-paper';
+import {
+  Button,
+  Dialog,
+  HelperText,
+  Portal,
+  Text,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 import {
   NavigationProp,
   RouteProp,
@@ -19,7 +27,7 @@ import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import PassCodeFields from './PassCodeFields';
-import { cloneDeep, find, isEqual, map } from 'lodash';
+import { cloneDeep, find, isEqual, map, some } from 'lodash';
 
 const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
@@ -31,6 +39,9 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   const [navBarStyles, setNavBarStyles] = useState(styles.navIcons);
   const [showTitle, setShowTitle] = useState(false);
+  const [showCustomFieldModal, setShowCustomFieldModal] = useState(false);
+  const [newField, setNewField] = useState('');
+  const [showDialogError, setShowDialogError] = useState(false);
   const [form, setForm] = useState<ExtendedPassData>({
     title: data.title,
     username: data.passData.username,
@@ -67,6 +78,33 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       setShowTitle(false);
       setNavBarStyles(styles.navIcons);
     }
+  };
+
+  const addFieldsHandler = () => {
+    const clonedCustomFields = cloneDeep(form.customFields || []);
+    clonedCustomFields.push({ name: newField, value: '' });
+    formHandler('customFields', clonedCustomFields);
+    onDismissDialog();
+  };
+
+  const dialogNewFieldOnChangeHandler = (value: string) => {
+    setNewField(value);
+    const clonedCustomFields = cloneDeep(form.customFields || []);
+    const isFieldAlreadyExists = some(
+      clonedCustomFields,
+      field => field.name === value,
+    );
+    if (isFieldAlreadyExists) {
+      setShowDialogError(true);
+    } else {
+      setShowDialogError(false);
+    }
+  };
+
+  const onDismissDialog = () => {
+    setShowDialogError(false);
+    setShowCustomFieldModal(false);
+    setNewField('');
   };
 
   return (
@@ -162,9 +200,62 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                   clonedCustomFields[index].value = value;
                   formHandler('customFields', clonedCustomFields);
                 }}
+                right={
+                  <TextInput.Icon icon="dots-vertical" onPress={console.log} />
+                }
               />
             </React.Fragment>
           ))}
+
+          <TranspBgrViewProps paddingVertical={5} />
+
+          <Button
+            style={styles.addFieldBtn}
+            icon={({ color, size }) => (
+              <MaterialCommunityIcons
+                name="plus-circle-outline"
+                color={color}
+                size={size + 5}
+              />
+            )}
+            mode="contained"
+            onPress={() => setShowCustomFieldModal(true)}>
+            Add Field
+          </Button>
+
+          <Portal>
+            <Dialog
+              style={styles.dialog}
+              onDismiss={onDismissDialog}
+              visible={showCustomFieldModal}>
+              <Dialog.Title style={styles.dialogTitle}>Field Name</Dialog.Title>
+              <Dialog.Content>
+                <Text variant="bodyLarge">
+                  Try to use the same name as the website or app field you'd
+                  like to autofill
+                </Text>
+                <View style={styles.viewDivider} />
+                <TextInput
+                  autoFocus
+                  label="Field Name"
+                  value={newField}
+                  onChangeText={dialogNewFieldOnChangeHandler}
+                />
+                <View style={styles.viewDivider} />
+                <Text variant="titleSmall" style={styles.dialogError}>
+                  {showDialogError ? 'Field Exists Already' : ''}
+                </Text>
+              </Dialog.Content>
+              <Dialog.Actions>
+                <Button onPress={onDismissDialog}>Cancel</Button>
+                <Button
+                  disabled={isEqual(newField, '') || showDialogError}
+                  onPress={addFieldsHandler}>
+                  Save
+                </Button>
+              </Dialog.Actions>
+            </Dialog>
+          </Portal>
         </View>
       </ScrollView>
     </ViewWrapper>
@@ -207,6 +298,15 @@ const themeStyle = (colors: MD3Colors) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
+    dialog: {
+      borderRadius: 0,
+    },
+    dialogTitle: {
+      textAlign: 'center',
+    },
+    dialogError: {
+      color: 'red',
+    },
     content: {
       backgroundColor: colors.onPrimary,
       borderRadius: 10,
@@ -221,6 +321,12 @@ const themeStyle = (colors: MD3Colors) =>
     },
     transpBgrView: {
       backgroundColor: colors.background,
+    },
+    addFieldBtn: {
+      borderRadius: 0,
+    },
+    viewDivider: {
+      height: 10,
     },
   });
 
