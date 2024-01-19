@@ -330,7 +330,6 @@ const themeStyle = (colors: MD3Colors) =>
       bottom: 0,
       alignItems: 'center',
       justifyContent: 'center',
-      // color: colors.onPrimary,
     },
   });
 
