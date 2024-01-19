@@ -1,10 +1,9 @@
 import React, { FC, useState } from 'react';
 import {
+  ActivityIndicator,
   ScrollView,
   View,
   TouchableWithoutFeedback,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
   StyleSheet,
 } from 'react-native';
 import {
@@ -27,7 +26,7 @@ import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import PassCodeFields from './PassCodeFields';
-import { cloneDeep, find, isEqual, map, some } from 'lodash';
+import { cloneDeep, isEqual, map, some } from 'lodash';
 
 const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
@@ -37,8 +36,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const { colors } = useTheme();
   const styles = themeStyle(colors);
 
-  const [navBarStyles, setNavBarStyles] = useState(styles.navIcons);
-  const [showTitle, setShowTitle] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [showCustomFieldModal, setShowCustomFieldModal] = useState(false);
   const [newField, setNewField] = useState('');
   const [showDialogError, setShowDialogError] = useState(false);
@@ -48,6 +46,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     password: data.passData.password,
     website: data.passData.website,
     customFields: data.passData.customFields,
+    note: data.passData.note,
   });
 
   const formHandler = (field: string, value: string | CustomField[]) =>
@@ -56,29 +55,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       [field]: value,
     }));
 
-  const gotoPassCodeConentStackScreen = () => navigation.goBack();
-
-  const gotoEditorStackScreen = () => {
-    navigation.navigate('Home');
-  };
-
-  const onScrollHandler = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    if (event.nativeEvent.contentOffset.y > 200) {
-      setShowTitle(true);
-      setNavBarStyles({
-        ...styles.navIcons,
-        ...{
-          backgroundColor: colors.onPrimary,
-          borderBottomColor: colors.onSecondaryContainer,
-          borderBottomWidth: 2,
-          // opacity: 0.5/* Change the opacity value as desired */
-        },
-      });
-    } else {
-      setShowTitle(false);
-      setNavBarStyles(styles.navIcons);
-    }
-  };
+  const gotoPassCodeContentStackScreen = () => navigation.goBack();
 
   const addFieldsHandler = () => {
     const clonedCustomFields = cloneDeep(form.customFields || []);
@@ -90,9 +67,8 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const dialogNewFieldOnChangeHandler = (value: string) => {
     setNewField(value);
     const clonedCustomFields = cloneDeep(form.customFields || []);
-    const isFieldAlreadyExists = some(
-      clonedCustomFields,
-      field => field.name === value,
+    const isFieldAlreadyExists = some(clonedCustomFields, field =>
+      isEqual(field.name, value),
     );
     if (isFieldAlreadyExists) {
       setShowDialogError(true);
@@ -107,15 +83,20 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     setNewField('');
   };
 
+  const updateFormHandler = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      gotoPassCodeContentStackScreen();
+    }, 3000);
+  };
+
   return (
     <ViewWrapper notchProtection>
-      <ScrollView
-        stickyHeaderIndices={[0]}
-        scrollEventThrottle={16}
-        onScroll={onScrollHandler}>
-        <View>
-          <View style={navBarStyles}>
-            <TouchableWithoutFeedback onPress={gotoPassCodeConentStackScreen}>
+      <ScrollView stickyHeaderIndices={[0]}>
+        <View style={styles.header}>
+          <View style={styles.navIcons}>
+            <TouchableWithoutFeedback onPress={gotoPassCodeContentStackScreen}>
               <View style={styles.back}>
                 <MaterialCommunityIcons
                   name="arrow-left"
@@ -125,17 +106,11 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
               </View>
             </TouchableWithoutFeedback>
 
-            {/* {showTitle && (
-              <View>
-                <Text variant="headlineLarge">{data.title}</Text>
-              </View>
-            )} */}
-
             <View style={styles.title}>
               <Text variant="headlineSmall">Edit Password</Text>
             </View>
 
-            <TouchableWithoutFeedback onPress={gotoEditorStackScreen}>
+            <TouchableWithoutFeedback onPress={updateFormHandler}>
               <View style={styles.edit}>
                 <MaterialCommunityIcons
                   name="check"
@@ -146,10 +121,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             </TouchableWithoutFeedback>
           </View>
         </View>
-
-        {/* <View style={styles.title}>
-          <Text variant="headlineLarge">{data.title}</Text>
-        </View> */}
 
         <View style={styles.content}>
           <TextInput
@@ -223,6 +194,16 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             Add Field
           </Button>
 
+          <TranspBgrViewProps paddingVertical={5} />
+
+          <TextInput
+            style={styles.note}
+            label="Notes"
+            multiline
+            value={form.note}
+            onChangeText={value => formHandler('note', value)}
+          />
+
           <Portal>
             <Dialog
               style={styles.dialog}
@@ -258,12 +239,22 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
           </Portal>
         </View>
       </ScrollView>
+      {isSaving && (
+        <ActivityIndicator
+          style={styles.loading}
+          size="large"
+          color={colors.onSecondaryContainer}
+        />
+      )}
     </ViewWrapper>
   );
 };
 
 const themeStyle = (colors: MD3Colors) =>
   StyleSheet.create({
+    header: {
+      backgroundColor: colors.onPrimary,
+    },
     navIcons: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -328,10 +319,22 @@ const themeStyle = (colors: MD3Colors) =>
     viewDivider: {
       height: 10,
     },
+    note: {
+      maxHeight: 350,
+    },
+    loading: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      // color: colors.onPrimary,
+    },
   });
 
 type RootStackParamList = {
-  // Home: undefined;
   PassCodeContent: { data: PassCodeProps };
 };
 
