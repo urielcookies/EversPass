@@ -45,6 +45,11 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     username: data.passData.username,
     password: data.passData.password,
     website: data.passData.website,
+    cardholder: data.passData.cardholder,
+    cardNumber: data.passData.cardNumber,
+    expirationDate: data.passData.expirationDate,
+    CVV: data.passData.CVV,
+    zipCode: data.passData.zipCode,
     customFields: data.passData.customFields,
     note: data.passData.note,
   });
@@ -91,6 +96,12 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     }, 3000);
   };
 
+  const title: Title = {
+    PASSWORD: 'Edit Password',
+    CREDITCARD: 'Edit Credit Card',
+    PERSONALINFO: 'Edit Personal Info',
+  };
+
   return (
     <ViewWrapper notchProtection>
       <ScrollView stickyHeaderIndices={[0]}>
@@ -107,7 +118,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             </TouchableWithoutFeedback>
 
             <View style={styles.title}>
-              <Text variant="headlineSmall">Edit Password</Text>
+              <Text variant="headlineSmall">{title[data.securityType]}</Text>
             </View>
 
             <TouchableWithoutFeedback onPress={updateFormHandler}>
@@ -143,17 +154,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
           />
 
           <TranspBgrViewProps paddingVertical={5} />
-          <Text style={styles.transpBgrView} variant="titleMedium">
-            Websites and Apps
-          </Text>
-          <TranspBgrViewProps paddingVertical={5} />
-          <TextInput
-            label="Website or App Name"
-            value={form.website}
-            onChangeText={value => formHandler('website', value)}
-          />
 
-          <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Custom Fields
           </Text>
@@ -381,5 +382,9 @@ interface PassData {
 interface CustomField {
   [key: string]: string;
 }
+
+type Title = {
+  [key: string]: string;
+};
 
 export default PassCodeContentEditor;

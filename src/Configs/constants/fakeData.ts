@@ -1,5 +1,5 @@
 export default [
-	{
+  {
     id: 1,
     securityType: 'PASSWORD',
     title: 'John',
@@ -11,10 +11,10 @@ export default [
       customFields: [
         {
           name: 'alternativeEmail',
-          value: 'whatup@ever.com'
-        }
-      ]
-    }
+          value: 'whatup@ever.com',
+        },
+      ],
+    },
   },
   {
     id: 2,
@@ -28,10 +28,10 @@ export default [
       customFields: [
         {
           name: 'birthday',
-          value: '1985-05-21'
-        }
-      ]
-    }
+          value: '1985-05-21',
+        },
+      ],
+    },
   },
   {
     id: 3,
@@ -42,10 +42,10 @@ export default [
       customFields: [
         {
           name: 'category',
-          value: 'Food'
-        }
-      ]
-    }
+          value: 'Food',
+        },
+      ],
+    },
   },
   {
     id: 4,
@@ -55,15 +55,15 @@ export default [
       cardholder: 'John Doe',
       cardNumber: '1234 5678 9012 3456',
       expirationDate: '12/24',
-			CVV: '123',
-			zipCode: '87144',
+      CVV: '123',
+      zipCode: '87144',
       customFields: [
         {
           name: 'card type',
-          value: 'Visa'
-        }
-      ]
-    }
+          value: 'Visa',
+        },
+      ],
+    },
   },
   {
     id: 5,
@@ -78,16 +78,16 @@ export default [
       customFields: [
         {
           name: 'gender',
-          value: 'Male'
-        }
-      ]
-    }
+          value: 'Male',
+        },
+      ],
+    },
   },
   {
     id: 6,
     securityType: 'FOLDER',
     title: 'Work',
-    passData: {}
+    passData: {},
   },
   {
     id: 7,
@@ -97,14 +97,14 @@ export default [
       username: 'john@example.com',
       password: 'my-dropbox-password',
       website: 'dropbox.com',
-      note: 'Don\'t share with anyone',
+      note: "Don't share with anyone",
       customFields: [
         {
           name: 'storage capacity',
-          value: '2 TB'
-        }
-      ]
-    }
+          value: '2 TB',
+        },
+      ],
+    },
   },
   {
     id: 8,
@@ -118,10 +118,10 @@ export default [
       customFields: [
         {
           name: 'emailA alias',
-          value: 'john.doe@gmail.com'
-        }
-      ]
-    }
+          value: 'john.doe@gmail.com',
+        },
+      ],
+    },
   },
   {
     id: 9,
@@ -132,10 +132,10 @@ export default [
       customFields: [
         {
           name: 'category',
-          value: 'Personal'
-        }
-      ]
-    }
+          value: 'Personal',
+        },
+      ],
+    },
   },
   {
     id: 10,
@@ -145,17 +145,17 @@ export default [
       cardholder: 'John Doe',
       cardNumber: '9876 5432 1098 7654',
       expirationDate: '06/26',
-			CVV: '123',
-			zipCode: '91331',
+      CVV: '123',
+      zipCode: '91331',
       customFields: [
         {
           name: 'card type',
-          value: 'Mastercard'
-        }
-      ]
-    }
+          value: 'Mastercard',
+        },
+      ],
+    },
   },
-	{
+  {
     id: 11,
     securityType: 'PASSWORD',
     title: 'Twitter',
@@ -167,10 +167,10 @@ export default [
       customFields: [
         {
           name: 'card type',
-          value: '1000+'
-        }
-      ]
-    }
+          value: '1000+',
+        },
+      ],
+    },
   },
   {
     id: 12,
@@ -184,10 +184,10 @@ export default [
       customFields: [
         {
           name: 'industry',
-          value: 'IT'
-        }
-      ]
-    }
+          value: 'IT',
+        },
+      ],
+    },
   },
   {
     id: 13,
@@ -201,10 +201,10 @@ export default [
       customFields: [
         {
           name: 'skills',
-          value: 'JavaScript, React, Node.js'
-        }
-      ]
-    }
+          value: 'JavaScript, React, Node.js',
+        },
+      ],
+    },
   },
   {
     id: 14,
@@ -215,10 +215,10 @@ export default [
       customFields: [
         {
           name: 'category',
-          value: 'Personal'
-        }
-      ]
-    }
+          value: 'Personal',
+        },
+      ],
+    },
   },
   {
     id: 15,
@@ -228,37 +228,37 @@ export default [
       cardholder: 'John Doe',
       cardNumber: '3456 7890 1234 5678',
       expirationDate: '09/27',
-			CVV: '123',
-			zipCode: '87123',
+      CVV: '123',
+      zipCode: '87123',
       website: 'amex.com',
       note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Et netus et malesuada fames ac turpis. Proin fermentum leo vel orci porta non pulvinar. Velit scelerisque in dictum non. A scelerisque purus semper eget duis at. Ipsum a arcu cursus vitae congue. Vestibulum morbi blandit cursus risus at ultrices mi tempus imperdiet. Mattis ullamcorper velit sed ullamcorper. Pellentesque eu tincidunt tortor aliquam nulla facilisi cras fermentum. Orci sagittis eu volutpat odio facilisis mauris sit amet massa. Diam donec adipiscing tristique risus nec feugiat in. Ut tellus elementum sagittis vitae et. Pharetra diam sit amet nisl suscipit adipiscing bibendum. Elementum integer enim neque volutpat ac. Egestas maecenas pharetra convallis posuere morbi leo. Sed augue lacus viverra vitae congue eu. Est ante in nibh mauris cursus mattis molestie a iaculis. Ut morbi tincidunt augue interdum velit. Eu turpis egestas pretium aenean. Sed faucibus turpis in eu mi bibendum neque egestas congue. Id eu nisl nunc mi ipsum faucibus vitae aliquet nec. Eleifend mi in nulla posuere sollicitudin aliquam ultrices. Magna fringilla urna porttitor rhoncus dolor purus. Ut tortor pretium viverra suspendisse potenti nullam. Congue nisi vitae suscipit tellus mauris a. Malesuada fames ac turpis egestas sed tempus. Elementum facilisis leo vel fringilla. Vulputate mi sit amet mauris commodo quis imperdiet massa. Netus et malesuada fames ac turpis egestas integer eget.',
       customFields: [
         {
           name: 'card type',
-          value: 'Amex'
+          value: 'Amex',
         },
         {
           name: 'test1',
-          value: 'value 1'
+          value: 'value 1',
         },
         {
           name: 'test2',
-          value: 'value 2'
+          value: 'value 2',
         },
         {
           name: 'test3',
-          value: 'value 3'
+          value: 'value 3',
         },
         {
           name: 'test4',
-          value: 'value 4'
+          value: 'value 4',
         },
         {
           name: 'test5',
-          value: 'value 5'
+          value: 'value 5',
         },
-      ]
-    }
+      ],
+    },
   },
   {
     id: 16,
@@ -272,10 +272,10 @@ export default [
       customFields: [
         {
           name: 'publicRepos',
-          value: '10+'
-        }
-      ]
-    }
+          value: '10+',
+        },
+      ],
+    },
   },
   {
     id: 17,
@@ -289,16 +289,16 @@ export default [
       customFields: [
         {
           name: 'followers',
-          value: '500+'
-        }
-      ]
-    }
+          value: '500+',
+        },
+      ],
+    },
   },
   {
     id: 18,
     securityType: 'FOLDER',
     title: 'Personal',
-    passData: {}
+    passData: {},
   },
   {
     id: 19,
@@ -312,12 +312,12 @@ export default [
       customFields: [
         {
           name: 'wishList',
-          value: 'Books, Gadgets'
-        }
-      ]
-    }
+          value: 'Books, Gadgets',
+        },
+      ],
+    },
   },
-	{
+  {
     id: 21,
     securityType: 'CREDITCARD',
     title: 'Visa (Bank Of America)',
@@ -325,15 +325,15 @@ export default [
       cardholder: 'John Doe',
       cardNumber: '1234 5678 9012 3456',
       expirationDate: '12/24',
-			CVV: '123',
-			zipCode: '91234',
+      CVV: '123',
+      zipCode: '91234',
       customFields: [
         {
           name: 'card type',
-          value: 'Visa'
-        }
-      ]
-    }
+          value: 'Visa',
+        },
+      ],
+    },
   },
   {
     id: 22,
@@ -344,10 +344,10 @@ export default [
       customFields: [
         {
           name: 'category',
-          value: 'Recipes'
-        }
-      ]
-    }
+          value: 'Recipes',
+        },
+      ],
+    },
   },
   {
     id: 23,
@@ -361,10 +361,10 @@ export default [
       customFields: [
         {
           name: 'storageSpace',
-          value: '2TB'
-        }
-      ]
-    }
+          value: '2TB',
+        },
+      ],
+    },
   },
   {
     id: 24,
@@ -378,12 +378,12 @@ export default [
       customFields: [
         {
           name: 'channels',
-          value: 'general, random'
-        }
-      ]
-    }
+          value: 'general, random',
+        },
+      ],
+    },
   },
-	{
+  {
     id: 26,
     securityType: 'PASSWORD',
     title: 'Netflix',
@@ -395,9 +395,9 @@ export default [
       customFields: [
         {
           name: 'plan',
-          value: 'Premium'
-        }
-      ]
-    }
+          value: 'Premium',
+        },
+      ],
+    },
   },
-]
+];

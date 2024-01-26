@@ -1,7 +1,14 @@
 import { isEqual } from 'lodash';
 import React, { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { TextInput, Text, useTheme } from 'react-native-paper';
+import {
+  TextInput,
+  Text,
+  useTheme,
+  List,
+  Divider,
+  HelperText,
+} from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
@@ -34,7 +41,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
   return (
     <View>
       {isEqual(securityType, 'PASSWORD') && (
-        <View>
+        <>
           <TranspBgrViewProps paddingVertical={10} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Login Details
@@ -87,71 +94,86 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
               Weak Password
             </Text>
           )}
-        </View>
-      )}
-
-      {/* {isEqual(data.securityType, 'CREDITCARD') && (
-        <>
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Cardholder Name"
-            description={data.passData.cardholder} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Cardholder Number"
-            description={data.passData.cardNumber} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Expiration Date"
-            description={data.passData.expirationDate} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="CVV"
-            description={data.passData.CVV}
-            right={props => <List.Icon {...props} icon="eye-outline" />} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Zip Code"
-            description={data.passData.zipCode} />
+          <TranspBgrViewProps paddingVertical={5} />
+          <Text style={styles.transpBgrView} variant="titleMedium">
+            Websites and Apps
+          </Text>
+          <TranspBgrViewProps paddingVertical={5} />
+          <TextInput
+            label="Website or App Name"
+            value={form.website}
+            onChangeText={value => formHandler('website', value)}
+          />
         </>
       )}
 
-      {isEqual(data.securityType, 'PERSONALINFO') && (
+      {isEqual(securityType, 'CREDITCARD') && (
         <>
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="First Name"
-            description={data.passData.firstName} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Last Name"
-            description={data.passData.lastName} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Email"
-            description={data.passData.email} />
-          <Divider />
-          <List.Item
-            titleStyle={{ fontSize: 15, color: 'grey' }}
-            descriptionStyle={{ fontSize: 15 }}
-            title="Phone"
-            description={data.passData.phone} />
+          <TextInput
+            label="Cardholder Name"
+            value={form.cardholder}
+            onChangeText={value => formHandler('cardholder', value)}
+          />
+          <TranspBgrViewProps paddingVertical={10} />
+          <TextInput
+            label="Card Number"
+            value={form.cardNumber}
+            onChangeText={value => formHandler('cardNumber', value)}
+          />
+          <HelperText
+            style={styles.transpBgrView}
+            type="info"
+            padding="none"
+            visible>
+            * Required
+          </HelperText>
+          <TextInput
+            label="Expiration Date"
+            value={form.expirationDate}
+            onChangeText={value => formHandler('expirationDate', value)}
+          />
+          <TranspBgrViewProps paddingVertical={10} />
+          <TextInput
+            label="CVV"
+            value={form.CVV}
+            onChangeText={value => formHandler('CVV', value)}
+          />
+          <TranspBgrViewProps paddingVertical={10} />
+          <TextInput
+            label="Zip Code"
+            value={form.zipCode}
+            onChangeText={value => formHandler('zipCode', value)}
+          />
         </>
-      )} */}
+      )}
+
+      {isEqual(securityType, 'PERSONALINFO') && (
+        <>
+          <TextInput
+            label="First Name"
+            value={form.firstName}
+            onChangeText={value => formHandler('firstName', value)}
+          />
+          <TranspBgrViewProps paddingVertical={10} />
+          <TextInput
+            label="Last Name"
+            value={form.lastName}
+            onChangeText={value => formHandler('lastName', value)}
+          />
+          <TranspBgrViewProps paddingVertical={10} />
+          <TextInput
+            label="Email"
+            value={form.email}
+            onChangeText={value => formHandler('email', value)}
+          />
+          <TranspBgrViewProps paddingVertical={10} />
+          <TextInput
+            label="Phone"
+            value={form.phone}
+            onChangeText={value => formHandler('phone', value)}
+          />
+        </>
+      )}
     </View>
   );
 };
