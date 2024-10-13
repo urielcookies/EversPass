@@ -57,7 +57,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={5} />
 
           <TextInput
-            label="Email or Username"
+            label="Password"
             value={form.password}
             onChangeText={value => formHandler('password', value)}
             secureTextEntry={!passwordVisibility}
