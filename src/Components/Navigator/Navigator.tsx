@@ -1,15 +1,15 @@
 import { ComponentType } from 'react';
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'react-native-paper';
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Browse from "../../Views/Browse/Browse";
-import Home from "../../Views/Home/Home";
-import Menu from "../../Views/Menu/Menu";
-import Tools from "../../Views/Tools/Tools";
-import SearchList from "../SearchList/SearchList";
-import TestScreen from "../TestScreen";
-import PassCodeContent from "../PassCodeContent/PassCodeContent";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Browse from '../../Views/Browse/Browse';
+import Home from '../../Views/Home/Home';
+import Menu from '../../Views/Menu/Menu';
+import Tools from '../../Views/Tools/Tools';
+import SearchList from '../SearchList/SearchList';
+import TestScreen from '../TestScreen';
+import PassCodeContent from '../PassCodeContent/PassCodeContent';
 import PassCodeContentEditor from '../PassCodeContentEditor/PassCodeContentEditor';
 
 const Navigator = () => {
@@ -21,22 +21,22 @@ const Navigator = () => {
       <Tab.Navigator
         initialRouteName="Home"
         screenOptions={{
-          headerStyle: { backgroundColor: colors.background},
+          headerStyle: { backgroundColor: colors.background },
           headerTitleStyle: {
             color: colors.secondary,
             fontSize: 20,
           },
           tabBarActiveTintColor: colors.primary,
           tabBarStyle: {
-            backgroundColor: colors.background
-          }
+            backgroundColor: colors.background,
+          },
         }}>
         <Tab.Screen
           name="Home"
           component={Home}
           options={{
-            tabBarLabel: 'Home', 
-            tabBarIcon: ({color, size}) => (
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="home-outline"
                 color={color}
@@ -50,7 +50,7 @@ const Navigator = () => {
           component={Browse}
           options={{
             tabBarLabel: 'Browse',
-            tabBarIcon: ({color, size}) => (
+            tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
                 name="dots-grid"
                 color={color}
@@ -64,7 +64,7 @@ const Navigator = () => {
           component={Tools}
           options={{
             tabBarLabel: 'Tools',
-            tabBarIcon: ({color, size}) => (
+            tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="tools" color={color} size={size} />
             ),
           }}
@@ -74,7 +74,7 @@ const Navigator = () => {
           component={Menu}
           options={{
             tabBarLabel: 'Menu',
-            tabBarIcon: ({color, size}) => (
+            tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="menu" color={color} size={size} />
             ),
           }}
@@ -94,6 +94,6 @@ const Navigator = () => {
       <Stack.Screen name="PassCodeContentEditor" component={PassCodeContentEditor as ComponentType} />
     </Stack.Navigator>
   );
-}
+};
 
 export default Navigator;
