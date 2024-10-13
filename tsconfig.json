@@ -1,3 +1,10 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json"
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx", // or "react-jsx" for React 17+
+    "strict": true, // Optional: enables strict type checking
+    "esModuleInterop": true // Optional: enables compatibility with CommonJS
+  },
+  "include": ["src/**/*"], // Adjust according to your project's structure
+  "exclude": ["node_modules"] // Optional: exclude node_modules
 }
