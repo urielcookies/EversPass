@@ -2,16 +2,14 @@ import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import BottomDrawer from '../BottomDrawer/BottomDrawer';
 import { useNavigation } from '@react-navigation/native';
-import {
-  PassCodeType,
-  SecurityType
-} from '../../Configs/interfaces/PassCodeData';
+
+import BottomDrawer from '../BottomDrawer/BottomDrawer';
+import { PassCodeType, SecurityType } from '../../Configs/interfaces/PassCodeData';
 
 type Props = {
-  closeDrawer: any;
-  gotoTestScreen: any;
+  closeDrawer: () => void;
+  gotoTestScreen: () => void;
 };
 
 const CreatePassDrawer = (props: Props) => {

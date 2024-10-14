@@ -58,7 +58,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       expirationDate: '',
       CVV: '',
       zipCode: '',
-      website: '',
       note: '',
       customFields: [],
     },
@@ -67,7 +66,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       lastName: '',
       email: '',
       phone: '',
-      website: '',
       note: '',
       customFields: [],
     },
@@ -80,7 +78,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     id: data.id,
     title: data.title,
     securityType: data.securityType,
-    passData: securityTypeObj[data.securityType],
+    passData: data.id ? data.passData : securityTypeObj[data.securityType],
 
   });
 
@@ -231,6 +229,9 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
           <TranspBgrViewProps paddingVertical={5} />
 
+          <Text style={styles.transpBgrView} variant="titleMedium">
+            Notes
+          </Text>
           <TextInput
             style={styles.note}
             label="Notes"

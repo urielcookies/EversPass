@@ -281,7 +281,7 @@ const themeStyle = (colors: MD3Colors, totalFields: number) =>
     content: {
       // flex: totalFields,
       // height: '60%',
-      height: totalFields,
+      // height: totalFields, // recent
       // backgroundColor: 'pink',
       backgroundColor: colors.onPrimary,
       borderRadius: 10,
