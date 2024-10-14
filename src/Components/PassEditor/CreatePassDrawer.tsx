@@ -117,6 +117,20 @@ const CreatePassDrawer = (props: Props) => {
               </Text>
             </View>
           </TouchableWithoutFeedback>
+
+          <TouchableWithoutFeedback
+            onPress={() => gotoEditorStackScreen('SECURENOTE')}>
+            <View style={styles.bottomDrawerOption}>
+              <MaterialCommunityIcons
+                name="note-edit-outline"
+                style={styles.bottomDrawerOptionIcons}
+                size={25}
+              />
+              <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Secure Note
+              </Text>
+            </View>
+          </TouchableWithoutFeedback>
         </View>
       </View>
     </BottomDrawer>

@@ -174,27 +174,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             onChangeText={(value) =>
               formHandler('passData', {
                 ...form.passData,
-                CVV: value,
-              })}
-          />
-          <TranspBgrViewProps paddingVertical={10} />
-          <TextInput
-            label="Zip Code"
-            value={(form.passData as CreditCard).website}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                website: value,
-              })}
-          />
-          <TranspBgrViewProps paddingVertical={10} />
-          <TextInput
-            label="Zip Code"
-            value={(form.passData as CreditCard).note}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                note: value,
+                zipCode: value,
               })}
           />
         </>

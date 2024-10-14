@@ -132,6 +132,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     PASSWORD: 'Edit Password',
     CREDITCARD: 'Edit Credit Card',
     PERSONALINFO: 'Edit Personal Info',
+    SECURENOTE: 'Edit Secure Note Info',
   };
 
   return (
