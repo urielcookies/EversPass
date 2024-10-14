@@ -19,6 +19,7 @@ import { FC, useState } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import PassCodeFields from './PassCodeFields';
 import { isEmpty, isUndefined, map } from 'lodash';
+import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 
 const PassCodeContent: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
@@ -329,7 +330,7 @@ const themeStyle = (colors: MD3Colors, totalFields: number) =>
 
 type RootStackParamList = {
   // Home: undefined;
-  PassCodeContent: { data: PassCodeProps };
+  PassCodeContent: { data: PassCodeType };
 };
 
 interface PassCodeContentProps {
@@ -338,35 +339,35 @@ interface PassCodeContentProps {
 }
 
 type Nav = {
-  navigate: (value: string, data?: { data: PassCodeProps }) => void;
+  navigate: (value: string, data?: { data: PassCodeType }) => void;
 };
 
-export interface PassCodeProps {
-  id: number;
-  securityType: string;
-  title: string;
-  passData: PassData;
-}
+// export interface PassCodeProps {
+//   id: number;
+//   securityType: string;
+//   title: string;
+//   passData: PassData;
+// }
 
-interface PassData {
-  firstName?: string;
-  lastName?: string;
-  username: string;
-  password?: string;
-  phone?: string;
-  email?: string;
-  website?: string;
-  note?: string;
-  cardholder?: string;
-  cardNumber?: string;
-  expirationDate?: string;
-  CVV?: string;
-  zipCode?: string;
-  customFields?: CustomField[];
-}
+// interface PassData {
+//   firstName?: string;
+//   lastName?: string;
+//   username: string;
+//   password?: string;
+//   phone?: string;
+//   email?: string;
+//   website?: string;
+//   note?: string;
+//   cardholder?: string;
+//   cardNumber?: string;
+//   expirationDate?: string;
+//   CVV?: string;
+//   zipCode?: string;
+//   customFields?: CustomField[];
+// }
 
-interface CustomField {
-  [key: string]: string;
-}
+// interface CustomField {
+//   [key: string]: string;
+// }
 
 export default PassCodeContent;

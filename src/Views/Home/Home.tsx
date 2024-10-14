@@ -13,20 +13,21 @@ import fakeData from '../../Configs/constants/fakeData';
 
 import CreatePassDrawer from '../../Components/PassEditor/CreatePassDrawer';
 import UpdatePassDrawer from '../../Components/PassEditor/UpdatePassDrawer';
+import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 
 const Home = () => {
   const { colors } = useTheme();
   const navigation = useNavigation<Nav>();
   const styles = themeStyle(colors);
 
-  const [data, setData] = useState<PassCodeProps[]>([]);
+  const [data, setData] = useState<PassCodeType[]>([]);
   const [isCreateActive, setIsCreateActive] = useState(false);
   const [isEditActive, setIsEditActive] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await mockApi();
-      setData(data);
+      const mockData = await mockApi();
+      setData(mockData as PassCodeType[]);
     };
     fetchData();
   }, []);
@@ -44,7 +45,7 @@ const Home = () => {
       data,
     });
 
-  const gotoPassCodeConentStackScreen = (data: PassCodeProps) =>
+  const gotoPassCodeConentStackScreen = (data: PassCodeType) =>
     navigation.navigate('PassCodeContent', {
       data,
     });
@@ -55,7 +56,7 @@ const Home = () => {
   };
 
   const prevChar = useRef('');
-  const Item = ({ data }: { data: PassCodeProps }) => {
+  const Item = ({ data }: { data: PassCodeType }) => {
     const currentChar = data.title.charAt(0);
     const showSubHeader = currentChar !== prevChar.current;
     if (showSubHeader) {
@@ -194,46 +195,46 @@ const themeStyle = (colors: MD3Colors) =>
     },
   });
 
-const mockApi = (): Promise<PassCodeProps[]> => {
+const mockApi = () => {
   return new Promise(resolve => {
     // Mock API call response
-    const data: PassCodeProps[] = fakeData;
+    const data = fakeData;
     resolve(data);
   });
 };
 
-interface PassCodeProps {
-  id: number;
-  securityType: string;
-  title: string;
-  passData: PassData;
-}
+// interface PassCodeProps {
+//   id: number;
+//   securityType: string;
+//   title: string;
+//   passData: PassData;
+// }
 
-interface PassData {
-  firstName?: string;
-  lastName?: string;
-  username?: string;
-  password?: string;
-  phone?: string;
-  email?: string;
-  website?: string;
-  note?: string;
-  cardholder?: string;
-  cardNumber?: string;
-  expirationDate?: string;
-  CVV?: string;
-  zipCode?: string;
-  customFields?: CustomField[];
-}
+// interface PassData {
+//   firstName?: string;
+//   lastName?: string;
+//   username?: string;
+//   password?: string;
+//   phone?: string;
+//   email?: string;
+//   website?: string;
+//   note?: string;
+//   cardholder?: string;
+//   cardNumber?: string;
+//   expirationDate?: string;
+//   CVV?: string;
+//   zipCode?: string;
+//   customFields?: CustomField[];
+// }
 
-interface CustomField {
-  [key: string]: string;
-}
+// interface CustomField {
+//   [key: string]: string;
+// }
 
 type Nav = {
   navigate: (
     value: string,
-    data?: { data: PassCodeProps } | { data: PassCodeProps[] },
+    data?: { data: PassCodeType } | { data: PassCodeType[] },
   ) => void;
 };
 

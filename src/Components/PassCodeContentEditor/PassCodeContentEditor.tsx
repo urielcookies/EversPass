@@ -15,11 +15,7 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
-import {
-  NavigationProp,
-  RouteProp,
-  useNavigation,
-} from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
@@ -28,10 +24,17 @@ import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import PassCodeFields from './PassCodeFields';
 import { cloneDeep, isEqual, map, some } from 'lodash';
 
+import {
+  PassCodeType,
+  SecurityType,
+  CustomField,
+} from '../../Configs/interfaces/PassCodeData';
+// import { PassCodeProps, SecurityType } from '../PassCodeContent/PassCodeContent';
+
 const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
 
-  const navigation = useNavigation<Nav>();
+  const navigation = useNavigation();
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
@@ -40,21 +43,50 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const [showCustomFieldModal, setShowCustomFieldModal] = useState(false);
   const [newField, setNewField] = useState('');
   const [showDialogError, setShowDialogError] = useState(false);
-  const [form, setForm] = useState<ExtendedPassData>({
+
+  const securityTypeObj: SecurityType = {
+    PASSWORD: {
+      username: '',
+      password: '',
+      website: '',
+      note: '',
+      customFields: [],
+    },
+    CREDITCARD: {
+      cardholder: '',
+      cardNumber: '',
+      expirationDate: '',
+      CVV: '',
+      zipCode: '',
+      website: '',
+      note: '',
+      customFields: [],
+    },
+    PERSONALINFO: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      website: '',
+      note: '',
+      customFields: [],
+    },
+    SECURENOTE: {
+      note: '',
+      customFields: [],
+    },
+  };
+  const [form, setForm] = useState<PassCodeType>({
+    id: data.id,
     title: data.title,
-    username: data.passData.username,
-    password: data.passData.password,
-    website: data.passData.website,
-    cardholder: data.passData.cardholder,
-    cardNumber: data.passData.cardNumber,
-    expirationDate: data.passData.expirationDate,
-    CVV: data.passData.CVV,
-    zipCode: data.passData.zipCode,
-    customFields: data.passData.customFields,
-    note: data.passData.note,
+    securityType: data.securityType,
+    passData: securityTypeObj[data.securityType],
+
   });
 
-  const formHandler = (field: string, value: string | CustomField[]) =>
+  // form is using id and securityType. those cant be edited in the form (maybe try remove it)
+  // const formHandler = (field: string, value: string |  CustomField[]) =>
+    const formHandler = (field: string, value: any) =>
     setForm(prevForm => ({
       ...prevForm,
       [field]: value,
@@ -63,7 +95,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const gotoPassCodeContentStackScreen = () => navigation.goBack();
 
   const addFieldsHandler = () => {
-    const clonedCustomFields = cloneDeep(form.customFields || []);
+    const clonedCustomFields = cloneDeep(form.passData.customFields || []);
     clonedCustomFields.push({ name: newField, value: '' });
     formHandler('customFields', clonedCustomFields);
     onDismissDialog();
@@ -71,7 +103,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   const dialogNewFieldOnChangeHandler = (value: string) => {
     setNewField(value);
-    const clonedCustomFields = cloneDeep(form.customFields || []);
+    const clonedCustomFields = cloneDeep(form.passData.customFields || []);
     const isFieldAlreadyExists = some(clonedCustomFields, field =>
       isEqual(field.name, value),
     );
@@ -149,9 +181,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
           <PassCodeFields
             form={form}
-            formHandler={formHandler}
-            securityType={data.securityType}
-          />
+            formHandler={formHandler} />
 
           <TranspBgrViewProps paddingVertical={5} />
 
@@ -159,7 +189,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             Custom Fields
           </Text>
           <TranspBgrViewProps paddingVertical={5} />
-          {map(form.customFields, (customFields, index) => (
+          {map(form.passData.customFields, (customFields, index) => (
             <React.Fragment key={index}>
               <TranspBgrViewProps paddingVertical={5} />
               <TextInput
@@ -167,10 +197,13 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                 value={customFields.value}
                 onChangeText={value => {
                   const clonedCustomFields = cloneDeep(
-                    form.customFields,
+                    form.passData.customFields,
                   ) as CustomField[];
                   clonedCustomFields[index].value = value;
-                  formHandler('customFields', clonedCustomFields);
+                  formHandler('passData', {
+                    ...form.passData,
+                    customFields: clonedCustomFields,
+                  });
                 }}
                 right={
                   <TextInput.Icon icon="dots-vertical" onPress={console.log} />
@@ -201,8 +234,12 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             style={styles.note}
             label="Notes"
             multiline
-            value={form.note}
-            onChangeText={value => formHandler('note', value)}
+            value={form.passData.note}
+            onChangeText={(value) =>
+              formHandler('passData', {
+                ...form.passData,
+                note: value,
+              })}
           />
 
           <Portal>
@@ -335,53 +372,44 @@ const themeStyle = (colors: MD3Colors) =>
   });
 
 type RootStackParamList = {
-  PassCodeContent: { data: PassCodeProps };
+  PassCodeContent: { data: PassCodeType };
 };
 
 interface PassCodeContentProps {
-  navigation: NavigationProp<Nav>;
   route: RouteProp<RootStackParamList, 'PassCodeContent'>;
 }
 
-type Nav = {
-  navigate: (
-    value: string,
-    data?: { data: PassCodeProps } | { data: PassCodeProps[] },
-  ) => void;
-  goBack: () => void;
-};
+// export interface PassCodeProps {
+//   id: number;
+//   securityType: string;
+//   title: string;
+//   passData: PassData;
+// }
 
-export interface PassCodeProps {
-  id: number;
-  securityType: string;
-  title: string;
-  passData: PassData;
-}
+// interface ExtendedPassData extends PassData {
+//   title?: string;
+// }
 
-interface ExtendedPassData extends PassData {
-  title?: string;
-}
+// interface PassData {
+//   firstName?: string;
+//   lastName?: string;
+//   username: string;
+//   password?: string;
+//   phone?: string;
+//   email?: string;
+//   website?: string;
+//   note?: string;
+//   cardholder?: string;
+//   cardNumber?: string;
+//   expirationDate?: string;
+//   CVV?: string;
+//   zipCode?: string;
+//   customFields?: CustomField[];
+// }
 
-interface PassData {
-  firstName?: string;
-  lastName?: string;
-  username: string;
-  password?: string;
-  phone?: string;
-  email?: string;
-  website?: string;
-  note?: string;
-  cardholder?: string;
-  cardNumber?: string;
-  expirationDate?: string;
-  CVV?: string;
-  zipCode?: string;
-  customFields?: CustomField[];
-}
-
-interface CustomField {
-  [key: string]: string;
-}
+// interface CustomField {
+//   [key: string]: string;
+// }
 
 type Title = {
   [key: string]: string;
