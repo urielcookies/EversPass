@@ -71,9 +71,9 @@ function HomeScreen() {
     useCallback(() => {
       const init = async () => {
       const data = await getData('stored-secrets') || [];
-      setStoredSecrets(Boolean(data.length));
-        };
-        init();
+        setStoredSecrets(Boolean(data.length));
+      };
+      init();
       }, [])
   );
 
