@@ -35,13 +35,12 @@ const Home = () => {
     }, [])
   );
 
-  const createPassDrawerCloseHandler = () => setIsCreateActive(false);
-
-  const createPassDrawerOpenHandler = () => setIsCreateActive(true);
-
-  const updatePassDrawerCloseHandler = () => setIsEditActive(false);
-
-  const updatePassDrawerOpenHandler = () => setIsEditActive(true);
+  const drawerActions = {
+    createDrawerClose: () => setIsCreateActive(false),
+    createDrawerOpen: () => setIsCreateActive(true),
+    updateDrawerClose: () => setIsEditActive(false),
+    updateDrawerOpen: () => setIsEditActive(true),
+  };
 
   const gotoTestStackScreen = () =>
     navigation.navigate('searchList', {
@@ -54,7 +53,7 @@ const Home = () => {
     });
 
   const gotoTestScreen = () => {
-    createPassDrawerCloseHandler();
+    drawerActions.createDrawerClose();
     navigation.navigate('TestScreen');
   };
 
@@ -91,7 +90,7 @@ const Home = () => {
             <MaterialCommunityIcons
               style={styles.threeDotIcon}
               name="dots-vertical"
-              onPress={updatePassDrawerOpenHandler}
+              onPress={drawerActions.updateDrawerOpen}
             />
           )}
         />
@@ -123,19 +122,19 @@ const Home = () => {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={createPassDrawerOpenHandler}
+        onPress={drawerActions.createDrawerOpen}
       />
 
       {isCreateActive && (
         <CreatePassDrawer
-          closeDrawer={createPassDrawerCloseHandler}
+          closeDrawer={drawerActions.createDrawerClose}
           gotoTestScreen={gotoTestScreen}
         />
       )}
 
       {isEditActive && (
         <UpdatePassDrawer
-          closeDrawer={updatePassDrawerCloseHandler}
+          closeDrawer={drawerActions.updateDrawerClose}
           gotoTestScreen={gotoTestScreen}
         />
       )}
