@@ -25,19 +25,9 @@ const Home = () => {
   const [isCreateActive, setIsCreateActive] = useState(false);
   const [isEditActive, setIsEditActive] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     console.log('INIT')
-  //     const mockData = await mockApi();
-  //     setData(mockData as PassCodeType[]);
-  //   };
-  //   fetchData();
-  // }, []);
-
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        console.log('INIT');
         const mockData = await mockApi();
         setData(mockData as PassCodeType[]);
       };
