@@ -84,12 +84,6 @@ export default [
     },
   },
   {
-    id: 6,
-    securityType: 'FOLDER',
-    title: 'Work',
-    passData: {},
-  },
-  {
     id: 7,
     securityType: 'PASSWORD',
     title: 'Dropbox',
@@ -293,12 +287,6 @@ export default [
         },
       ],
     },
-  },
-  {
-    id: 18,
-    securityType: 'FOLDER',
-    title: 'Personal',
-    passData: {},
   },
   {
     id: 19,
