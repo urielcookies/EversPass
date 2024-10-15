@@ -1,15 +1,16 @@
 import { FlatList, Image, TouchableWithoutFeedback, View } from 'react-native';
 import { FAB, useTheme } from 'react-native-paper';
 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { sortBy, upperCase } from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Divider, List, Text } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ViewWrapper from '../../Components/ViewWrapper/ViewWrapper';
 import fakeData from '../../Configs/constants/fakeData';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import CreatePassDrawer from '../../Components/PassEditor/CreatePassDrawer';
 import UpdatePassDrawer from '../../Components/PassEditor/UpdatePassDrawer';
@@ -24,13 +25,25 @@ const Home = () => {
   const [isCreateActive, setIsCreateActive] = useState(false);
   const [isEditActive, setIsEditActive] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const mockData = await mockApi();
-      setData(mockData as PassCodeType[]);
-    };
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     console.log('INIT')
+  //     const mockData = await mockApi();
+  //     setData(mockData as PassCodeType[]);
+  //   };
+  //   fetchData();
+  // }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        console.log('INIT');
+        const mockData = await mockApi();
+        setData(mockData as PassCodeType[]);
+      };
+      fetchData();
+    }, [])
+  );
 
   const createPassDrawerCloseHandler = () => setIsCreateActive(false);
 
@@ -196,9 +209,18 @@ const themeStyle = (colors: MD3Colors) =>
   });
 
 const mockApi = () => {
-  return new Promise(resolve => {
+  return new Promise(async resolve => {
     // Mock API call response
-    const data = fakeData;
+    const getData = async (key) => {
+      try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        return jsonValue != null ? JSON.parse(jsonValue) : null;
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    const data = await getData('stored-secrets');
+    // const data = fakeData;
     resolve(data);
   });
 };

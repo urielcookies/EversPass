@@ -1,9 +1,15 @@
-import { PropsWithChildren, useContext } from "react";
+import { PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from "react-native";
 import { Colors, DebugInstructions, Header, LearnMoreLinks, ReloadInstructions } from "react-native/Libraries/NewAppScreen";
 import { ThemesContext } from '../../Context/ThemesContext';
-
+import { List, Divider } from 'react-native-paper';
 import { Button } from "react-native-paper";
+import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import fakeData from '../../Configs/constants/fakeData';
+import { useFocusEffect } from "@react-navigation/native";
+
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
@@ -36,10 +42,44 @@ function Section({children, title}: SectionProps): JSX.Element {
 function HomeScreen() {
   const { themeState, updateThemeState } = useContext(ThemesContext);
   const isDarkMode = useColorScheme() === 'dark';
+  const [storedSecrets, setStoredSecrets] = useState(false);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  const storeData = async (key, value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      console.log('key', key)
+      console.log('jsonValue', jsonValue)
+      console.log('typeof', typeof jsonValue)
+      await AsyncStorage.setItem(key, jsonValue);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  // Function to retrieve data
+  const getData = async (key) => {
+    try {
+      const jsonValue = await AsyncStorage.getItem(key);
+      return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      const init = async () => {
+      const data = await getData('stored-secrets') || [];
+      setStoredSecrets(Boolean(data.length));
+        };
+        init();
+      }, [])
+  );
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
@@ -61,20 +101,38 @@ function HomeScreen() {
 							Dark mode is currently {themeState.darkMode ? 'on' : 'off'}
 						</Button>
 					</View>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          {storedSecrets
+          ? (
+            <>
+              <TranspBgrViewProps paddingVertical={5} />
+              <View>
+                <Button
+                  mode="outlined"
+                  onPress={() => {
+                    storeData('stored-secrets', []);
+                    setStoredSecrets(false);
+                  }}>
+                  Delete data in Phone Storage
+                </Button>
+              </View>
+            </>
+          )
+          : (
+            <>
+              <TranspBgrViewProps paddingVertical={5} />
+              <View>
+                <Button
+                  mode="outlined"
+                  onPress={() => {
+                    storeData('stored-secrets', fakeData);
+                    setStoredSecrets(true);
+                  }}>
+                  Create Data Unto Phone Storage
+                </Button>
+              </View>
+            </>
+        )}
+
         </View>
       </ScrollView>
     </SafeAreaView>
