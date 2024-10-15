@@ -51,9 +51,6 @@ function HomeScreen() {
   const storeData = async (key, value) => {
     try {
       const jsonValue = JSON.stringify(value);
-      console.log('key', key)
-      console.log('jsonValue', jsonValue)
-      console.log('typeof', typeof jsonValue)
       await AsyncStorage.setItem(key, jsonValue);
     } catch (e) {
       console.error(e);
