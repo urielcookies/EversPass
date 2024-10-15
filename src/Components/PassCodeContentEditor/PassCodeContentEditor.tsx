@@ -167,6 +167,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         <View style={styles.content}>
           <TextInput
             label="Title*"
+            autoCapitalize="none"
             value={form.title}
             onChangeText={value => formHandler('title', value)}
           />
@@ -192,6 +193,8 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             <React.Fragment key={index}>
               <TranspBgrViewProps paddingVertical={5} />
               <TextInput
+                autoCapitalize="none"
+                spellCheck={false}
                 label={customFields.name}
                 value={customFields.value}
                 onChangeText={value => {
@@ -235,6 +238,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
           <TextInput
             style={styles.note}
             label="Notes"
+            autoCapitalize="none"
             multiline
             value={form.passData.note}
             onChangeText={(value) =>

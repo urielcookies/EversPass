@@ -43,6 +43,20 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
     }
   };
 
+  const formatExpirationDate = (value: string): string => {
+    // Remove any non-numeric characters
+    const cleaned = value.replace(/\D/g, '');
+
+    // Format the cleaned value as MM/YY
+    if (cleaned.length >= 3) {
+      return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`;
+    } else if (cleaned.length >= 1) {
+      return cleaned;
+    } else {
+      return '';
+    }
+  };
+
   return (
     <View>
       {isEqual(form.securityType, 'PASSWORD') && (
@@ -55,6 +69,9 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
 
           <TextInput
             label="Email or Username"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            spellCheck={false}
             value={(form.passData as Password).username}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -115,7 +132,11 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TextInput
             label="Website or App Name"
             value={form.passData.website}
-            onChangeText={value => formHandler('website', value)}
+            onChangeText={(value) =>
+              formHandler('passData', {
+                ...form.passData,
+                website: value,
+              })}
           />
         </>
       )}
@@ -149,17 +170,21 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             * Required
           </HelperText>
           <TextInput
-            label="Expiration Date"
+            label="Expiration Date (MM/YY)"
+            keyboardType="numeric"
             value={(form.passData as CreditCard).expirationDate}
-            onChangeText={(value) =>
+            onChangeText={(value) => {
+              const formattedValue = formatExpirationDate(value);
               formHandler('passData', {
                 ...form.passData,
-                expirationDate: value,
-              })}
+                expirationDate: formattedValue,
+              });}
+            }
           />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="CVV"
+            keyboardType="numeric"
             value={(form.passData as CreditCard).CVV}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -170,6 +195,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Zip Code"
+            keyboardType="numeric"
             value={(form.passData as CreditCard).zipCode}
             onChangeText={(value) =>
               formHandler('passData', {
