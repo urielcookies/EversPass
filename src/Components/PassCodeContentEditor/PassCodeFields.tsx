@@ -133,6 +133,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             label="Website or App Name"
             autoCapitalize="none"
             spellCheck={false}
+            keyboardType="url"
             value={form.passData.website}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -208,6 +209,23 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
                 zipCode: value,
               })}
           />
+          <TranspBgrViewProps paddingVertical={5} />
+          <Text style={styles.transpBgrView} variant="titleMedium">
+            Websites and Apps
+          </Text>
+          <TranspBgrViewProps paddingVertical={5} />
+          <TextInput
+            label="Website or App Name"
+            autoCapitalize="none"
+            spellCheck={false}
+            keyboardType="url"
+            value={form.passData.website}
+            onChangeText={(value) =>
+              formHandler('passData', {
+                ...form.passData,
+                website: value,
+              })}
+          />
         </>
       )}
 
@@ -258,6 +276,23 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
               formHandler('passData', {
                 ...form.passData,
                 phone: value,
+              })}
+          />
+          <TranspBgrViewProps paddingVertical={5} />
+          <Text style={styles.transpBgrView} variant="titleMedium">
+            Websites and Apps
+          </Text>
+          <TranspBgrViewProps paddingVertical={5} />
+          <TextInput
+            label="Website or App Name"
+            autoCapitalize="none"
+            spellCheck={false}
+            keyboardType="url"
+            value={form.passData.website}
+            onChangeText={(value) =>
+              formHandler('passData', {
+                ...form.passData,
+                website: value,
               })}
           />
         </>

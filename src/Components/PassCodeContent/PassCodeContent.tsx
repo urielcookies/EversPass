@@ -66,6 +66,9 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
     }
   };
 
+  const offlineMode = false;
+  const logoToken = 'pk_OLd8oa6tSJuxHARkGM-lew';
+  const websiteIcons = `https://img.logo.dev/${data.passData.website}?token=${logoToken}`;
   return (
     <ViewWrapper notchProtection>
       <ScrollView
@@ -102,13 +105,16 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
           </View>
         </View>
 
-        <View style={styles.logoIcon}>
-          <Image
-            style={styles.logoIcon.logo}
-            source={require('../../Assets/amex.jpeg')}
-            defaultSource={require('../../Assets/amex.jpeg')}
-          />
-        </View>
+        {(data.passData.website && !offlineMode) && (
+          <View style={styles.logoIcon}>
+            <Image
+                style={styles.logoIcon.logo}
+                source={{
+                  uri: websiteIcons,
+                }}
+                defaultSource={require('../../Assets/amex.jpeg')}
+            />
+        </View>)}
 
         <View style={styles.title}>
           <Text variant="headlineLarge">{data.title}</Text>

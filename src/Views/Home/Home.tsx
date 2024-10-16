@@ -61,6 +61,10 @@ const Home = () => {
       prevChar.current = currentChar;
     }
 
+    const offlineMode = false;
+    const logoToken = 'pk_OLd8oa6tSJuxHARkGM-lew';
+    const websiteIcons = `https://img.logo.dev/${data.passData.website}?token=${logoToken}`;
+
     return (
       <List.Section>
         {showSubHeader && (
@@ -74,12 +78,20 @@ const Home = () => {
         <List.Item
           onPress={() => gotoPassCodeConentStackScreen(data)}
           titleStyle={styles.ListItem}
-          title={data.title + ' ' + data.securityType}
+          title={data.title}
           left={() => (
-            <Image
-              style={styles.avatar}
-              source={require('../../Assets/avatar.png')}
-              defaultSource={require('../../Assets/avatar.png')}
+            data.passData.website && !offlineMode
+            ? <Image
+                style={styles.avatar}
+                source={{
+                  uri: websiteIcons,
+                }}
+                defaultSource={require('../../Assets/avatar.png')}
+              />
+            : <MaterialCommunityIcons
+                style={styles.iconAvatar}
+                name={iconMap[data.securityType as keyof typeof iconMap]}
+                onPress={drawerActions.updateDrawerOpen}
             />
           )}
           right={() => (
@@ -191,23 +203,20 @@ const themeStyle = (colors: MD3Colors) =>
       height: 23.5,
       borderRadius: 400 / 2,
     },
+    iconAvatar: {
+      fontSize: 25,
+      marginTop: 8,
+      marginLeft: 10,
+      width: 23.5,
+      height: 23.5,
+    },
   });
 
-const mockApi = () => {
-  return new Promise(async resolve => {
-    // Mock API call response
-    const getData = async (key) => {
-      try {
-        const jsonValue = await AsyncStorage.getItem(key);
-        return jsonValue != null ? JSON.parse(jsonValue) : null;
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    const data = await getData('stored-secrets');
-    // const data = fakeData;
-    resolve(data);
-  });
+  const iconMap = {
+  PASSWORD: 'form-textbox-password',
+  CREDITCARD: 'credit-card-outline',
+  PERSONALINFO: 'badge-account-horizontal-outline',
+  SECURENOTE: 'note-edit-outline',
 };
 
 // interface PassCodeProps {
