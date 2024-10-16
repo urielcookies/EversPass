@@ -31,7 +31,7 @@ const PassCodeFields: FC<IPassCodeFields> = ({ data }) => {
       description: 'Strong Password',
     },
     MEDIUM: {
-      color: 'yellow',
+      color: '#FFA500',
       description: 'Medium Password',
     },
     WEAK: {

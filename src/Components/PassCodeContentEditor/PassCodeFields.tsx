@@ -282,7 +282,7 @@ const themeStyle = (colors: MD3Colors) =>
       backgroundColor: colors.background,
     },
     passwordStrengthTextMEDIUM: {
-      color: 'yellow',
+      color: '#FFA500',
       backgroundColor: colors.background,
     },
     passwordStrengthTextWEAK: {
