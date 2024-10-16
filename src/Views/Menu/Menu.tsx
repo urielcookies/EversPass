@@ -9,6 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import fakeData from '../../Configs/constants/fakeData';
 import { useFocusEffect } from "@react-navigation/native";
+import useStoredDataStore from '../../Store/useStoredDataStore';
+import { clearLocalData, getLocalData, storeLocalData } from "../../Configs/utils/storeData";
+import { isEmpty } from "lodash";
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -42,40 +45,17 @@ function Section({children, title}: SectionProps): JSX.Element {
 function HomeScreen() {
   const { themeState, updateThemeState } = useContext(ThemesContext);
   const isDarkMode = useColorScheme() === 'dark';
-  const [storedSecrets, setStoredSecrets] = useState(false);
+  // const [storedSecretsToggle, setStoredSecretsToggle] = useState(false);
+  const { storedSecrets, setMockSecrets, setClearSecrets } = useStoredDataStore();
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
-  const storeData = async (key, value) => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  // Function to retrieve data
-  const getData = async (key) => {
-    try {
-      const jsonValue = await AsyncStorage.getItem(key);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  useFocusEffect(
-    useCallback(() => {
-      const init = async () => {
-      const data = await getData('stored-secrets') || [];
-        setStoredSecrets(Boolean(data.length));
-      };
-      init();
-      }, [])
-  );
+  // useFocusEffect(() => {
+  //   console.log("menu");
+  //   setStoredSecretsToggle(!isEmpty(storedSecrets));
+  // });
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -98,7 +78,7 @@ function HomeScreen() {
 							Dark mode is currently {themeState.darkMode ? 'on' : 'off'}
 						</Button>
 					</View>
-          {storedSecrets
+          {!isEmpty(storedSecrets)
           ? (
             <>
               <TranspBgrViewProps paddingVertical={5} />
@@ -106,8 +86,10 @@ function HomeScreen() {
                 <Button
                   mode="outlined"
                   onPress={() => {
-                    storeData('stored-secrets', []);
-                    setStoredSecrets(false);
+                    setClearSecrets();
+                    // storeLocalData('stored-secrets', []);
+                    // clearLocalData();
+                    // setStoredSecretsToggle(false);
                   }}>
                   Delete data in Phone Storage
                 </Button>
@@ -121,8 +103,8 @@ function HomeScreen() {
                 <Button
                   mode="outlined"
                   onPress={() => {
-                    storeData('stored-secrets', fakeData);
-                    setStoredSecrets(true);
+                    setMockSecrets();
+                    // setStoredSecretsToggle(true);
                   }}>
                   Create Data Unto Phone Storage
                 </Button>

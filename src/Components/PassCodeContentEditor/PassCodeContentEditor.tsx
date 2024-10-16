@@ -15,26 +15,26 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
+import { cloneDeep, isEqual, map, some } from 'lodash';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
-import ViewWrapper from '../ViewWrapper/ViewWrapper';
-import PassCodeFields from './PassCodeFields';
-import { cloneDeep, isEqual, map, some } from 'lodash';
-
+import useStoredDataStore from '../../Store/useStoredDataStore';
 import {
   PassCodeType,
   SecurityType,
   CustomField,
 } from '../../Configs/interfaces/PassCodeData';
-// import { PassCodeProps, SecurityType } from '../PassCodeContent/PassCodeContent';
+import ViewWrapper from '../ViewWrapper/ViewWrapper';
+import PassCodeFields from './PassCodeFields';
+
 
 const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
-
-  const navigation = useNavigation();
+  const { addStoredSecret, updateStoredSecret } = useStoredDataStore();
+  const navigation = useNavigation<Nav>();
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
@@ -82,7 +82,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   });
 
-  // form is using id and securityType. those cant be edited in the form (maybe try remove it)
   // const formHandler = (field: string, value: string |  CustomField[]) =>
     const formHandler = (field: string, value: any) =>
     setForm(prevForm => ({
@@ -90,12 +89,21 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       [field]: value,
     }));
 
-  const gotoPassCodeContentStackScreen = () => navigation.goBack();
+  const gotoPassCodeContentStackScreen = (afterCreated: boolean) => {
+    if (afterCreated) {
+      navigation.navigate('PassCodeContent', { data: form });
+    } else {
+      navigation.goBack();
+    }
+  }
 
   const addFieldsHandler = () => {
     const clonedCustomFields = cloneDeep(form.passData.customFields || []);
     clonedCustomFields.push({ name: newField, value: '' });
-    formHandler('customFields', clonedCustomFields);
+    formHandler('passData', {
+      ...form.passData,
+      customFields: clonedCustomFields,
+    });
     onDismissDialog();
   };
 
@@ -120,10 +128,15 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   const updateFormHandler = () => {
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
-      gotoPassCodeContentStackScreen();
-    }, 3000);
+    if (isEqual(form.id, 0)) {
+      addStoredSecret(form);
+      gotoPassCodeContentStackScreen(false);
+
+    }
+    else {
+      updateStoredSecret(form);
+      gotoPassCodeContentStackScreen(true);
+    }
   };
 
   const title: Title = {
@@ -138,7 +151,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       <ScrollView stickyHeaderIndices={[0]}>
         <View style={styles.header}>
           <View style={styles.navIcons}>
-            <TouchableWithoutFeedback onPress={gotoPassCodeContentStackScreen}>
+            <TouchableWithoutFeedback onPress={() => gotoPassCodeContentStackScreen(false)}>
               <View style={styles.back}>
                 <MaterialCommunityIcons
                   name="arrow-left"
@@ -262,6 +275,8 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                 <View style={styles.viewDivider} />
                 <TextInput
                   autoFocus
+                  autoCapitalize="none"
+                  spellCheck={false}
                   label="Field Name"
                   value={newField}
                   onChangeText={dialogNewFieldOnChangeHandler}
@@ -385,37 +400,10 @@ interface PassCodeContentProps {
   route: RouteProp<RootStackParamList, 'PassCodeContent'>;
 }
 
-// export interface PassCodeProps {
-//   id: number;
-//   securityType: string;
-//   title: string;
-//   passData: PassData;
-// }
-
-// interface ExtendedPassData extends PassData {
-//   title?: string;
-// }
-
-// interface PassData {
-//   firstName?: string;
-//   lastName?: string;
-//   username: string;
-//   password?: string;
-//   phone?: string;
-//   email?: string;
-//   website?: string;
-//   note?: string;
-//   cardholder?: string;
-//   cardNumber?: string;
-//   expirationDate?: string;
-//   CVV?: string;
-//   zipCode?: string;
-//   customFields?: CustomField[];
-// }
-
-// interface CustomField {
-//   [key: string]: string;
-// }
+type Nav = {
+  navigate: (value: string, data: { data: PassCodeType }) => void;
+  goBack: () => void;
+};
 
 type Title = {
   [key: string]: string;

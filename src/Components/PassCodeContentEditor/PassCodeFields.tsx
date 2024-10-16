@@ -131,6 +131,8 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={5} />
           <TextInput
             label="Website or App Name"
+            autoCapitalize="none"
+            spellCheck={false}
             value={form.passData.website}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -145,6 +147,8 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
         <>
           <TextInput
             label="Cardholder Name"
+            autoCapitalize="none"
+            spellCheck={false}
             value={(form.passData as CreditCard).cardholder}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -155,6 +159,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Card Number"
+            keyboardType="numeric"
             value={(form.passData as CreditCard).cardNumber}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -210,6 +215,8 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
         <>
           <TextInput
             label="First Name"
+            autoCapitalize="none"
+            spellCheck={false}
             value={(form.passData as PersonalInfo).firstName}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -220,6 +227,8 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Last Name"
+            autoCapitalize="none"
+            spellCheck={false}
             value={(form.passData as PersonalInfo).lastName}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -230,6 +239,9 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Email"
+            autoCapitalize="none"
+            spellCheck={false}
+            keyboardType="email-address"
             value={(form.passData as PersonalInfo).email}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -240,6 +252,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Phone"
+            keyboardType="numeric"
             value={(form.passData as PersonalInfo).phone}
             onChangeText={(value) =>
               formHandler('passData', {

@@ -15,25 +15,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CreatePassDrawer from '../../Components/PassEditor/CreatePassDrawer';
 import UpdatePassDrawer from '../../Components/PassEditor/UpdatePassDrawer';
 import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
+import useStoredDataStore from '../../Store/useStoredDataStore';
 
 const Home = () => {
   const { colors } = useTheme();
   const navigation = useNavigation<Nav>();
   const styles = themeStyle(colors);
+  const { storedSecrets } = useStoredDataStore();
 
   const [data, setData] = useState<PassCodeType[]>([]);
   const [isCreateActive, setIsCreateActive] = useState(false);
   const [isEditActive, setIsEditActive] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        const mockData = await mockApi();
-        setData(mockData as PassCodeType[]);
-      };
-      fetchData();
-    }, [])
-  );
+  useFocusEffect(() => {
+      setData(storedSecrets);
+  });
 
   const drawerActions = {
     createDrawerClose: () => setIsCreateActive(false),
