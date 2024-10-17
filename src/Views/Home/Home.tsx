@@ -212,7 +212,7 @@ const themeStyle = (colors: MD3Colors) =>
     },
   });
 
-  const iconMap = {
+const iconMap = {
   PASSWORD: 'form-textbox-password',
   CREDITCARD: 'credit-card-outline',
   PERSONALINFO: 'badge-account-horizontal-outline',
