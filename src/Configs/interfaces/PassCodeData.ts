@@ -59,5 +59,6 @@ export type {
   CreditCard,
   PersonalInfo,
   CustomField,
+  SecureNote,
   SecurityType,
 };
