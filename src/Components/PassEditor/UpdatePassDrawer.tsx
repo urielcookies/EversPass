@@ -8,6 +8,7 @@ import BottomDrawer from '../BottomDrawer/BottomDrawer';
 import { forEach, isEmpty, isEqual } from 'lodash';
 import { useNavigation } from '@react-navigation/native';
 import useStoredDataStore from '../../Store/useStoredDataStore';
+import useSubscriptionPlanStore from '../../Store/useSubscriptionPlanStore';
 
 import { PassCodeType as _PassCodeType } from '../../Configs/interfaces/PassCodeData';
 
@@ -16,10 +17,9 @@ const CreatePassDrawer = (props: Props) => {
 
   const navigation = useNavigation<Nav>();
   const { moveToTrash } = useStoredDataStore();
+  const { isSubscriber } = useSubscriptionPlanStore();
 	const { colors } = useTheme();
   const styles = themeStyle(colors);
-
-  const showAttachement = false; // will change when a subscription plan is added later on
 
   const launchWebsiteHandler = () => {
     const url = data.passData.website;
@@ -59,7 +59,7 @@ const CreatePassDrawer = (props: Props) => {
       }
     });
 
-    if (showAttachement) {
+    if (isSubscriber) {
       customHeight += 0.05;
     }
     return customHeight;
@@ -215,7 +215,7 @@ const CreatePassDrawer = (props: Props) => {
 						</View>
 					</TouchableWithoutFeedback>
 
-          {showAttachement && (
+          {isSubscriber && (
             <TouchableWithoutFeedback onPress={console.log}>
               <View style={styles.bottomDrawerOption}>
                 <MaterialCommunityIcons

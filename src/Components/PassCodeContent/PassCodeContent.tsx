@@ -20,12 +20,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import PassCodeFields from './PassCodeFields';
 import { isEmpty, map } from 'lodash';
 import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
+import useSubscriptionPlanStore from '../../Store/useSubscriptionPlanStore';
 
 const PassCodeContent: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
 
   const navigation = useNavigation<Nav>();
-
+  const { isSubscriber } = useSubscriptionPlanStore();
   const { colors } = useTheme();
 
   const numberofFields: { [key: string]: number } = {
@@ -121,6 +122,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
         </View>
 
         <View style={styles.actionButtons}>
+          {isSubscriber && (
           <View>
             <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
               <View style={styles.actionButton}>
@@ -133,6 +135,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
               </View>
             </TouchableWithoutFeedback>
           </View>
+          )}
           <View>
             <TouchableWithoutFeedback onPress={gotoTestStackScreen}>
               <View style={styles.actionButton}>
