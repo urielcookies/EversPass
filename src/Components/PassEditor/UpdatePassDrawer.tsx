@@ -41,8 +41,8 @@ const CreatePassDrawer = (props: Props) => {
   const baseHeights: Record<SecurityTypeKeys, number> = {
     PASSWORD: 0.35,
     CREDITCARD: 0.40,
-    PERSONALINFO: 0.20,
-    SECURENOTE: 0.20,
+    PERSONALINFO: 0.23,
+    SECURENOTE: 0.23,
   };
 
   const additionalFields = ['website', 'note'];
