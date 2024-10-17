@@ -6,15 +6,19 @@ import { cloneDeep, findIndex, isEqual, maxBy } from 'lodash';
 
 interface StoredDataState {
   storedSecrets: PassCodeType[];
+  trashSecrets: PassCodeType[];
   addStoredSecret: (value: PassCodeType) => void;
   updateStoredSecret: (value: PassCodeType) => void;
   setClearSecrets: () => void;
   setMockSecrets: () => void;
   setStoredSecrets: () => void;
+  setTrashSecrets: () => void;
+  moveToTrash: (value: PassCodeType) => void;
 }
 
 const useStoredDataStore = create<StoredDataState>((set) => ({
   storedSecrets: [],
+  trashSecrets: [],
   addStoredSecret: (value: PassCodeType) => {
     set((state) => {
       const maxSecret = maxBy(state.storedSecrets, 'id');
@@ -51,6 +55,30 @@ const useStoredDataStore = create<StoredDataState>((set) => ({
   setStoredSecrets: async () => {
     const data: PassCodeType[] = await getLocalData('stored-secrets', []);
     set({ storedSecrets: data });
+  },
+  setTrashSecrets: async () => {
+    const data: PassCodeType[] = await getLocalData('trash-secrets', []);
+    set({ trashSecrets: data });
+  },
+  moveToTrash: async (value: PassCodeType) => {
+    set((state) => {
+      const newTrashSecrets = cloneDeep(state.trashSecrets);
+      const newStoredSecrets = cloneDeep(state.storedSecrets);
+
+      newTrashSecrets.push(value);
+
+      const index = newStoredSecrets.findIndex(secret => isEqual(secret.id, value.id));
+      if (index !== -1) {
+        newStoredSecrets.splice(index, 1);
+      }
+
+      storeLocalData('trash-secrets', newTrashSecrets);
+      storeLocalData('stored-secrets', newStoredSecrets);
+      return {
+        trashSecrets: newTrashSecrets,
+        storedSecrets: newStoredSecrets,
+      };
+    });
   },
 }));
 

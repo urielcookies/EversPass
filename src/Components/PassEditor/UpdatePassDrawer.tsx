@@ -1,4 +1,4 @@
-import { Linking, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Linking, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Divider, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,11 +6,16 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 import BottomDrawer from '../BottomDrawer/BottomDrawer';
 import { forEach, isEmpty, isEqual } from 'lodash';
+import { useNavigation } from '@react-navigation/native';
+import useStoredDataStore from '../../Store/useStoredDataStore';
 
+import { PassCodeType as _PassCodeType } from '../../Configs/interfaces/PassCodeData';
 
 const CreatePassDrawer = (props: Props) => {
 	const { closeDrawer, data, gotoTestScreen } = props;
 
+  const navigation = useNavigation<Nav>();
+  const { moveToTrash } = useStoredDataStore();
 	const { colors } = useTheme();
   const styles = themeStyle(colors);
 
@@ -53,6 +58,30 @@ const CreatePassDrawer = (props: Props) => {
     });
 
     return customHeight;
+  };
+
+  const gotoEditorStackScreen = () => {
+    navigation.navigate('PassCodeContentEditor', { data });
+    closeDrawer();
+  };
+
+  const moveToTrashHandler = () => {
+    Alert.alert(
+      'Are your sure?',
+      'Are you sure you want to remove this beautiful box?',
+      [
+        {
+          text: 'No',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            moveToTrash(data as unknown as _PassCodeType);
+            closeDrawer();
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -169,7 +198,7 @@ const CreatePassDrawer = (props: Props) => {
             </>
           )}
 
-					<TouchableWithoutFeedback onPress={gotoTestScreen}>
+					<TouchableWithoutFeedback onPress={gotoEditorStackScreen}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
 								name="pencil-outline"
@@ -181,7 +210,7 @@ const CreatePassDrawer = (props: Props) => {
 						</View>
 					</TouchableWithoutFeedback>
 
-					<TouchableWithoutFeedback onPress={gotoTestScreen}>
+					<TouchableWithoutFeedback onPress={console.log}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
 								name="paperclip"
@@ -193,7 +222,7 @@ const CreatePassDrawer = (props: Props) => {
 						</View>
 					</TouchableWithoutFeedback>
 
-					<TouchableWithoutFeedback onPress={gotoTestScreen}>
+					<TouchableWithoutFeedback onPress={moveToTrashHandler}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
 								name="delete-outline"
@@ -268,5 +297,9 @@ type Props = {
 	gotoTestScreen: any,
   data: PassCodeType,
 }
+
+type Nav = {
+  navigate: (value: string, data: { data: PassCodeType }) => void;
+};
 
 export default CreatePassDrawer;

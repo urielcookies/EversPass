@@ -8,10 +8,11 @@ import useStoredDataStore from '../Store/useStoredDataStore';
 import { useEffect } from 'react';
 
 const Root = () => {
-  const { setStoredSecrets } = useStoredDataStore();
+  const { setStoredSecrets, setTrashSecrets  } = useStoredDataStore();
   useEffect(() => {
     setStoredSecrets();
-  }, [setStoredSecrets]);
+    setTrashSecrets();
+  }, [setStoredSecrets, setTrashSecrets]);
 
   return (
     <NavigationContainer>
