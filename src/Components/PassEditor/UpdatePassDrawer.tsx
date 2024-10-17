@@ -37,7 +37,7 @@ const CreatePassDrawer = (props: Props) => {
     Clipboard.setString(data.passData[field]);
   };
 
-  const baseHeights: Record<SecurityType, number> = {
+  const baseHeights: Record<SecurityTypeKeys, number> = {
     PASSWORD: 0.40,
     CREDITCARD: 0.45,
     PERSONALINFO: 0.25,
@@ -256,11 +256,11 @@ const formatUrl = (url: string) => {
 };
 
 // Define the type for the keys of baseHeights
-type SecurityType = 'PASSWORD' | 'CREDITCARD' | 'PERSONALINFO' | 'SECURENOTE';
+type SecurityTypeKeys = 'PASSWORD' | 'CREDITCARD' | 'PERSONALINFO' | 'SECURENOTE';
 
 // Define the PassCodeType interface
 interface PassCodeType {
-  securityType: SecurityType;
+  securityType: SecurityTypeKeys;
   passData: {
     [key: string]: any;
   };
