@@ -1,19 +1,34 @@
-import { StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Linking, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { Divider, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomDrawer from '../BottomDrawer/BottomDrawer';
+import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 
 type Props = {
 	closeDrawer: any,
 	gotoTestScreen: any,
+  data: PassCodeType,
 }
 
 const CreatePassDrawer = (props: Props) => {
-	const { closeDrawer, gotoTestScreen } = props;
+	const { closeDrawer, data, gotoTestScreen } = props;
 
 	const { colors } = useTheme();
   const styles = themeStyle(colors);
+
+  const launchWebsiteHandler = () => {
+    const url = data.passData.website;
+    if (url) {
+      Linking.canOpenURL(url).then((supported) => {
+        if (supported) {
+          Linking.openURL(formatUrl(url));
+        } else {
+          console.log("Don't know how to open URI: " + url);
+        }
+      });
+    }
+  };
 
   return (
 		<BottomDrawer
@@ -25,13 +40,15 @@ const CreatePassDrawer = (props: Props) => {
 				</View>
 
 				<View style={styles.bottomDrawerOptions}>
-					<TouchableWithoutFeedback onPress={gotoTestScreen}>
+					<TouchableWithoutFeedback onPress={launchWebsiteHandler}>
 						<View style={styles.bottomDrawerOption}>
 							<MaterialCommunityIcons
 								name="arrow-top-right-bold-box-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Launch Website</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Launch Website
+              </Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -41,7 +58,9 @@ const CreatePassDrawer = (props: Props) => {
 								name="email-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Copy Username</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Copy Username
+              </Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -51,7 +70,9 @@ const CreatePassDrawer = (props: Props) => {
 								name="asterisk"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Copy Password</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Copy Password
+              </Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -63,7 +84,9 @@ const CreatePassDrawer = (props: Props) => {
 								name="pencil-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Edit</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Edit
+              </Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -73,7 +96,9 @@ const CreatePassDrawer = (props: Props) => {
 								name="paperclip"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Attach File</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Attach File
+              </Text>
 						</View>
 					</TouchableWithoutFeedback>
 
@@ -83,7 +108,9 @@ const CreatePassDrawer = (props: Props) => {
 								name="delete-outline"
 								style={styles.bottomDrawerOptionIcons}
 								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>&nbsp;Move to Trash</Text>
+							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                &nbsp;Move to Trash
+              </Text>
 						</View>
 					</TouchableWithoutFeedback>
 				</View>
@@ -125,5 +152,12 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
 		color: 'red'
 	}
 });
+
+const formatUrl = (url: string) => {
+  if (!/^https?:\/\//i.test(url)) {
+    return `http://${url}`;
+  }
+  return url;
+};
 
 export default CreatePassDrawer;

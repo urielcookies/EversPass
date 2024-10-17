@@ -2,7 +2,7 @@ import { FlatList, Image, TouchableWithoutFeedback, View } from 'react-native';
 import { FAB, useTheme } from 'react-native-paper';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { sortBy, upperCase } from 'lodash';
+import { isEmpty, sortBy, upperCase } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Divider, List, Text } from 'react-native-paper';
@@ -25,7 +25,7 @@ const Home = () => {
 
   const [data, setData] = useState<PassCodeType[]>([]);
   const [isCreateActive, setIsCreateActive] = useState(false);
-  const [isEditActive, setIsEditActive] = useState(false);
+  const [isEditActive, setIsEditActive] = useState({});
 
   useFocusEffect(() => {
       setData(storedSecrets);
@@ -34,8 +34,8 @@ const Home = () => {
   const drawerActions = {
     createDrawerClose: () => setIsCreateActive(false),
     createDrawerOpen: () => setIsCreateActive(true),
-    updateDrawerClose: () => setIsEditActive(false),
-    updateDrawerOpen: () => setIsEditActive(true),
+    updateDrawerClose: () => setIsEditActive({}),
+    updateDrawerOpen: (pass: PassCodeType) => setIsEditActive(pass),
   };
 
   const gotoTestStackScreen = () =>
@@ -91,14 +91,13 @@ const Home = () => {
             : <MaterialCommunityIcons
                 style={styles.iconAvatar}
                 name={iconMap[data.securityType as keyof typeof iconMap]}
-                onPress={drawerActions.updateDrawerOpen}
             />
           )}
           right={() => (
             <MaterialCommunityIcons
               style={styles.threeDotIcon}
               name="dots-vertical"
-              onPress={drawerActions.updateDrawerOpen}
+              onPress={() => drawerActions.updateDrawerOpen(data)}
             />
           )}
         />
@@ -140,10 +139,11 @@ const Home = () => {
         />
       )}
 
-      {isEditActive && (
+      {!isEmpty(isEditActive) && (
         <UpdatePassDrawer
           closeDrawer={drawerActions.updateDrawerClose}
           gotoTestScreen={gotoTestScreen}
+          data={isEditActive as PassCodeType}
         />
       )}
     </ViewWrapper>
