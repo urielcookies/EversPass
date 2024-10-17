@@ -5,20 +5,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import BottomDrawer from '../BottomDrawer/BottomDrawer';
-import {
-  CreditCard,
-  PassCodeType,
-  Password,
-  PersonalInfo,
-  SecureNote,
-} from '../../Configs/interfaces/PassCodeData';
 import { forEach, isEmpty, isEqual } from 'lodash';
 
-type Props = {
-	closeDrawer: any,
-	gotoTestScreen: any,
-  data: PassCodeType,
-}
 
 const CreatePassDrawer = (props: Props) => {
 	const { closeDrawer, data, gotoTestScreen } = props;
@@ -52,9 +40,11 @@ const CreatePassDrawer = (props: Props) => {
 
   const additionalFields = ['website', 'note'];
 
-  const calculateCustomHeight = (formData: PassCodeTypekik) => {
+  const calculateCustomHeight = (formData: PassCodeType) => {
+    const securityType = formData.securityType as SecurityTypeKeys;
+
     // Default to 0.25 if securityType is not found
-    let customHeight = baseHeights[formData.securityType] || 0.25;
+    let customHeight = baseHeights[securityType] || 0.25;
 
     forEach(additionalFields, (field) => {
       if (!isEmpty(formData.passData[field])) {
@@ -264,12 +254,19 @@ const formatUrl = (url: string) => {
 // Define the type for the keys of baseHeights
 type SecurityTypeKeys = 'PASSWORD' | 'CREDITCARD' | 'PERSONALINFO' | 'SECURENOTE';
 
-// Define the PassCodeType interface
-interface PassCodeTypekik {
+type PassDataType = {
+  [key: string]: 'username' | 'password' | 'cardholder' | 'cardNumber' | 'CVV' | 'note';
+};
+
+interface PassCodeType {
   securityType: SecurityTypeKeys;
-  passData: {
-    [key: string]: Password | CreditCard | PersonalInfo | SecureNote;
-  };
+  passData: PassDataType;
+}
+
+type Props = {
+	closeDrawer: any,
+	gotoTestScreen: any,
+  data: PassCodeType,
 }
 
 export default CreatePassDrawer;
