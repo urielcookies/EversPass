@@ -43,7 +43,6 @@ interface SecureNote {
   customFields?: CustomField[];
 }
 
-
 interface CustomField {
   [key: string]: string;
 }
