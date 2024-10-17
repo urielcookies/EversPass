@@ -5,7 +5,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import BottomDrawer from '../BottomDrawer/BottomDrawer';
-import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
+import {
+  CreditCard,
+  PassCodeType,
+  Password,
+  PersonalInfo,
+  SecureNote,
+} from '../../Configs/interfaces/PassCodeData';
 import { forEach, isEmpty, isEqual } from 'lodash';
 
 type Props = {
@@ -46,7 +52,7 @@ const CreatePassDrawer = (props: Props) => {
 
   const additionalFields = ['website', 'note'];
 
-  const calculateCustomHeight = (formData: PassCodeType) => {
+  const calculateCustomHeight = (formData: PassCodeTypekik) => {
     // Default to 0.25 if securityType is not found
     let customHeight = baseHeights[formData.securityType] || 0.25;
 
@@ -259,10 +265,10 @@ const formatUrl = (url: string) => {
 type SecurityTypeKeys = 'PASSWORD' | 'CREDITCARD' | 'PERSONALINFO' | 'SECURENOTE';
 
 // Define the PassCodeType interface
-interface PassCodeType {
+interface PassCodeTypekik {
   securityType: SecurityTypeKeys;
   passData: {
-    [key: string]: any;
+    [key: string]: Password | CreditCard | PersonalInfo | SecureNote;
   };
 }
 
