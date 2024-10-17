@@ -133,7 +133,7 @@ const CreatePassDrawer = (props: Props) => {
               <TouchableWithoutFeedback onPress={() => copyField('cardholder')}>
                 <View style={styles.bottomDrawerOption}>
                   <MaterialCommunityIcons
-                    name="email-outline"
+                    name="card-account-details-outline"
                     style={styles.bottomDrawerOptionIcons}
                     size={25} />
                   <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
@@ -145,7 +145,7 @@ const CreatePassDrawer = (props: Props) => {
               <TouchableWithoutFeedback onPress={() => copyField('cardNumber')}>
                 <View style={styles.bottomDrawerOption}>
                   <MaterialCommunityIcons
-                    name="email-outline"
+                    name="card-bulleted-outline"
                     style={styles.bottomDrawerOptionIcons}
                     size={25} />
                   <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
@@ -157,7 +157,7 @@ const CreatePassDrawer = (props: Props) => {
               <TouchableWithoutFeedback onPress={() => copyField('CVV')}>
                 <View style={styles.bottomDrawerOption}>
                   <MaterialCommunityIcons
-                    name="asterisk"
+                    name="card-text-outline"
                     style={styles.bottomDrawerOptionIcons}
                     size={25} />
                   <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
