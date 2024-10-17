@@ -19,6 +19,8 @@ const CreatePassDrawer = (props: Props) => {
 	const { colors } = useTheme();
   const styles = themeStyle(colors);
 
+  const showAttachement = false; // will change when a subscription plan is added later on
+
   const launchWebsiteHandler = () => {
     const url = data.passData.website;
     if (url) {
@@ -37,10 +39,10 @@ const CreatePassDrawer = (props: Props) => {
   };
 
   const baseHeights: Record<SecurityTypeKeys, number> = {
-    PASSWORD: 0.40,
-    CREDITCARD: 0.45,
-    PERSONALINFO: 0.25,
-    SECURENOTE: 0.25,
+    PASSWORD: 0.35,
+    CREDITCARD: 0.40,
+    PERSONALINFO: 0.20,
+    SECURENOTE: 0.20,
   };
 
   const additionalFields = ['website', 'note'];
@@ -57,6 +59,9 @@ const CreatePassDrawer = (props: Props) => {
       }
     });
 
+    if (showAttachement) {
+      customHeight += 0.05;
+    }
     return customHeight;
   };
 
@@ -210,17 +215,20 @@ const CreatePassDrawer = (props: Props) => {
 						</View>
 					</TouchableWithoutFeedback>
 
-					<TouchableWithoutFeedback onPress={console.log}>
-						<View style={styles.bottomDrawerOption}>
-							<MaterialCommunityIcons
-								name="paperclip"
-								style={styles.bottomDrawerOptionIcons}
-								size={25} />
-							<Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
-                &nbsp;Attach File
-              </Text>
-						</View>
-					</TouchableWithoutFeedback>
+          {showAttachement && (
+            <TouchableWithoutFeedback onPress={console.log}>
+              <View style={styles.bottomDrawerOption}>
+                <MaterialCommunityIcons
+                  name="paperclip"
+                  style={styles.bottomDrawerOptionIcons}
+                  size={25} />
+                <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                  &nbsp;Attach File
+                </Text>
+              </View>
+            </TouchableWithoutFeedback>
+          )}
+
 
 					<TouchableWithoutFeedback onPress={moveToTrashHandler}>
 						<View style={styles.bottomDrawerOption}>
