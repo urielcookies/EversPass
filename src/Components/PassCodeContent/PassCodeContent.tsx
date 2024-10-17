@@ -187,12 +187,14 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
             ))}
           </View>
         )}
-        {!isUndefined(data.passData.note) && (
+        {!isEmpty(data.passData.note) && (
           <View style={styles.note}>
             <List.Item
               titleStyle={{ fontSize: 15, color: 'grey' }}
               descriptionStyle={{ fontSize: 15 }}
-              descriptionNumberOfLines={data.passData.note.length * 100}
+              descriptionNumberOfLines={
+                data.passData.note?.length ? data.passData.note.length * 100 : 0
+              }
               title="Note"
               description={data.passData.note}
             />
