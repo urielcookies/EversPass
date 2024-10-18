@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { filter, includes, isEmpty, isEqual, sortBy, toLower, upperCase } from 'lodash';
+import { filter, includes, isEmpty, isEqual, sortBy, toLower, toUpper, upperCase } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Image, StyleSheet, View } from 'react-native';
 import { Divider, List, Searchbar, Text, useTheme } from 'react-native-paper';
@@ -51,7 +51,7 @@ const SearchList = () => {
 
   const prevChar = useRef('');
   const Item = ({ data }: { data: PassCodeType }) => {
-    const currentChar = data.title.charAt(0);
+    const currentChar = toUpper(data.title.charAt(0));
     const showSubHeader = currentChar !== prevChar.current;
     if (showSubHeader) {
       prevChar.current = currentChar;
@@ -130,7 +130,7 @@ const SearchList = () => {
 			{!isEmpty(filteredList) && (
 				<View style={styles.bottomContainerResults}>
           <FlatList
-            data={sortBy(filteredList, ['title'])}
+            data={sortBy(filteredList, item => toUpper(item.title))}
             renderItem={({ item }) => <Item data={item} />}
             keyExtractor={item => item.id.toString()} />
 					{/* <FlatList
