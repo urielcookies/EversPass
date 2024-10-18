@@ -184,13 +184,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
             value={form.title}
             onChangeText={value => formHandler('title', value)}
           />
-          <HelperText
-            style={styles.transpBgrView}
-            type="info"
-            padding="none"
-            visible>
-            * Required
-          </HelperText>
 
           <PassCodeFields
             form={form}

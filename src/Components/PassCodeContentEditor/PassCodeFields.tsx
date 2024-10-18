@@ -68,7 +68,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={5} />
 
           <TextInput
-            label="Email or Username"
+            label="Email or Username*"
             autoCapitalize="none"
             keyboardType="email-address"
             spellCheck={false}
@@ -83,7 +83,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TranspBgrViewProps paddingVertical={5} />
 
           <TextInput
-            label="Password"
+            label="Password*"
             value={(form.passData as Password).password}
             onChangeText={(value) =>
               formHandler('passData', {
@@ -126,11 +126,11 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           )}
           <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
-            Websites and Apps
+            Website / App
           </Text>
           <TranspBgrViewProps paddingVertical={5} />
           <TextInput
-            label="Website or App Name"
+            label="Website*"
             autoCapitalize="none"
             spellCheck={false}
             keyboardType="url"
