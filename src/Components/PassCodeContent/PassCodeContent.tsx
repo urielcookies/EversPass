@@ -21,6 +21,7 @@ import PassCodeFields from './PassCodeFields';
 import { isEmpty, map } from 'lodash';
 import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 import useSubscriptionPlanStore from '../../Store/useSubscriptionPlanStore';
+import FastImage from 'react-native-fast-image';
 
 const PassCodeContent: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
@@ -107,13 +108,13 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
         </View>
         {(data.passData.website && !offlineMode) && (
           <View style={styles.logoIcon}>
-            <Image
-                style={styles.logoIcon.logo}
-                source={{
-                  uri: websiteIcons,
-                }}
-                defaultSource={require('../../Assets/avatar.png')}
-            />
+            <FastImage
+              style={styles.logoIcon.logo}
+              source={{
+                uri: websiteIcons,
+              }}
+              defaultSource={require('../../Assets/avatar.png')}
+              resizeMode={FastImage.resizeMode.contain} />
         </View>)}
 
         <View style={styles.title}>

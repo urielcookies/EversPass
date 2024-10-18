@@ -16,6 +16,7 @@ import CreatePassDrawer from '../../Components/PassEditor/CreatePassDrawer';
 import UpdatePassDrawer from '../../Components/PassEditor/UpdatePassDrawer';
 import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 import useStoredDataStore from '../../Store/useStoredDataStore';
+import FastImage from 'react-native-fast-image';
 
 const Home = () => {
   const { colors } = useTheme();
@@ -81,12 +82,13 @@ const Home = () => {
           title={data.title}
           left={() => (
             data.passData.website && !offlineMode
-            ? <Image
+            ? <FastImage
                 style={styles.avatar}
                 source={{
                   uri: websiteIcons,
                 }}
                 defaultSource={require('../../Assets/avatar.png')}
+                resizeMode={FastImage.resizeMode.cover}
               />
             : <MaterialCommunityIcons
                 style={styles.iconAvatar}
