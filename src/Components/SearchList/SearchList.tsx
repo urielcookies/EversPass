@@ -10,6 +10,7 @@ import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 import CreatePassDrawer from '../PassEditor/CreatePassDrawer';
 import UpdatePassDrawer from '../PassEditor/UpdatePassDrawer';
 import useStoredDataStore from '../../Store/useStoredDataStore';
+import FastImage from 'react-native-fast-image';
 
 const SearchList = () => {
   const { storedSecrets } = useStoredDataStore();
@@ -82,13 +83,13 @@ const SearchList = () => {
           title={data.title}
           left={() => (
             data.passData.website && !offlineMode
-            ? <Image
+            ? <FastImage
                 style={styles.avatar}
                 source={{
                   uri: websiteIcons,
                 }}
                 defaultSource={require('../../Assets/avatar.png')}
-              />
+                resizeMode={FastImage.resizeMode.cover} />
             : <MaterialCommunityIcons
                 style={styles.iconAvatar}
                 name={iconMap[data.securityType as keyof typeof iconMap]}

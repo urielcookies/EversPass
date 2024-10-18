@@ -88,12 +88,10 @@ const Home = () => {
                   uri: websiteIcons,
                 }}
                 defaultSource={require('../../Assets/avatar.png')}
-                resizeMode={FastImage.resizeMode.cover}
-              />
+                resizeMode={FastImage.resizeMode.cover} />
             : <MaterialCommunityIcons
                 style={styles.iconAvatar}
-                name={iconMap[data.securityType as keyof typeof iconMap]}
-            />
+                name={iconMap[data.securityType as keyof typeof iconMap]} />
           )}
           right={() => (
             <MaterialCommunityIcons
