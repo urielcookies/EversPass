@@ -106,9 +106,6 @@ const SearchList = () => {
     );
   };
 
-  console.log('storedSecrets--->', storedSecrets[0]);
-  console.log('filteredList--->>', filteredList);
-
 	return (
     <ViewWrapper notchProtection>
 			<View style={styles.topContainer}>
