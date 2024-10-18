@@ -222,6 +222,7 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     marginLeft: 10,
     width: 23.5,
     height: 23.5,
+    color: colors.onSecondaryContainer,
   },
 });
 
