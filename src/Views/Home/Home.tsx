@@ -2,7 +2,7 @@ import { FlatList, Image, TouchableWithoutFeedback, View } from 'react-native';
 import { FAB, useTheme } from 'react-native-paper';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { isEmpty, sortBy, upperCase } from 'lodash';
+import { isEmpty, sortBy, toUpper, upperCase } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { Divider, List, Text } from 'react-native-paper';
@@ -55,7 +55,7 @@ const Home = () => {
 
   const prevChar = useRef('');
   const Item = ({ data }: { data: PassCodeType }) => {
-    const currentChar = data.title.charAt(0);
+    const currentChar = toUpper(data.title.charAt(0));
     const showSubHeader = currentChar !== prevChar.current;
     if (showSubHeader) {
       prevChar.current = currentChar;
@@ -117,10 +117,9 @@ const Home = () => {
           <Text style={styles.searchText}>Search</Text>
         </View>
       </TouchableWithoutFeedback>
-
       <View style={{ flex: 13 }}>
         <FlatList
-          data={sortBy(data, ['title'])}
+          data={sortBy(data, item => toUpper(item.title))}
           renderItem={({ item }) => <Item data={item} />}
           keyExtractor={item => item.id.toString()}
         />
