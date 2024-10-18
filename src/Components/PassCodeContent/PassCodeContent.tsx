@@ -105,7 +105,6 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
             </TouchableWithoutFeedback>
           </View>
         </View>
-
         {(data.passData.website && !offlineMode) && (
           <View style={styles.logoIcon}>
             <Image
@@ -113,7 +112,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
                 source={{
                   uri: websiteIcons,
                 }}
-                defaultSource={require('../../Assets/amex.jpeg')}
+                defaultSource={require('../../Assets/avatar.png')}
             />
         </View>)}
 

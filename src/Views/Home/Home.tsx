@@ -112,8 +112,7 @@ const Home = () => {
           <MaterialCommunityIcons
             style={styles.icon}
             name="magnify"
-            size={30}
-          />
+            size={30} />
           <Text style={styles.searchText}>Search</Text>
         </View>
       </TouchableWithoutFeedback>
@@ -121,29 +120,25 @@ const Home = () => {
         <FlatList
           data={sortBy(data, item => toUpper(item.title))}
           renderItem={({ item }) => <Item data={item} />}
-          keyExtractor={item => item.id.toString()}
-        />
+          keyExtractor={item => item.id.toString()} />
       </View>
 
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={drawerActions.createDrawerOpen}
-      />
+        onPress={drawerActions.createDrawerOpen} />
 
       {isCreateActive && (
         <CreatePassDrawer
           closeDrawer={drawerActions.createDrawerClose}
-          gotoTestScreen={gotoTestScreen}
-        />
+          gotoTestScreen={gotoTestScreen} />
       )}
 
       {!isEmpty(isEditActive) && (
         <UpdatePassDrawer
           closeDrawer={drawerActions.updateDrawerClose}
           gotoTestScreen={gotoTestScreen}
-          data={isEditActive as PassCodeType}
-        />
+          data={isEditActive as PassCodeType} />
       )}
     </ViewWrapper>
   );
