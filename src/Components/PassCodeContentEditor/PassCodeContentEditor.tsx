@@ -9,12 +9,12 @@ import {
 import {
   Button,
   Dialog,
-  HelperText,
   Portal,
   Text,
   TextInput,
   useTheme,
 } from 'react-native-paper';
+import { Formik } from 'formik';
 import { cloneDeep, isEqual, map, some } from 'lodash';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -74,42 +74,24 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       customFields: [],
     },
   };
-  const [form, setForm] = useState<PassCodeType>({
+
+  const form: PassCodeType = {
     id: data.id,
     title: data.title,
     securityType: data.securityType,
     passData: data.id ? data.passData : securityTypeObj[data.securityType],
+  };
 
-  });
-
-  // const formHandler = (field: string, value: string |  CustomField[]) =>
-    const formHandler = (field: string, value: any) =>
-    setForm(prevForm => ({
-      ...prevForm,
-      [field]: value,
-    }));
-
-  const gotoPassCodeContentStackScreen = (afterCreated: boolean) => {
-    if (afterCreated) {
-      navigation.navigate('PassCodeContent', { data: form });
-    } else {
-      navigation.goBack();
-    }
-  }
-
-  const addFieldsHandler = () => {
-    const clonedCustomFields = cloneDeep(form.passData.customFields || []);
+  const addFieldsHandler = (customFields: CustomField[], setField: any) => {
+    const clonedCustomFields = cloneDeep(customFields || []);
     clonedCustomFields.push({ name: newField, value: '' });
-    formHandler('passData', {
-      ...form.passData,
-      customFields: clonedCustomFields,
-    });
+    setField('passData.customFields', clonedCustomFields)
     onDismissDialog();
   };
 
-  const dialogNewFieldOnChangeHandler = (value: string) => {
+  const dialogNewFieldOnChangeHandler = (value: string, customFields: CustomField[]) => {
     setNewField(value);
-    const clonedCustomFields = cloneDeep(form.passData.customFields || []);
+    const clonedCustomFields = cloneDeep(customFields || []);
     const isFieldAlreadyExists = some(clonedCustomFields, field =>
       isEqual(field.name, value),
     );
@@ -126,170 +108,160 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     setNewField('');
   };
 
-  const updateFormHandler = () => {
+  const handleFormSubmit = (formikForm: PassCodeType) => {
     setIsSaving(true);
-    if (isEqual(form.id, 0)) {
-      addStoredSecret(form);
-      gotoPassCodeContentStackScreen(false);
-
+    if (isEqual(formikForm.id, 0)) {
+      addStoredSecret(formikForm);
+    } else {
+      updateStoredSecret(formikForm);
     }
-    else {
-      updateStoredSecret(form);
-      gotoPassCodeContentStackScreen(true);
-    }
-  };
-
-  const title: Title = {
-    PASSWORD: 'Edit Password',
-    CREDITCARD: 'Edit Credit Card',
-    PERSONALINFO: 'Edit Personal Info',
-    SECURENOTE: 'Edit Secure Note Info',
+    navigation.navigate('PassCodeContent', { data: formikForm });
   };
 
   return (
     <ViewWrapper notchProtection>
       <ScrollView stickyHeaderIndices={[0]}>
-        <View style={styles.header}>
-          <View style={styles.navIcons}>
-            <TouchableWithoutFeedback onPress={() => gotoPassCodeContentStackScreen(false)}>
-              <View style={styles.back}>
-                <MaterialCommunityIcons
-                  name="arrow-left"
-                  size={30}
-                  color={colors.onSecondaryContainer}
-                />
-              </View>
-            </TouchableWithoutFeedback>
+        <Formik
+        initialValues={form}
+        onSubmit={handleFormSubmit}>
+          {({ handleChange, handleBlur, handleSubmit, setFieldValue, values, errors }) => (
+            <>
+            <View style={styles.header}>
+              <View style={styles.navIcons}>
+                <TouchableWithoutFeedback
+                  onPress={navigation.goBack}>
+                  <View style={styles.back}>
+                    <MaterialCommunityIcons
+                      name="arrow-left"
+                      size={30}
+                      color={colors.onSecondaryContainer}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
 
-            <View style={styles.title}>
-              <Text variant="headlineSmall">{title[data.securityType]}</Text>
+                <View style={styles.title}>
+                  <Text variant="headlineSmall">{title[data.securityType]}</Text>
+                </View>
+
+                <TouchableWithoutFeedback onPress={() => handleSubmit()}>
+                  <View style={styles.edit}>
+                    <MaterialCommunityIcons
+                      name="check"
+                      size={30}
+                      color={colors.onSecondaryContainer}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
             </View>
 
-            <TouchableWithoutFeedback onPress={updateFormHandler}>
-              <View style={styles.edit}>
-                <MaterialCommunityIcons
-                  name="check"
-                  size={30}
-                  color={colors.onSecondaryContainer}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </View>
-
-        <View style={styles.content}>
-          <TextInput
-            label="Title*"
-            autoCapitalize="none"
-            value={form.title}
-            onChangeText={value => formHandler('title', value)}
-          />
-
-          <PassCodeFields
-            form={form}
-            formHandler={formHandler} />
-
-          <TranspBgrViewProps paddingVertical={5} />
-
-          <Text style={styles.transpBgrView} variant="titleMedium">
-            Custom Fields
-          </Text>
-          <TranspBgrViewProps paddingVertical={5} />
-          {map(form.passData.customFields, (customFields, index) => (
-            <React.Fragment key={index}>
-              <TranspBgrViewProps paddingVertical={5} />
+            <View style={styles.content}>
               <TextInput
+                label="Title*"
                 autoCapitalize="none"
-                spellCheck={false}
-                label={customFields.name}
-                value={customFields.value}
-                onChangeText={value => {
-                  const clonedCustomFields = cloneDeep(
-                    form.passData.customFields,
-                  ) as CustomField[];
-                  clonedCustomFields[index].value = value;
-                  formHandler('passData', {
-                    ...form.passData,
-                    customFields: clonedCustomFields,
-                  });
-                }}
-                right={
-                  <TextInput.Icon icon="dots-vertical" onPress={console.log} />
-                }
+                value={values.title}
+                onChangeText={handleChange('title')}
               />
-            </React.Fragment>
-          ))}
 
-          <TranspBgrViewProps paddingVertical={5} />
+              <PassCodeFields />
 
-          <Button
-            style={styles.addFieldBtn}
-            icon={({ color, size }) => (
-              <MaterialCommunityIcons
-                name="plus-circle-outline"
-                color={color}
-                size={size + 5}
-              />
-            )}
-            mode="contained"
-            onPress={() => setShowCustomFieldModal(true)}>
-            Add Field
-          </Button>
+              <TranspBgrViewProps paddingVertical={5} />
 
-          <TranspBgrViewProps paddingVertical={5} />
+              <Text style={styles.transpBgrView} variant="titleMedium">
+                Custom Fields
+              </Text>
+              <TranspBgrViewProps paddingVertical={5} />
+              {map(values.passData.customFields, (customFields, index) => (
+                <React.Fragment key={index}>
+                  <TranspBgrViewProps paddingVertical={5} />
+                  <TextInput
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    label={customFields.name}
+                    value={customFields.value}
+                    onChangeText={value => {
+                      const clonedCustomFields = cloneDeep(
+                        values.passData.customFields,
+                      ) as CustomField[];
+                      clonedCustomFields[index].value = value;
+                      setFieldValue('passData.customFields', clonedCustomFields);
+                    }}
+                    right={
+                      <TextInput.Icon icon="dots-vertical" onPress={console.log} />
+                    }
+                  />
+                </React.Fragment>
+              ))}
 
-          <Text style={styles.transpBgrView} variant="titleMedium">
-            Notes
-          </Text>
-          <TextInput
-            style={styles.note}
-            label="Notes"
-            autoCapitalize="none"
-            multiline
-            value={form.passData.note}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                note: value,
-              })}
-          />
+              <TranspBgrViewProps paddingVertical={5} />
 
-          <Portal>
-            <Dialog
-              style={styles.dialog}
-              onDismiss={onDismissDialog}
-              visible={showCustomFieldModal}>
-              <Dialog.Title style={styles.dialogTitle}>Field Name</Dialog.Title>
-              <Dialog.Content>
-                <Text variant="bodyLarge">
-                  Try to use the same name as the website or app field you'd
-                  like to autofill
-                </Text>
-                <View style={styles.viewDivider} />
-                <TextInput
-                  autoFocus
-                  autoCapitalize="none"
-                  spellCheck={false}
-                  label="Field Name"
-                  value={newField}
-                  onChangeText={dialogNewFieldOnChangeHandler}
-                />
-                <View style={styles.viewDivider} />
-                <Text variant="titleSmall" style={styles.dialogError}>
-                  {showDialogError ? 'Field Exists Already' : ''}
-                </Text>
-              </Dialog.Content>
-              <Dialog.Actions>
-                <Button onPress={onDismissDialog}>Cancel</Button>
-                <Button
-                  disabled={isEqual(newField, '') || showDialogError}
-                  onPress={addFieldsHandler}>
-                  Save
-                </Button>
-              </Dialog.Actions>
-            </Dialog>
-          </Portal>
-        </View>
+              <Button
+                style={styles.addFieldBtn}
+                icon={({ color, size }) => (
+                  <MaterialCommunityIcons
+                    name="plus-circle-outline"
+                    color={color}
+                    size={size + 5}
+                  />
+                )}
+                mode="contained"
+                onPress={() => setShowCustomFieldModal(true)}>
+                Add Field
+              </Button>
+
+              <TranspBgrViewProps paddingVertical={5} />
+
+              <Text style={styles.transpBgrView} variant="titleMedium">
+                Notes
+              </Text>
+              <TextInput
+                style={styles.note}
+                label="Notes"
+                autoCapitalize="none"
+                multiline
+                value={values.passData.note}
+                onChangeText={handleChange('passData.note')} />
+
+              <Portal>
+                <Dialog
+                  style={styles.dialog}
+                  onDismiss={onDismissDialog}
+                  visible={showCustomFieldModal}>
+                  <Dialog.Title style={styles.dialogTitle}>Field Name</Dialog.Title>
+                  <Dialog.Content>
+                    <Text variant="bodyLarge">
+                      Try to use the same name as the website or app field you'd
+                      like to autofill
+                    </Text>
+                    <View style={styles.viewDivider} />
+                    <TextInput
+                      autoFocus
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      label="Field Name"
+                      value={newField}
+                      onChangeText={
+                        (text) => dialogNewFieldOnChangeHandler(text, values.passData.customFields)
+                      } />
+                    <View style={styles.viewDivider} />
+                    <Text variant="titleSmall" style={styles.dialogError}>
+                      {showDialogError ? 'Field Exists Already' : ''}
+                    </Text>
+                  </Dialog.Content>
+                  <Dialog.Actions>
+                    <Button onPress={onDismissDialog}>Cancel</Button>
+                    <Button
+                      disabled={isEqual(newField, '') || showDialogError}
+                      onPress={() => addFieldsHandler(values.passData.customFields, setFieldValue)}>
+                      Insert
+                    </Button>
+                  </Dialog.Actions>
+                </Dialog>
+              </Portal>
+            </View>
+          </>
+        )}
+        </Formik>
       </ScrollView>
       {isSaving && (
         <ActivityIndicator
@@ -400,6 +372,13 @@ type Nav = {
 
 type Title = {
   [key: string]: string;
+};
+
+const title: Title = {
+  PASSWORD: 'Edit Password',
+  CREDITCARD: 'Edit Credit Card',
+  PERSONALINFO: 'Edit Personal Info',
+  SECURENOTE: 'Edit Secure Note Info',
 };
 
 export default PassCodeContentEditor;

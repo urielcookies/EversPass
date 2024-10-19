@@ -18,8 +18,10 @@ import {
   PersonalInfo,
 } from '../../Configs/interfaces/PassCodeData';
 
-const PassCodeFields: FC<IPassCodeFields> = props => {
-  const { form, formHandler } = props;
+import { useFormikContext } from 'formik';
+
+const PassCodeFields: FC = () => {
+  const { values, setFieldValue } = useFormikContext<PassCodeType>();
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
@@ -59,7 +61,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
 
   return (
     <View>
-      {isEqual(form.securityType, 'PASSWORD') && (
+      {isEqual(values.securityType, 'PASSWORD') && (
         <>
           <TranspBgrViewProps paddingVertical={10} />
           <Text style={styles.transpBgrView} variant="titleMedium">
@@ -72,35 +74,24 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             autoCapitalize="none"
             keyboardType="email-address"
             spellCheck={false}
-            value={(form.passData as Password).username}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                username: value,
-              })}
-          />
+            value={(values.passData as Password).username}
+            onChangeText={(text) => setFieldValue('passData.username', text)} />
 
           <TranspBgrViewProps paddingVertical={5} />
 
           <TextInput
             label="Password*"
-            value={(form.passData as Password).password}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                password: value,
-              })}
+            value={(values.passData as Password).password}
+            onChangeText={(text) => setFieldValue('passData.password', text)}
             secureTextEntry={!passwordVisibility}
             right={
               <TextInput.Icon
                 icon={passwordVisibility ? 'eye' : 'eye-off'}
-                onPress={togglePasswordVisibility}
-              />
-            }
-          />
+                onPress={togglePasswordVisibility} />
+            } />
 
           {isEqual(
-            checkPasswordStrength((form.passData as Password).password),
+            checkPasswordStrength((values.passData as Password).password),
             'STRONG',
           ) && (
             <Text
@@ -110,7 +101,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             </Text>
           )}
           {isEqual(
-            checkPasswordStrength((form.passData as Password).password),
+            checkPasswordStrength((values.passData as Password).password),
             'MEDIUM',
           ) && (
             <Text
@@ -119,7 +110,7 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
               Medium Password
             </Text>
           )}
-          {isEqual(checkPasswordStrength((form.passData as Password).password), 'WEAK') && (
+          {isEqual(checkPasswordStrength((values.passData as Password).password), 'WEAK') && (
             <Text variant="titleSmall" style={styles.passwordStrengthTextWEAK}>
               Weak Password
             </Text>
@@ -134,40 +125,25 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             autoCapitalize="none"
             spellCheck={false}
             keyboardType="url"
-            value={form.passData.website}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                website: value,
-              })}
-          />
+            value={values.passData.website}
+            onChangeText={(text) => setFieldValue('passData.website', text)} />
         </>
       )}
 
-      {isEqual(form.securityType, 'CREDITCARD') && (
+      {isEqual(values.securityType, 'CREDITCARD') && (
         <>
           <TextInput
             label="Cardholder Name"
             autoCapitalize="none"
             spellCheck={false}
-            value={(form.passData as CreditCard).cardholder}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                cardholder: value,
-              })}
-          />
+            value={(values.passData as CreditCard).cardholder}
+            onChangeText={(text) => setFieldValue('passData.cardholder', text)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Card Number"
             keyboardType="numeric"
-            value={(form.passData as CreditCard).cardNumber}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                cardNumber: value,
-              })}
-          />
+            value={(values.passData as CreditCard).cardNumber}
+            onChangeText={(text) => setFieldValue('passData.cardNumber', text)} />
           <HelperText
             style={styles.transpBgrView}
             type="info"
@@ -178,37 +154,23 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
           <TextInput
             label="Expiration Date (MM/YY)"
             keyboardType="numeric"
-            value={(form.passData as CreditCard).expirationDate}
+            value={(values.passData as CreditCard).expirationDate}
             onChangeText={(value) => {
               const formattedValue = formatExpirationDate(value);
-              formHandler('passData', {
-                ...form.passData,
-                expirationDate: formattedValue,
-              });}
-            }
-          />
+              setFieldValue('passData.expirationDate', formattedValue);
+            }} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="CVV"
             keyboardType="numeric"
-            value={(form.passData as CreditCard).CVV}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                CVV: value,
-              })}
-          />
+            value={(values.passData as CreditCard).CVV}
+            onChangeText={(text) => setFieldValue('passData.CVV', text)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Zip Code"
             keyboardType="numeric"
-            value={(form.passData as CreditCard).zipCode}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                zipCode: value,
-              })}
-          />
+            value={(values.passData as CreditCard).zipCode}
+            onChangeText={(text) => setFieldValue('passData.zipCode', text)} />
           <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Websites and Apps
@@ -219,65 +181,40 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             autoCapitalize="none"
             spellCheck={false}
             keyboardType="url"
-            value={form.passData.website}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                website: value,
-              })}
-          />
+            value={values.passData.website}
+            onChangeText={(text) => setFieldValue('passData.website', text)} />
         </>
       )}
 
-      {isEqual(form.securityType, 'PERSONALINFO') && (
+      {isEqual(values.securityType, 'PERSONALINFO') && (
         <>
           <TextInput
             label="First Name"
             autoCapitalize="none"
             spellCheck={false}
-            value={(form.passData as PersonalInfo).firstName}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                firstName: value,
-              })}
-          />
+            value={(values.passData as PersonalInfo).firstName}
+            onChangeText={(text) => setFieldValue('passData.firstName', text)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Last Name"
             autoCapitalize="none"
             spellCheck={false}
-            value={(form.passData as PersonalInfo).lastName}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                lastName: value,
-              })}
-          />
+            value={(values.passData as PersonalInfo).lastName}
+            onChangeText={(text) => setFieldValue('passData.lastName', text)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Email"
             autoCapitalize="none"
             spellCheck={false}
             keyboardType="email-address"
-            value={(form.passData as PersonalInfo).email}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                email: value,
-              })}
-          />
+            value={(values.passData as PersonalInfo).email}
+            onChangeText={(text) => setFieldValue('passData.email', text)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Phone"
             keyboardType="numeric"
-            value={(form.passData as PersonalInfo).phone}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                phone: value,
-              })}
-          />
+            value={(values.passData as PersonalInfo).phone}
+            onChangeText={(text) => setFieldValue('passData.phone', text)} />
           <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Websites and Apps
@@ -288,13 +225,8 @@ const PassCodeFields: FC<IPassCodeFields> = props => {
             autoCapitalize="none"
             spellCheck={false}
             keyboardType="url"
-            value={form.passData.website}
-            onChangeText={(value) =>
-              formHandler('passData', {
-                ...form.passData,
-                website: value,
-              })}
-          />
+            value={values.passData.website}
+            onChangeText={(text) => setFieldValue('passData.website', text)} />
         </>
       )}
     </View>
@@ -325,10 +257,5 @@ const themeStyle = (colors: MD3Colors) =>
       backgroundColor: colors.background,
     },
   });
-
-interface IPassCodeFields {
-  formHandler: (field: string, value: any) => void;
-  form: PassCodeType;
-}
 
 export default PassCodeFields;
