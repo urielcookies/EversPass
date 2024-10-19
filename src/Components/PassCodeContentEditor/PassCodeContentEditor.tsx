@@ -91,7 +91,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   const dialogNewFieldOnChangeHandler = (value: string, customFields: CustomField[]) => {
     setNewField(value);
-    const clonedCustomFields = cloneDeep(customFields || []);
+    const clonedCustomFields = cloneDeep(customFields);
     const isFieldAlreadyExists = some(clonedCustomFields, field =>
       isEqual(field.name, value),
     );
@@ -241,7 +241,8 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       label="Field Name"
                       value={newField}
                       onChangeText={
-                        (text) => dialogNewFieldOnChangeHandler(text, values.passData.customFields)
+                        (text) => 
+                          dialogNewFieldOnChangeHandler(text, values.passData.customFields || [])
                       } />
                     <View style={styles.viewDivider} />
                     <Text variant="titleSmall" style={styles.dialogError}>
@@ -252,7 +253,10 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                     <Button onPress={onDismissDialog}>Cancel</Button>
                     <Button
                       disabled={isEqual(newField, '') || showDialogError}
-                      onPress={() => addFieldsHandler(values.passData.customFields, setFieldValue)}>
+                      onPress={() =>
+                        addFieldsHandler(values.passData.customFields || [],
+                        setFieldValue
+                      )}>
                       Insert
                     </Button>
                   </Dialog.Actions>
