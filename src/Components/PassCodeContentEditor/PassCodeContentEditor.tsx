@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import { Formik } from 'formik';
 import { z } from 'zod';
-import { cloneDeep, isEqual, keys, map, some } from 'lodash';
+import { cloneDeep, isEmpty, isEqual, keys, map, some } from 'lodash';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
@@ -43,7 +43,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const [isSaving, setIsSaving] = useState(false);
   const [showCustomFieldModal, setShowCustomFieldModal] = useState(false);
   const [newField, setNewField] = useState('');
-  const [showDialogError, setShowDialogError] = useState(false);
+  const [showDialogError, setShowDialogError] = useState('');
 
   const securityTypeObj: SecurityType = {
     PASSWORD: {
@@ -99,15 +99,26 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     const isFieldAlreadyExists = some(clonedCustomFields, field =>
       isEqual(field.name, value),
     );
-    if (isFieldAlreadyExists) {
-      setShowDialogError(true);
-    } else {
-      setShowDialogError(false);
+    if (newField.length > 20) {
+      setShowDialogError('Field name must be no longer than 20 characters');
     }
+    else if (isFieldAlreadyExists) {
+      setShowDialogError('Field Exists Already');
+    } else {
+      setShowDialogError('');
+    }
+
+
+    // {newField.length > 20
+    //   ? 'Field name must be no longer than 20 characters'
+    //   : ''}
+    // {showDialogError
+    //   ? 'Field Exists Already'
+    //   : ''}
   };
 
   const onDismissDialog = () => {
-    setShowDialogError(false);
+    setShowDialogError('');
     setShowCustomFieldModal(false);
     setNewField('');
   };
@@ -123,10 +134,12 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   };
 
   const CustomFieldSchema = z.object({
+    // name not being used since field is on model when adding it.
+    // manual validation has being implemented instead but still left this one on schema
     name: z
       .string()
       .min(1, 'Field name must be at least 1 characters long')
-      .max(50, 'Field name must be no longer than 50 characters'),
+      .max(20, 'Field name must be no longer than 50 characters'),
     value: z
       .string()
       .min(1, 'Value name must be at least 1 characters long')
@@ -351,26 +364,23 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       }
                       error={
                         Boolean(
-                          touched.passData &&
-                          touched.passData.customFields &&
-                          touched.passData.customFields[customFields.name as any] &&
-                          errors.passData &&
-                          errors.passData.customFields &&
-                          errors.passData.customFields[index]
+                          touched
+                            .passData
+                            ?.customFields
+                            ?.[customFields.name as keyof typeof touched.passData.customFields] &&
+                          errors.passData?.customFields?.[index]
                         )
                       }
                       />
 
-                    {touched.passData &&
-                      touched.passData.customFields &&
-                      touched.passData.customFields[customFields.name as any] &&
-                      errors.passData &&
-                      errors.passData.customFields &&
-                      errors.passData.customFields[index] && (
-                        <Text style={styles.errorText}>
-                          {errors.passData.customFields[index] as any}
-                        </Text>
-                    )}
+                  {touched.passData
+                    ?.customFields
+                    ?.[customFields.name as keyof typeof touched.passData.customFields] &&
+                  errors.passData?.customFields?.[index] && (
+                    <Text style={styles.errorText}>
+                      {errors.passData.customFields[index] as string}
+                    </Text>
+                  )}
                   </React.Fragment>
                 ))}
 
@@ -430,20 +440,24 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                         onChangeText={
                           (text) =>
                             dialogNewFieldOnChangeHandler(text, values.passData.customFields || [])
-                        } />
+                        }
+                        error={!isEmpty(showDialogError)} />
                       <View style={styles.viewDivider} />
-                      <Text variant="titleSmall" style={styles.dialogError}>
-                        {showDialogError ? 'Field Exists Already' : ''}
-                      </Text>
+                      {!isEmpty(showDialogError) && (
+                        <Text variant="titleSmall" style={styles.dialogError}>
+                          {showDialogError}
+                        </Text>)}
                     </Dialog.Content>
                     <Dialog.Actions>
                       <Button onPress={onDismissDialog}>Cancel</Button>
                       <Button
-                        disabled={isEqual(newField, '') || showDialogError}
-                        onPress={() =>
-                          addFieldsHandler(values.passData.customFields || [],
-                          setFieldValue
-                        )}>
+                        disabled={
+                          isEqual(newField, '') || !isEmpty(showDialogError)
+                        }
+                        onPress={() => addFieldsHandler(
+                            values.passData.customFields || [],
+                            setFieldValue
+                          )}>
                         Insert
                       </Button>
                     </Dialog.Actions>
