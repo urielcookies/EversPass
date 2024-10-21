@@ -182,6 +182,7 @@ const PassCodeFields: FC = () => {
 
       {isEqual(values.securityType, 'CREDITCARD') && (
         <>
+          <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Cardholder Name"
             autoCapitalize="none"
