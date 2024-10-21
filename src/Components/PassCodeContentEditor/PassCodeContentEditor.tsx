@@ -59,6 +59,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       expirationDate: '',
       CVV: '',
       zipCode: '',
+      website: '',
       note: '',
       customFields: [],
     },
@@ -67,10 +68,12 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
       lastName: '',
       email: '',
       phone: '',
+      website: '',
       note: '',
       customFields: [],
     },
     SECURENOTE: {
+      website: '',
       note: '',
       customFields: [],
     },
@@ -191,7 +194,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         .min(1, 'First name must be at least 1 characters long')
         .max(2048, 'Website must be no longer than 2048 characters')
       : z.string().max(2048, 'Website must be no longer than 2048 characters').optional(),
-    note: isEqual(form.securityType, 'PASSWORD')
+    note: isEqual(form.securityType, 'SECURENOTE')
       ? z
         .string()
         .regex(
@@ -228,10 +231,20 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     } catch (e: any) {
       return e.errors.reduce((acc: any, error: any) => {
         if (isEqual(error.path[0], 'passData')) {
-          if (!acc.passData) {
-            acc.passData = {};
+          if (isEqual(error.path[1], 'customFields')) {
+            if (!acc.passData) {
+              acc.passData = {};
+            }
+            if (!acc.passData.customFields) {
+              acc.passData.customFields = {};
+            }
+            acc.passData.customFields[error.path[2]] = error.message;
+          } else {
+            if (!acc.passData) {
+              acc.passData = {};
+            }
+            acc.passData[error.path[1]] = error.message;
           }
-          acc.passData[error.path[1]] = error.message;
         } else {
           acc[error.path.join('.')] = error.message;
         }
@@ -304,6 +317,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                   onChangeText={handleChange('title')}
                   onBlur={handleBlur('title')}
                   error={Boolean(touched.title && errors.title)} />
+
                 {(touched.title && errors.title) && (
                   <Text style={styles.errorText}>{errors.title}</Text>
                 )}
@@ -324,6 +338,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       spellCheck={false}
                       label={customFields.name}
                       value={customFields.value}
+                      onBlur={handleBlur(`passData.customFields.${customFields.name}`)}
                       onChangeText={value => {
                         const clonedCustomFields = cloneDeep(
                           values.passData.customFields,
@@ -334,7 +349,28 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       right={
                         <TextInput.Icon icon="dots-vertical" onPress={console.log} />
                       }
-                    />
+                      error={
+                        Boolean(
+                          touched.passData &&
+                          touched.passData.customFields &&
+                          touched.passData.customFields[customFields.name as any] &&
+                          errors.passData &&
+                          errors.passData.customFields &&
+                          errors.passData.customFields[index]
+                        )
+                      }
+                      />
+
+                    {touched.passData &&
+                      touched.passData.customFields &&
+                      touched.passData.customFields[customFields.name as any] &&
+                      errors.passData &&
+                      errors.passData.customFields &&
+                      errors.passData.customFields[index] && (
+                        <Text style={styles.errorText}>
+                          {errors.passData.customFields[index] as any}
+                        </Text>
+                    )}
                   </React.Fragment>
                 ))}
 
@@ -365,7 +401,13 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                   autoCapitalize="none"
                   multiline
                   value={values.passData.note}
-                  onChangeText={handleChange('passData.note')} />
+                  onBlur={handleBlur('passData.note')}
+                  onChangeText={handleChange('passData.note')}
+                  error={Boolean(touched.passData?.note && touched.passData?.note)} />
+
+                {errors.passData?.note && (
+                  <Text style={styles.errorText}>{errors.passData?.note}</Text>
+                )}
 
                 <Portal>
                   <Dialog
