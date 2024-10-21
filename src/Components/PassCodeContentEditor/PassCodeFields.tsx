@@ -5,7 +5,6 @@ import {
   TextInput,
   Text,
   useTheme,
-  HelperText,
 } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
@@ -60,30 +59,31 @@ const PassCodeFields: FC = () => {
   };
 
   const errorsMap = {
-    username: !isEmpty(touched.passData) && (touched.passData as Password).username
+    username: !isEmpty(touched.passData) && (touched.passData as unknown as Password).username
       && !isEmpty(errors.passData) && (errors.passData as Password).username,
-    password: !isEmpty(touched.passData) && (touched.passData as Password).password
+    password: !isEmpty(touched.passData) && (touched.passData as unknown as Password).password
       && !isEmpty(errors.passData) && (errors.passData as Password).password,
-    cardholder: !isEmpty(touched.passData) && (touched.passData as CreditCard).cardholder
+    cardholder: !isEmpty(touched.passData) && (touched.passData as unknown as CreditCard).cardholder
       && !isEmpty(errors.passData) && (errors.passData as CreditCard).cardholder,
-    cardNumber: !isEmpty(touched.passData) && (touched.passData as CreditCard).cardNumber
+    cardNumber: !isEmpty(touched.passData) && (touched.passData as unknown as CreditCard).cardNumber
       && !isEmpty(errors.passData) && (errors.passData as CreditCard).cardNumber,
-    expirationDate: !isEmpty(touched.passData) && (touched.passData as CreditCard).expirationDate
+    expirationDate: !isEmpty(touched.passData)
+      && (touched.passData as unknown as CreditCard).expirationDate
       && !isEmpty(errors.passData) && (errors.passData as CreditCard).expirationDate,
-    CVV: !isEmpty(touched.passData) && (touched.passData as CreditCard).CVV
+    CVV: !isEmpty(touched.passData) && (touched.passData as unknown as CreditCard).CVV
       && !isEmpty(errors.passData) && (errors.passData as CreditCard).CVV,
-    zipCode: !isEmpty(touched.passData) && (touched.passData as CreditCard).zipCode
+    zipCode: !isEmpty(touched.passData) && (touched.passData as unknown as CreditCard).zipCode
       && !isEmpty(errors.passData) && (errors.passData as CreditCard).zipCode,
-    firstName: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).firstName
+    firstName: !isEmpty(touched.passData) && (touched.passData as unknown as PersonalInfo).firstName
       && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).firstName,
-    lastName: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).lastName
+    lastName: !isEmpty(touched.passData) && (touched.passData as unknown as PersonalInfo).lastName
       && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).lastName,
-    email: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).email
+    email: !isEmpty(touched.passData) && (touched.passData as unknown as PersonalInfo).email
       && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).email,
-    phone: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).phone
+    phone: !isEmpty(touched.passData) && (touched.passData as unknown as PersonalInfo).phone
       && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).phone,
     website: !isEmpty(touched.passData) && (
-      (touched.passData as Password | CreditCard | PersonalInfo).website
+      (touched.passData as unknown as Password | CreditCard | PersonalInfo).website
     ) && !isEmpty(errors.passData) && (
       (errors.passData as Password | CreditCard | PersonalInfo).website
     ),
@@ -216,13 +216,8 @@ const PassCodeFields: FC = () => {
             <Text style={styles.errorText}>{errorsMap.cardNumber}</Text>
           )}
 
-          <HelperText
-            style={styles.transpBgrView}
-            type="info"
-            padding="none"
-            visible>
-            * Required
-          </HelperText>
+          <TranspBgrViewProps paddingVertical={10} />
+
           <TextInput
             label="Expiration Date (MM/YY)"
             keyboardType="numeric"
