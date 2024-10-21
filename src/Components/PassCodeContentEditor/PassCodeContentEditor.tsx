@@ -16,7 +16,7 @@ import {
 } from 'react-native-paper';
 import { Formik } from 'formik';
 import { z } from 'zod';
-import { cloneDeep, isEqual, map, some } from 'lodash';
+import { cloneDeep, isEqual, keys, map, some } from 'lodash';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
@@ -209,7 +209,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const getSchema = (type: SecurityTypeKey) => {
     const specificFields = schemaMap[type] || {};
     return z.object({
-      id: z.number().optional(),
+      id: z.number(),
       title: z.string().min(2, 'Title must be at least 2 characters long'),
       securityType: z.string(),
       passData: z.object({
@@ -274,7 +274,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                     <Text variant="headlineSmall">{title[data.securityType]}</Text>
                   </View>
 
-                  {isEqual(Object.keys(errors).length, 0) ? (
+                  {isEqual(keys(errors).length, 0) ? (
                     <TouchableWithoutFeedback onPress={() => handleSubmit()}>
                       <View style={styles.edit}>
                         <MaterialCommunityIcons
@@ -307,8 +307,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                 {(touched.title && errors.title) && (
                   <Text style={styles.errorText}>{errors.title}</Text>
                 )}
-
-                <TranspBgrViewProps paddingVertical={5} />
 
                 <PassCodeFields />
 
