@@ -308,7 +308,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                   <Text style={styles.errorText}>{errors.title}</Text>
                 )}
 
-                <TranspBgrViewProps paddingVertical={10} />
+                <TranspBgrViewProps paddingVertical={5} />
 
                 <PassCodeFields />
 
