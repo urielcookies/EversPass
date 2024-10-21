@@ -165,8 +165,8 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     },
     PERSONALINFO: {
       firstName: z.
-        string().
-        min(1, 'First name must be at least 1 characters long')
+        string()
+        .min(1, 'First name must be at least 1 characters long')
         .max(50, 'First name must be no longer than 50 characters'),
       lastName: z
         .string().
@@ -181,8 +181,26 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   };
 
   const commonFields = {
-    website: z.string().max(2048, 'Website must be no longer than 2048 characters').optional(),
-    note: z.string().max(1000, 'Note must be no longer than 1000 characters').optional(),
+    website: isEqual(form.securityType, 'PASSWORD')
+      ? z
+        .string()
+        .regex(
+          /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+          'Website must be a valid URL'
+        )
+        .min(1, 'First name must be at least 1 characters long')
+        .max(2048, 'Website must be no longer than 2048 characters')
+      : z.string().max(2048, 'Website must be no longer than 2048 characters').optional(),
+    note: isEqual(form.securityType, 'PASSWORD')
+      ? z
+        .string()
+        .regex(
+          /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+          'Website must be a valid URL'
+        )
+        .min(1, 'First name must be at least 1 characters long')
+        .max(1000, 'Note must be no longer than 1000 characters')
+      : z.string().max(1000, 'Note must be no longer than 1000 characters').optional(),
     customFields: z.array(CustomFieldSchema).optional(),
   };
 
