@@ -1,4 +1,4 @@
-import { isEqual } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { FC, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
@@ -21,7 +21,7 @@ import {
 import { useFormikContext } from 'formik';
 
 const PassCodeFields: FC = () => {
-  const { values, setFieldValue } = useFormikContext<PassCodeType>();
+  const { errors, handleBlur, touched, values, setFieldValue } = useFormikContext<PassCodeType>();
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
@@ -59,6 +59,36 @@ const PassCodeFields: FC = () => {
     }
   };
 
+  const errorsMap = {
+    username: !isEmpty(touched.passData) && (touched.passData as Password).username
+      && !isEmpty(errors.passData) && (errors.passData as Password).username,
+    password: !isEmpty(touched.passData) && (touched.passData as Password).password
+      && !isEmpty(errors.passData) && (errors.passData as Password).password,
+    cardholder: !isEmpty(touched.passData) && (touched.passData as CreditCard).cardholder
+      && !isEmpty(errors.passData) && (errors.passData as CreditCard).cardholder,
+    cardNumber: !isEmpty(touched.passData) && (touched.passData as CreditCard).cardNumber
+      && !isEmpty(errors.passData) && (errors.passData as CreditCard).cardNumber,
+    expirationDate: !isEmpty(touched.passData) && (touched.passData as CreditCard).expirationDate
+      && !isEmpty(errors.passData) && (errors.passData as CreditCard).expirationDate,
+    CVV: !isEmpty(touched.passData) && (touched.passData as CreditCard).CVV
+      && !isEmpty(errors.passData) && (errors.passData as CreditCard).CVV,
+    zipCode: !isEmpty(touched.passData) && (touched.passData as CreditCard).zipCode
+      && !isEmpty(errors.passData) && (errors.passData as CreditCard).zipCode,
+    firstName: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).firstName
+      && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).firstName,
+    lastName: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).lastName
+      && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).lastName,
+    email: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).email
+      && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).email,
+    phone: !isEmpty(touched.passData) && (touched.passData as PersonalInfo).phone
+      && !isEmpty(errors.passData) && (errors.passData as PersonalInfo).phone,
+    website: !isEmpty(touched.passData) && (
+      (touched.passData as Password | CreditCard | PersonalInfo).website
+    ) && !isEmpty(errors.passData) && (
+      (errors.passData as Password | CreditCard | PersonalInfo).website
+    ),
+  };
+
   return (
     <View>
       {isEqual(values.securityType, 'PASSWORD') && (
@@ -69,13 +99,20 @@ const PassCodeFields: FC = () => {
           </Text>
           <TranspBgrViewProps paddingVertical={5} />
 
+          {/* (errors.passData as FormikErrors<Password>) */}
           <TextInput
             label="Email or Username*"
             autoCapitalize="none"
             keyboardType="email-address"
             spellCheck={false}
             value={(values.passData as Password).username}
-            onChangeText={(text) => setFieldValue('passData.username', text)} />
+            onChangeText={(text) => setFieldValue('passData.username', text)}
+            onBlur={handleBlur('passData.username')}
+            error={Boolean(errorsMap.username)} />
+
+            {errorsMap.username && (
+              <Text style={styles.errorText}>{errorsMap.username}</Text>
+            )}
 
           <TranspBgrViewProps paddingVertical={5} />
 
@@ -84,11 +121,17 @@ const PassCodeFields: FC = () => {
             value={(values.passData as Password).password}
             onChangeText={(text) => setFieldValue('passData.password', text)}
             secureTextEntry={!passwordVisibility}
+            onBlur={handleBlur('passData.password')}
+            error={Boolean(errorsMap.password)}
             right={
               <TextInput.Icon
                 icon={passwordVisibility ? 'eye' : 'eye-off'}
                 onPress={togglePasswordVisibility} />
             } />
+
+          {errorsMap.password && (
+            <Text style={styles.errorText}>{errorsMap.password}</Text>
+          )}
 
           {isEqual(
             checkPasswordStrength((values.passData as Password).password),
@@ -115,6 +158,7 @@ const PassCodeFields: FC = () => {
               Weak Password
             </Text>
           )}
+
           <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Website / App
@@ -126,7 +170,13 @@ const PassCodeFields: FC = () => {
             spellCheck={false}
             keyboardType="url"
             value={values.passData.website}
-            onChangeText={(text) => setFieldValue('passData.website', text)} />
+            onBlur={handleBlur('passData.website')}
+            onChangeText={(text) => setFieldValue('passData.website', text)}
+            error={Boolean(errorsMap.website)} />
+
+          {errorsMap.website && (
+            <Text style={styles.errorText}>{errorsMap.website}</Text>
+          )}
         </>
       )}
 
@@ -137,13 +187,34 @@ const PassCodeFields: FC = () => {
             autoCapitalize="none"
             spellCheck={false}
             value={(values.passData as CreditCard).cardholder}
-            onChangeText={(text) => setFieldValue('passData.cardholder', text)} />
+            onBlur={handleBlur('passData.cardholder')}
+            onChangeText={(text) => setFieldValue('passData.cardholder', text)}
+            error={Boolean(errorsMap.cardholder)} />
+
+          {errorsMap.cardholder && (
+            <Text style={styles.errorText}>{errorsMap.cardholder}</Text>
+          )}
+
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Card Number"
             keyboardType="numeric"
             value={(values.passData as CreditCard).cardNumber}
-            onChangeText={(text) => setFieldValue('passData.cardNumber', text)} />
+            onBlur={handleBlur('passData.cardNumber')}
+            onChangeText={(text) => {
+              // Remove non-digit characters
+              const cleaned = text.replace(/\D/g, '');
+              // Insert spaces after every 4 digits
+              const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+              setFieldValue('passData.cardNumber', formatted);
+            }}
+            error={Boolean(errorsMap.cardNumber)}
+          />
+
+          {errorsMap.cardNumber && (
+            <Text style={styles.errorText}>{errorsMap.cardNumber}</Text>
+          )}
+
           <HelperText
             style={styles.transpBgrView}
             type="info"
@@ -155,22 +226,47 @@ const PassCodeFields: FC = () => {
             label="Expiration Date (MM/YY)"
             keyboardType="numeric"
             value={(values.passData as CreditCard).expirationDate}
+            onBlur={handleBlur('passData.expirationDate')}
+            error={Boolean(errorsMap.expirationDate)}
             onChangeText={(value) => {
               const formattedValue = formatExpirationDate(value);
               setFieldValue('passData.expirationDate', formattedValue);
             }} />
+
+          {errorsMap.expirationDate && (
+            <Text style={styles.errorText}>{errorsMap.expirationDate}</Text>
+          )}
+
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="CVV"
             keyboardType="numeric"
             value={(values.passData as CreditCard).CVV}
-            onChangeText={(text) => setFieldValue('passData.CVV', text)} />
+            onBlur={handleBlur('passData.CVV')}
+            onChangeText={(text) => {
+              const numericText = text.replace(/\D/g, '');
+              setFieldValue('passData.CVV', numericText);
+            }}
+            error={Boolean(errorsMap.CVV)}
+          />
+
+          {errorsMap.CVV && (
+            <Text style={styles.errorText}>{errorsMap.CVV}</Text>
+          )}
+
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Zip Code"
             keyboardType="numeric"
             value={(values.passData as CreditCard).zipCode}
-            onChangeText={(text) => setFieldValue('passData.zipCode', text)} />
+            onBlur={handleBlur('passData.zipCode')}
+            onChangeText={(text) => setFieldValue('passData.zipCode', text)}
+            error={Boolean(errorsMap.zipCode)} />
+
+          {errorsMap.zipCode && (
+            <Text style={styles.errorText}>{errorsMap.zipCode}</Text>
+          )}
+
           <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Websites and Apps
@@ -182,7 +278,13 @@ const PassCodeFields: FC = () => {
             spellCheck={false}
             keyboardType="url"
             value={values.passData.website}
-            onChangeText={(text) => setFieldValue('passData.website', text)} />
+            onBlur={handleBlur('passData.website')}
+            onChangeText={(text) => setFieldValue('passData.website', text)}
+            error={Boolean(errorsMap.website)} />
+
+          {errorsMap.website && (
+            <Text style={styles.errorText}>{errorsMap.website}</Text>
+          )}
         </>
       )}
 
@@ -193,14 +295,23 @@ const PassCodeFields: FC = () => {
             autoCapitalize="none"
             spellCheck={false}
             value={(values.passData as PersonalInfo).firstName}
-            onChangeText={(text) => setFieldValue('passData.firstName', text)} />
+            onBlur={handleBlur('passData.firstName')}
+            onChangeText={(text) => setFieldValue('passData.firstName', text)}
+            error={Boolean(errorsMap.firstName)} />
+
+          {errorsMap.firstName && (
+            <Text style={styles.errorText}>{errorsMap.firstName}</Text>
+          )}
+
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Last Name"
             autoCapitalize="none"
             spellCheck={false}
             value={(values.passData as PersonalInfo).lastName}
-            onChangeText={(text) => setFieldValue('passData.lastName', text)} />
+            onBlur={handleBlur('passData.lastName')}
+            onChangeText={(text) => setFieldValue('passData.lastName', text)}
+            error={Boolean(errorsMap.lastName)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Email"
@@ -208,13 +319,17 @@ const PassCodeFields: FC = () => {
             spellCheck={false}
             keyboardType="email-address"
             value={(values.passData as PersonalInfo).email}
-            onChangeText={(text) => setFieldValue('passData.email', text)} />
+            onBlur={handleBlur('passData.email')}
+            onChangeText={(text) => setFieldValue('passData.email', text)}
+            error={Boolean(errorsMap.email)} />
           <TranspBgrViewProps paddingVertical={10} />
           <TextInput
             label="Phone"
             keyboardType="numeric"
             value={(values.passData as PersonalInfo).phone}
-            onChangeText={(text) => setFieldValue('passData.phone', text)} />
+            onBlur={handleBlur('passData.phone')}
+            onChangeText={(text) => setFieldValue('passData.phone', text)}
+            error={Boolean(errorsMap.phone)} />
           <TranspBgrViewProps paddingVertical={5} />
           <Text style={styles.transpBgrView} variant="titleMedium">
             Websites and Apps
@@ -226,7 +341,9 @@ const PassCodeFields: FC = () => {
             spellCheck={false}
             keyboardType="url"
             value={values.passData.website}
-            onChangeText={(text) => setFieldValue('passData.website', text)} />
+            onBlur={handleBlur('passData.website')}
+            onChangeText={(text) => setFieldValue('passData.website', text)}
+            error={Boolean(errorsMap.website)} />
         </>
       )}
     </View>
@@ -256,6 +373,10 @@ const themeStyle = (colors: MD3Colors) =>
       color: 'red',
       backgroundColor: colors.background,
     },
+    errorText: {
+      color: 'red',
+      fontSize: 12,
+    }
   });
 
 export default PassCodeFields;
