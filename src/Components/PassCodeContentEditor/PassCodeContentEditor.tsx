@@ -120,19 +120,32 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   };
 
   const CustomFieldSchema = z.object({
-    name: z.string().min(1, 'Field name must be at least 1 characters long'),
-    value: z.string().min(1, 'Value name must be at least 1 characters long'),
+    name: z
+      .string()
+      .min(1, 'Field name must be at least 1 characters long')
+      .max(50, 'Field name must be no longer than 50 characters'),
+    value: z
+      .string()
+      .min(1, 'Value name must be at least 1 characters long')
+      .max(1000, 'Value name must be no longer than 1000 characters'),
   });
 
   const schemaMap = {
     PASSWORD: {
-      username: z.string().min(1, 'Username must be at least 1 characters long'),
-      password: z.string().min(1, 'Password must be at least 1 characters long'),
+      username: z
+        .string()
+        .min(1, 'Username must be at least 1 characters long')
+        .max(50, 'Username must be no longer than 50 characters'),
+      password: z.
+        string()
+        .min(1, 'Password must be at least 1 characters long')
+        .max(128, 'Password must be no longer than 128 characters'),
     },
     CREDITCARD: {
       cardholder: z
         .string()
-        .min(1, 'Card holder name must be at least 1 characters long'),
+        .min(1, 'Card holder name must be at least 1 characters long')
+        .max(50, 'Card holder name must be no longer than 50 characters'),
       cardNumber: z
         .string()
         .min(13, 'Card Number must be at least 13 digits long')
@@ -147,19 +160,29 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         .max(4, 'CVV must be no longer than 4 digits'),
       zipCode: z
         .string()
-        .min(3, 'Zip/Postal code must be at least 3 characters long'),
+        .min(3, 'Zip/Postal code must be at least 3 characters long')
+        .max(10, 'Zip/Postal code must be no longer than 10 characters'),
     },
     PERSONALINFO: {
-      firstName: z.string().min(1, 'First name must be at least 1 characters long'),
-      lastName: z.string().min(1, 'Last name must be at least 1 characters long').optional(),
-      email: z.string().optional(),
-      phone: z.string().optional(),
+      firstName: z.
+        string().
+        min(1, 'First name must be at least 1 characters long')
+        .max(50, 'First name must be no longer than 50 characters'),
+      lastName: z
+        .string().
+        min(1, 'Last name must be at least 1 characters long').
+        max(50, 'Last name must be no longer than 50 characters').optional(),
+      email: z.
+        string().
+        max(254, 'Email must be no longer than 254 characters').optional(),
+      phone: z.string()
+        .max(15, 'Phone number must be no longer than 15 characters').optional(),
     },
   };
 
   const commonFields = {
-    website: z.string().optional(),
-    note: z.string().optional(),
+    website: z.string().max(2048, 'Website must be no longer than 2048 characters').optional(),
+    note: z.string().max(1000, 'Note must be no longer than 1000 characters').optional(),
     customFields: z.array(CustomFieldSchema).optional(),
   };
 
