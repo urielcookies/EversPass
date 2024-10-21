@@ -107,14 +107,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     } else {
       setShowDialogError('');
     }
-
-
-    // {newField.length > 20
-    //   ? 'Field name must be no longer than 20 characters'
-    //   : ''}
-    // {showDialogError
-    //   ? 'Field Exists Already'
-    //   : ''}
   };
 
   const onDismissDialog = () => {
