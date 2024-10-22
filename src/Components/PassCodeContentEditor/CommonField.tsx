@@ -45,6 +45,7 @@ const CommonField: React.FC<CommonFieldProps> = (props) => {
         </>
       )}
       <TextInput
+        style={isEqual(type, 'note') ? styles.note : null}
         label={capitalize(keyName)}
         autoCapitalize="none"
         multiline={isEqual(type, 'note')}

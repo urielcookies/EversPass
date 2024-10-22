@@ -182,9 +182,6 @@ const themeStyle = (colors: MD3Colors) =>
     transpBgrView: {
       backgroundColor: colors.background,
     },
-    note: {
-      maxHeight: 350,
-    },
     passwordStrengthTextSTRONG: {
       color: 'green',
       backgroundColor: colors.background,
