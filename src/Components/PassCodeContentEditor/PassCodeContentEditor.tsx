@@ -1,35 +1,30 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
+import { Text, useTheme } from 'react-native-paper';
+import { Formik } from 'formik';
+import { z } from 'zod';
+import { isEqual, keys } from 'lodash';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import {
-  ActivityIndicator,
   ScrollView,
   View,
   TouchableWithoutFeedback,
   StyleSheet,
 } from 'react-native';
-import {
-  Button,
-  Dialog,
-  Portal,
-  Text,
-  TextInput,
-  useTheme,
-} from 'react-native-paper';
-import { Formik } from 'formik';
-import { z } from 'zod';
-import { cloneDeep, isEmpty, isEqual, keys, map, some } from 'lodash';
-import { RouteProp, useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
-import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 import useStoredDataStore from '../../Store/useStoredDataStore';
-import {
-  PassCodeType,
-  SecurityType,
-  CustomField,
-} from '../../Configs/interfaces/PassCodeData';
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
-import PassCodeFields from './PassCodeFields';
+import PasswordEditor from './PasswordEditor/PasswordEditor';
+import CreditCardEditor from './PasswordEditor/CreditCardEditor';
+import PersonalInfoEditor from './PasswordEditor/PersonalInfoEditor';
+import SecureNoteEditor from './PasswordEditor/SecureNoteEditor';
+import {
+  CreditCardData,
+  PasswordData,
+  PersonalInfoData,
+  SecureNoteData,
+} from '../../Configs/interfaces/PassCodeData';
 
 
 const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
@@ -39,11 +34,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
-
-  const [isSaving, setIsSaving] = useState(false);
-  const [showCustomFieldModal, setShowCustomFieldModal] = useState(false);
-  const [newField, setNewField] = useState('');
-  const [showDialogError, setShowDialogError] = useState('');
 
   const securityTypeObj: SecurityType = {
     PASSWORD: {
@@ -86,37 +76,8 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     passData: data.id ? data.passData : securityTypeObj[data.securityType],
   };
 
-  const addFieldsHandler = (customFields: CustomField[], setField: any) => {
-    const clonedCustomFields = cloneDeep(customFields || []);
-    clonedCustomFields.push({ name: newField, value: '' });
-    setField('passData.customFields', clonedCustomFields)
-    onDismissDialog();
-  };
-
-  const dialogNewFieldOnChangeHandler = (value: string, customFields: CustomField[]) => {
-    setNewField(value);
-    const clonedCustomFields = cloneDeep(customFields);
-    const isFieldAlreadyExists = some(clonedCustomFields, field =>
-      isEqual(field.name, value),
-    );
-    if (newField.length > 20) {
-      setShowDialogError('Field name must be no longer than 20 characters');
-    }
-    else if (isFieldAlreadyExists) {
-      setShowDialogError('Field Exists Already');
-    } else {
-      setShowDialogError('');
-    }
-  };
-
-  const onDismissDialog = () => {
-    setShowDialogError('');
-    setShowCustomFieldModal(false);
-    setNewField('');
-  };
 
   const handleFormSubmit = (formikForm: PassCodeType) => {
-    setIsSaving(true);
     if (isEqual(formikForm.id, 0)) {
       addStoredSecret(formikForm);
     } else {
@@ -135,7 +96,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     value: z
       .string()
       .min(1, 'Value name must be at least 1 characters long')
-      .max(1000, 'Value name must be no longer than 1000 characters'),
+      .max(3, 'Value name must be no longer than 1000 characters'),
   });
 
   const schemaMap = {
@@ -196,17 +157,13 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
           /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
           'Website must be a valid URL'
         )
-        .min(1, 'First name must be at least 1 characters long')
-        .max(2048, 'Website must be no longer than 2048 characters')
-      : z.string().max(2048, 'Website must be no longer than 2048 characters').optional(),
+        .min(1, 'Website must be at least 1 characters long')
+        .max(2048, 'Website must be no longer than 254 characters')
+      : z.string().max(2048, 'Website must be no longer than 254 characters').optional(),
     note: isEqual(form.securityType, 'SECURENOTE')
       ? z
         .string()
-        .regex(
-          /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-          'Website must be a valid URL'
-        )
-        .min(1, 'First name must be at least 1 characters long')
+        .min(1, 'Note must be at least 1 characters long')
         .max(1000, 'Note must be no longer than 1000 characters')
       : z.string().max(1000, 'Note must be no longer than 1000 characters').optional(),
     customFields: z.array(CustomFieldSchema).optional(),
@@ -229,7 +186,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
 
   const PassCodeTypeSchema = getSchema(data.securityType as SecurityTypeKey);
-  const validate = (values: PassCodeType) => {
+  const validate = (values: any) => {
     try {
       PassCodeTypeSchema.parse(values);
       return {};
@@ -265,208 +222,62 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
           initialValues={form}
           validate={validate}
           onSubmit={handleFormSubmit}>
-            {({
-              handleBlur,
-              handleChange,
-              handleSubmit,
-              setFieldValue,
-              values,
-              errors,
-              touched,
-            }) => (
+            {({ handleSubmit, errors }) => (
               <>
-              <View style={styles.header}>
-                <View style={styles.navIcons}>
-                  <TouchableWithoutFeedback
-                    onPress={navigation.goBack}>
-                    <View style={styles.back}>
-                      <MaterialCommunityIcons
-                        name="arrow-left"
-                        size={30}
-                        color={colors.onSecondaryContainer}
-                      />
+                <View style={styles.header}>
+                  <View style={styles.navIcons}>
+                    <TouchableWithoutFeedback
+                      onPress={navigation.goBack}>
+                      <View style={styles.back}>
+                        <MaterialCommunityIcons
+                          name="arrow-left"
+                          size={30}
+                          color={colors.onSecondaryContainer}
+                        />
+                      </View>
+                    </TouchableWithoutFeedback>
+
+                    <View style={styles.title}>
+                      <Text variant="headlineSmall">{title[data.securityType]}</Text>
                     </View>
-                  </TouchableWithoutFeedback>
 
-                  <View style={styles.title}>
-                    <Text variant="headlineSmall">{title[data.securityType]}</Text>
-                  </View>
-
-                  {isEqual(keys(errors).length, 0) ? (
-                    <TouchableWithoutFeedback onPress={() => handleSubmit()}>
-                      <View style={styles.edit}>
+                    {isEqual(keys(errors).length, 0) ? (
+                      <TouchableWithoutFeedback onPress={() => handleSubmit()}>
+                        <View style={styles.edit}>
+                          <MaterialCommunityIcons
+                            name="check"
+                            size={30}
+                            color={colors.onSecondaryContainer}
+                          />
+                        </View>
+                      </TouchableWithoutFeedback>
+                    ) : (
+                      <View style={[styles.edit, { opacity: 0.5 }]}>
                         <MaterialCommunityIcons
                           name="check"
                           size={30}
                           color={colors.onSecondaryContainer}
                         />
                       </View>
-                    </TouchableWithoutFeedback>
-                  ) : (
-                    <View style={[styles.edit, { opacity: 0.5 }]}>
-                      <MaterialCommunityIcons
-                        name="check"
-                        size={30}
-                        color={colors.onSecondaryContainer}
-                      />
-                    </View>
-                  )}
+                    )}
+                  </View>
                 </View>
-              </View>
-
-              <View style={styles.content}>
-                <TextInput
-                  label="Title*"
-                  autoCapitalize="none"
-                  value={values.title}
-                  onChangeText={handleChange('title')}
-                  onBlur={handleBlur('title')}
-                  error={Boolean(touched.title && errors.title)} />
-
-                {(touched.title && errors.title) && (
-                  <Text style={styles.errorText}>{errors.title}</Text>
+                {isEqual(form.securityType, 'PASSWORD') && (
+                  <PasswordEditor passwordId={form.id as number} />
                 )}
-
-                <PassCodeFields />
-
-                <TranspBgrViewProps paddingVertical={5} />
-
-                <Text style={styles.transpBgrView} variant="titleMedium">
-                  Custom Fields
-                </Text>
-                <TranspBgrViewProps paddingVertical={5} />
-                {map(values.passData.customFields, (customFields, index) => (
-                  <React.Fragment key={index}>
-                    <TranspBgrViewProps paddingVertical={5} />
-                    <TextInput
-                      autoCapitalize="none"
-                      spellCheck={false}
-                      label={customFields.name}
-                      value={customFields.value}
-                      onBlur={handleBlur(`passData.customFields.${customFields.name}`)}
-                      onChangeText={value => {
-                        const clonedCustomFields = cloneDeep(
-                          values.passData.customFields,
-                        ) as CustomField[];
-                        clonedCustomFields[index].value = value;
-                        setFieldValue('passData.customFields', clonedCustomFields);
-                      }}
-                      right={
-                        <TextInput.Icon icon="dots-vertical" onPress={console.log} />
-                      }
-                      error={
-                        Boolean(
-                          touched
-                            .passData
-                            ?.customFields
-                            ?.[customFields.name as keyof typeof touched.passData.customFields] &&
-                          errors.passData?.customFields?.[index]
-                        )
-                      }
-                      />
-
-                  {touched.passData
-                    ?.customFields
-                    ?.[customFields.name as keyof typeof touched.passData.customFields] &&
-                  errors.passData?.customFields?.[index] && (
-                    <Text style={styles.errorText}>
-                      {errors.passData.customFields[index] as string}
-                    </Text>
-                  )}
-                  </React.Fragment>
-                ))}
-
-                <TranspBgrViewProps paddingVertical={5} />
-
-                <Button
-                  style={styles.addFieldBtn}
-                  icon={({ color, size }) => (
-                    <MaterialCommunityIcons
-                      name="plus-circle-outline"
-                      color={color}
-                      size={size + 5}
-                    />
-                  )}
-                  mode="contained"
-                  onPress={() => setShowCustomFieldModal(true)}>
-                  Add Field
-                </Button>
-
-                <TranspBgrViewProps paddingVertical={5} />
-
-                <Text style={styles.transpBgrView} variant="titleMedium">
-                  Notes
-                </Text>
-                <TextInput
-                  style={styles.note}
-                  label="Notes"
-                  autoCapitalize="none"
-                  multiline
-                  value={values.passData.note}
-                  onBlur={handleBlur('passData.note')}
-                  onChangeText={handleChange('passData.note')}
-                  error={Boolean(touched.passData?.note && touched.passData?.note)} />
-
-                {errors.passData?.note && (
-                  <Text style={styles.errorText}>{errors.passData?.note}</Text>
+                {isEqual(form.securityType, 'PASSWORD') && (
+                  <CreditCardEditor />
                 )}
-
-                <Portal>
-                  <Dialog
-                    style={styles.dialog}
-                    onDismiss={onDismissDialog}
-                    visible={showCustomFieldModal}>
-                    <Dialog.Title style={styles.dialogTitle}>Field Name</Dialog.Title>
-                    <Dialog.Content>
-                      <Text variant="bodyLarge">
-                        Try to use the same name as the website or app field you'd
-                        like to autofill
-                      </Text>
-                      <View style={styles.viewDivider} />
-                      <TextInput
-                        autoFocus
-                        autoCapitalize="none"
-                        spellCheck={false}
-                        label="Field Name"
-                        value={newField}
-                        onChangeText={
-                          (text) =>
-                            dialogNewFieldOnChangeHandler(text, values.passData.customFields || [])
-                        }
-                        error={!isEmpty(showDialogError)} />
-                      <View style={styles.viewDivider} />
-                      {!isEmpty(showDialogError) && (
-                        <Text variant="titleSmall" style={styles.dialogError}>
-                          {showDialogError}
-                        </Text>)}
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                      <Button onPress={onDismissDialog}>Cancel</Button>
-                      <Button
-                        disabled={
-                          isEqual(newField, '') || !isEmpty(showDialogError)
-                        }
-                        onPress={() => addFieldsHandler(
-                            values.passData.customFields || [],
-                            setFieldValue
-                          )}>
-                        Insert
-                      </Button>
-                    </Dialog.Actions>
-                  </Dialog>
-                </Portal>
-              </View>
-            </>
-          )}
+                {isEqual(form.securityType, 'PERSONALINFO') && (
+                  <PersonalInfoEditor />
+                )}
+                {isEqual(form.securityType, 'SECURENOTE') && (
+                  <SecureNoteEditor />
+                )}
+              </>
+            )}
         </Formik>
       </ScrollView>
-      {isSaving && (
-        <ActivityIndicator
-          style={styles.loading}
-          size="large"
-          color={colors.onSecondaryContainer}
-        />
-      )}
     </ViewWrapper>
   );
 };
@@ -510,53 +321,9 @@ const themeStyle = (colors: MD3Colors) =>
       alignItems: 'center',
       justifyContent: 'center',
     },
-    dialog: {
-      borderRadius: 0,
-    },
-    dialogTitle: {
-      textAlign: 'center',
-    },
-    dialogError: {
-      color: 'red',
-    },
-    content: {
-      backgroundColor: colors.onPrimary,
-      borderRadius: 10,
-      marginLeft: 10,
-      marginRight: 10,
-      marginTop: 7.5,
-      marginBottom: 7.5,
-    },
-    icon: {
-      color: colors.onSecondaryContainer,
-      fontSize: 20,
-    },
-    transpBgrView: {
-      backgroundColor: colors.background,
-    },
-    addFieldBtn: {
-      borderRadius: 0,
-    },
-    viewDivider: {
-      height: 10,
-    },
-    note: {
-      maxHeight: 350,
-    },
-    loading: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
-    }
   });
+
+type PassCodeType = PasswordData | CreditCardData | PersonalInfoData | SecureNoteData;
 
 type RootStackParamList = {
   PassCodeContent: { data: PassCodeType };
