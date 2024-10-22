@@ -186,7 +186,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
 
   const PassCodeTypeSchema = getSchema(data.securityType as SecurityTypeKey);
-  const validate = (values: any) => {
+  const validate = (values: PassCodeType) => {
     try {
       PassCodeTypeSchema.parse(values);
       return {};
