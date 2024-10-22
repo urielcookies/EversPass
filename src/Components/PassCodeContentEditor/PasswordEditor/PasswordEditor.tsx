@@ -73,10 +73,10 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
 
   return (
     <View style={styles.content}>
-    <CommonField
-      keyName="title"
-      type="simple"
-      value={values.title} />
+      <CommonField
+        keyName="title"
+        type="simple"
+        value={values.title} />
 
       <TranspBgrViewProps paddingVertical={10} />
 
