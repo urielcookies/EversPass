@@ -1,8 +1,8 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { Text, useTheme } from 'react-native-paper';
 import { Formik } from 'formik';
 import { z } from 'zod';
-import { isEqual, keys } from 'lodash';
+import { isEmpty, isEqual } from 'lodash';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import {
@@ -223,7 +223,6 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         onSubmit={handleFormSubmit}>
           {({ handleSubmit, errors }) => (
             <ScrollView stickyHeaderIndices={[0]}>
-              {console.log('errors-->>', errors)}
               <View style={styles.header}>
                 <View style={styles.navIcons}>
                   <TouchableWithoutFeedback
@@ -241,7 +240,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                     <Text variant="headlineSmall">{title[data.securityType]}</Text>
                   </View>
 
-                  {isEqual(keys(errors).length, 0) ? (
+                  {isEmpty(errors) ? (
                     <TouchableWithoutFeedback onPress={() => handleSubmit()}>
                       <View style={styles.edit}>
                         <MaterialCommunityIcons
