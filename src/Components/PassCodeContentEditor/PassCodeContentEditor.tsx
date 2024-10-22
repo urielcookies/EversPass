@@ -125,6 +125,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         .length(5, 'Expiration date must be in MM/YY format'),
       CVV: z
         .string()
+        .regex(/^\d+$/, 'CVV must only contain numeric digits')
         .min(3, 'CVV must be at least 3 digits long')
         .max(4, 'CVV must be no longer than 4 digits'),
       zipCode: z
