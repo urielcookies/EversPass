@@ -223,6 +223,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         onSubmit={handleFormSubmit}>
           {({ handleSubmit, errors }) => (
             <ScrollView stickyHeaderIndices={[0]}>
+              {console.log('errors-->>', errors)}
               <View style={styles.header}>
                 <View style={styles.navIcons}>
                   <TouchableWithoutFeedback
