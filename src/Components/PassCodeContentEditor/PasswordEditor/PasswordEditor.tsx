@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { cloneDeep, find, isEqual, map } from 'lodash';
+import { find, isEqual } from 'lodash';
 import { View, StyleSheet } from 'react-native';
 import {
-  Button,
-  Dialog,
-  Portal,
   Text,
   TextInput,
   useTheme,
@@ -13,32 +10,32 @@ import { useFormikContext } from 'formik';
 
 import TranspBgrViewProps from '../../../RenderProps/TranspBgrView';
 import { getLocalData } from '../../../Configs/utils/storeData';
-import { CustomField, PasswordData } from '../../../Configs/interfaces/PassCodeData';
+import { PasswordData } from '../../../Configs/interfaces/PassCodeData';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import React from 'react';
 import CustomFieldEditor from '../CustomFieldEditor';
+import CommonField from '../CommonField';
 
 interface PasswordEditorProps {
   passwordId?: number;
 }
 
 const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
-  const [activeData, setActiveData] = useState<PasswordData>({
-    id: 0,
-    title: '',
-    securityType: 'PASSWORD',
-    passData: {
-      username: '',
-      password: '',
-      website: '',
-      note: '',
-      customFields: [],
-    },
-  });
+  // const [activeData, setActiveData] = useState<PasswordData>({
+  //   id: 0,
+  //   title: '',
+  //   securityType: 'PASSWORD',
+  //   passData: {
+  //     username: '',
+  //     password: '',
+  //     website: '',
+  //     note: '',
+  //     customFields: [],
+  //   },
+  // });
   const {
     errors,
     handleBlur,
-    handleChange,
     setFieldValue,
     touched,
     values,
@@ -48,16 +45,16 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
   const styles = themeStyle(colors);
   const [passwordVisibility, setPasswordVisibility] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getLocalData('stored-secrets');
-      const selectedData = find(data, ({ id }) => isEqual(id, passwordId));
-      setActiveData(selectedData);
-    };
-    if (passwordId) {
-      fetchData();
-    }
-  }, [passwordId]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const data = await getLocalData('stored-secrets');
+  //     const selectedData = find(data, ({ id }) => isEqual(id, passwordId));
+  //     setActiveData(selectedData);
+  //   };
+  //   if (passwordId) {
+  //     fetchData();
+  //   }
+  // }, [passwordId]);
 
   const checkPasswordStrength = (password: string) => {
     // Define criteria for different strength levels
@@ -76,17 +73,10 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
 
   return (
     <View style={styles.content}>
-      <TextInput
-        label="Title"
-        autoCapitalize="none"
-        value={values.title}
-        onChangeText={handleChange('title')}
-        onBlur={handleBlur('title')}
-        error={Boolean(touched.title && errors.title)} />
-
-      {(touched.title && errors.title) && (
-        <Text style={styles.errorText}>{errors.title}</Text>
-      )}
+    <CommonField
+      keyName="title"
+      type="simple"
+      value={values.title} />
 
       <TranspBgrViewProps paddingVertical={10} />
 
@@ -155,24 +145,13 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
         </Text>
       )}
 
-      <TranspBgrViewProps paddingVertical={5} />
-      <Text style={styles.transpBgrView} variant="titleMedium">
-        Website / App
-      </Text>
-
-      <TextInput
-        label="Website*"
-        autoCapitalize="none"
-        spellCheck={false}
+      <CommonField
+        passData
+        keyName="website"
+        type="simple"
+        title="Website / App"
         keyboardType="url"
-        value={values.passData.website}
-        onBlur={handleBlur('passData.website')}
-        onChangeText={(text) => setFieldValue('passData.website', text)}
-        error={Boolean(touched.passData?.website && errors.passData?.website)} />
-
-      {touched.passData?.website && errors.passData?.website && (
-        <Text style={styles.errorText}>{errors.passData.website}</Text>
-      )}
+        value={values.passData.website} />
 
       <TranspBgrViewProps paddingVertical={5} />
 
@@ -180,22 +159,12 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
 
       <TranspBgrViewProps paddingVertical={5} />
 
-      <Text style={styles.transpBgrView} variant="titleMedium">
-        Notes
-      </Text>
-      <TextInput
-        style={styles.note}
-        label="Notes"
-        autoCapitalize="none"
-        multiline
-        value={values.passData.note}
-        onBlur={handleBlur('passData.note')}
-        onChangeText={handleChange('passData.note')}
-        error={Boolean(touched.passData?.note && errors.passData?.note)} />
-
-      {touched.passData?.note && errors.passData?.note && (
-        <Text style={styles.errorText}>{errors.passData.note}</Text>
-      )}
+      <CommonField
+        passData
+        keyName="note"
+        type="note"
+        title="Notes"
+        value={values.passData.note} />
     </View>
   );
 };
