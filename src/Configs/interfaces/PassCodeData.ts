@@ -1,12 +1,40 @@
-interface PassCodeData {
-  title: string;
-  passData: Password | CreditCard | PersonalInfo | SecureNote;
-}
+// interface PassCodeData {
+//   title: string;
+//   passData: Password | CreditCard | PersonalInfo | SecureNote;
+// }
 
-interface PassCodeType extends PassCodeData {
+interface PasswordData {
   id: number;
   securityType: string;
+  title: string;
+  passData: Password;
 }
+
+interface CreditCardData {
+  id: number;
+  securityType: string;
+  title: string;
+  passData: CreditCard;
+}
+
+interface PersonalInfoData {
+  id: number;
+  securityType: string;
+  title: string;
+  passData: PersonalInfo;
+}
+
+interface SecureNoteData {
+  id: number;
+  securityType: string;
+  title: string;
+  passData: SecureNote;
+}
+
+// interface PassCodeType extends PassCodeData {
+//   id: number;
+//   securityType: string;
+// }
 
 interface Password {
   username: string;
@@ -47,17 +75,22 @@ interface CustomField {
   [key: string]: string;
 }
 
-interface SecurityType {
-  [key: string]: Password | CreditCard | PersonalInfo | SecureNote;
-}
+// interface SecurityType {
+//   [key: string]: Password | CreditCard | PersonalInfo | SecureNote;
+// }
 
 export type {
-  PassCodeType,
-  PassCodeData,
-  Password,
-  CreditCard,
-  PersonalInfo,
+  // PassCodeType,
+  // PassCodeData,
+  // Password,
+  // CreditCard,
+  // PersonalInfo,
+  // CustomField,
+  // SecureNote,
+  // SecurityType,
+  PasswordData,
+  CreditCardData,
+  PersonalInfoData,
+  SecureNoteData,
   CustomField,
-  SecureNote,
-  SecurityType,
 };
