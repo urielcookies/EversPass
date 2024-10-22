@@ -265,7 +265,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                 {isEqual(form.securityType, 'PASSWORD') && (
                   <PasswordEditor passwordId={form.id as number} />
                 )}
-                {isEqual(form.securityType, 'PASSWORD') && (
+                {isEqual(form.securityType, 'CREDITCARD') && (
                   <CreditCardEditor />
                 )}
                 {isEqual(form.securityType, 'PERSONALINFO') && (
