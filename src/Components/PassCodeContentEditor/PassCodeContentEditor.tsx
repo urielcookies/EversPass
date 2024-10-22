@@ -96,7 +96,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     value: z
       .string()
       .min(1, 'Value name must be at least 1 characters long')
-      .max(3, 'Value name must be no longer than 1000 characters'),
+      .max(1000, 'Value name must be no longer than 1000 characters'),
   });
 
   const schemaMap = {
