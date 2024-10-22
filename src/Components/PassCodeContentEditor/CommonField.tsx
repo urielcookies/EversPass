@@ -1,6 +1,6 @@
 import { capitalize, isEmpty, isEqual } from 'lodash';
 import { useFormikContext } from 'formik';
-import { StyleSheet } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import { Text, TextInput, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
@@ -16,13 +16,14 @@ interface CommonFieldProps {
   passData?: boolean;
   title?: string | boolean;
   keyboardType?: 'numeric' | 'url';
+  customStyles?: StyleProp<ViewStyle>;
   type: 'simple' | 'note';
   keyName: string;
   value: string;
 }
 
 const CommonField: React.FC<CommonFieldProps> = (props) => {
-  const { passData, title, type, keyName, keyboardType, value } = props;
+  const { passData, customStyles, title, type, keyName, keyboardType, value } = props;
   const {
     errors,
     handleBlur,
@@ -45,7 +46,7 @@ const CommonField: React.FC<CommonFieldProps> = (props) => {
         </>
       )}
       <TextInput
-        style={isEqual(type, 'note') ? styles.note : null}
+        style={[isEqual(type, 'note') ? styles.note : null, customStyles]}
         label={capitalize(keyName)}
         autoCapitalize="none"
         multiline={isEqual(type, 'note')}
