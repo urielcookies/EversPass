@@ -217,67 +217,65 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 
   return (
     <ViewWrapper notchProtection>
-      <ScrollView>
-        <Formik
-          initialValues={form}
-          validate={validate}
-          onSubmit={handleFormSubmit}>
-            {({ handleSubmit, errors }) => (
-              <>
-                <View style={styles.header}>
-                  <View style={styles.navIcons}>
-                    <TouchableWithoutFeedback
-                      onPress={navigation.goBack}>
-                      <View style={styles.back}>
-                        <MaterialCommunityIcons
-                          name="arrow-left"
-                          size={30}
-                          color={colors.onSecondaryContainer}
-                        />
-                      </View>
-                    </TouchableWithoutFeedback>
-
-                    <View style={styles.title}>
-                      <Text variant="headlineSmall">{title[data.securityType]}</Text>
+      <Formik
+        initialValues={form}
+        validate={validate}
+        onSubmit={handleFormSubmit}>
+          {({ handleSubmit, errors }) => (
+            <ScrollView stickyHeaderIndices={[0]}>
+              <View style={styles.header}>
+                <View style={styles.navIcons}>
+                  <TouchableWithoutFeedback
+                    onPress={navigation.goBack}>
+                    <View style={styles.back}>
+                      <MaterialCommunityIcons
+                        name="arrow-left"
+                        size={30}
+                        color={colors.onSecondaryContainer}
+                      />
                     </View>
+                  </TouchableWithoutFeedback>
 
-                    {isEqual(keys(errors).length, 0) ? (
-                      <TouchableWithoutFeedback onPress={() => handleSubmit()}>
-                        <View style={styles.edit}>
-                          <MaterialCommunityIcons
-                            name="check"
-                            size={30}
-                            color={colors.onSecondaryContainer}
-                          />
-                        </View>
-                      </TouchableWithoutFeedback>
-                    ) : (
-                      <View style={[styles.edit, { opacity: 0.5 }]}>
+                  <View style={styles.title}>
+                    <Text variant="headlineSmall">{title[data.securityType]}</Text>
+                  </View>
+
+                  {isEqual(keys(errors).length, 0) ? (
+                    <TouchableWithoutFeedback onPress={() => handleSubmit()}>
+                      <View style={styles.edit}>
                         <MaterialCommunityIcons
                           name="check"
                           size={30}
                           color={colors.onSecondaryContainer}
                         />
                       </View>
-                    )}
-                  </View>
+                    </TouchableWithoutFeedback>
+                  ) : (
+                    <View style={[styles.edit, { opacity: 0.5 }]}>
+                      <MaterialCommunityIcons
+                        name="check"
+                        size={30}
+                        color={colors.onSecondaryContainer}
+                      />
+                    </View>
+                  )}
                 </View>
-                {isEqual(form.securityType, 'PASSWORD') && (
-                  <PasswordEditor passwordId={form.id as number} />
-                )}
-                {isEqual(form.securityType, 'CREDITCARD') && (
-                  <CreditCardEditor />
-                )}
-                {isEqual(form.securityType, 'PERSONALINFO') && (
-                  <PersonalInfoEditor />
-                )}
-                {isEqual(form.securityType, 'SECURENOTE') && (
-                  <SecureNoteEditor />
-                )}
-              </>
-            )}
-        </Formik>
-      </ScrollView>
+              </View>
+              {isEqual(form.securityType, 'PASSWORD') && (
+                <PasswordEditor passwordId={form.id as number} />
+              )}
+              {isEqual(form.securityType, 'CREDITCARD') && (
+                <CreditCardEditor />
+              )}
+              {isEqual(form.securityType, 'PERSONALINFO') && (
+                <PersonalInfoEditor />
+              )}
+              {isEqual(form.securityType, 'SECURENOTE') && (
+                <SecureNoteEditor />
+              )}
+            </ScrollView>
+          )}
+      </Formik>
     </ViewWrapper>
   );
 };
