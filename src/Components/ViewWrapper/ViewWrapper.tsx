@@ -18,7 +18,7 @@ const ViewWrapper = (props: Props) => {
 	const notchSettings = notchProtection
 	? {
 		paddingTop: safeAreaInsets.top,
-		// paddingBottom: safeAreaInsets.bottom,
+		paddingBottom: safeAreaInsets.bottom,
 		paddingLeft: safeAreaInsets.left,
 		paddingRight: safeAreaInsets.right,
 	}
@@ -28,7 +28,7 @@ const ViewWrapper = (props: Props) => {
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-			...notchSettings
+			...notchSettings,
     },
   });
   return <View style={styles.container}>{children}</View>

@@ -1,7 +1,7 @@
 import { capitalize, isEmpty, isEqual } from 'lodash';
 import { useFormikContext } from 'formik';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
-import { Text, TextInput, useTheme } from 'react-native-paper';
+import { HelperText, Text, TextInput, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
@@ -71,16 +71,16 @@ const CommonField: React.FC<CommonFieldProps> = (props) => {
         ? (
           touched.passData?.[keyName as keyof typeof touched.passData] &&
               errors.passData?.[keyName as keyof typeof errors.passData] && (
-            <Text style={styles.errorText}>
-              {errors.passData?.[keyName as keyof typeof errors.passData] as string}
-            </Text>
+                <HelperText type="error" style={styles.helperText}>
+                  {errors.passData?.[keyName as keyof typeof errors.passData] as string}
+                </HelperText>
           )
         )
         : (touched[keyName as keyof typeof touched] &&
           errors[keyName as keyof typeof errors]) && (
-          <Text style={styles.errorText}>
+          <HelperText type="error" style={styles.helperText}>
             {errors[keyName as keyof typeof errors] as string}
-          </Text>
+          </HelperText>
       ))}
     </>
   );
@@ -106,9 +106,8 @@ const themeStyle = (colors: MD3Colors) =>
     viewDivider: {
       height: 10,
     },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
+    helperText: {
+      backgroundColor: colors.background,
     },
     note: {
       maxHeight: 350,
