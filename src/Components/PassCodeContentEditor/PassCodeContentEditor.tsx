@@ -222,7 +222,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
         initialValues={form}
         validate={validate}
         onSubmit={handleFormSubmit}>
-          {({ handleSubmit, errors }) => (
+          {({ handleSubmit, errors, values }) => (
             <ScrollView stickyHeaderIndices={[0]}>
               <View style={styles.header}>
                 <View style={styles.navIcons}>
@@ -240,26 +240,25 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                   <View style={styles.title}>
                     <Text variant="headlineSmall">{title[data.securityType]}</Text>
                   </View>
-
-                  {isEmpty(errors) ? (
-                    <TouchableWithoutFeedback onPress={() => handleSubmit()}>
-                      <View style={styles.edit}>
-                        <MaterialCommunityIcons
-                          name="check"
-                          size={30}
-                          color={colors.onSecondaryContainer}
-                        />
-                      </View>
-                    </TouchableWithoutFeedback>
-                  ) : (
-                    <View style={[styles.edit, { opacity: 0.5 }]}>
+                  {!isEmpty(errors) || isEqual(JSON.stringify(values), JSON.stringify(form)) ? (
+                  <View style={[styles.edit, { opacity: 0.5 }]}>
+                    <MaterialCommunityIcons
+                      name="check"
+                      size={30}
+                      color={colors.onSecondaryContainer}
+                    />
+                  </View>
+                ) : (
+                  <TouchableWithoutFeedback onPress={() => handleSubmit()}>
+                    <View style={styles.edit}>
                       <MaterialCommunityIcons
                         name="check"
                         size={30}
                         color={colors.onSecondaryContainer}
                       />
                     </View>
-                  )}
+                  </TouchableWithoutFeedback>
+                )}
                 </View>
               </View>
               {isEqual(form.securityType, 'PASSWORD') && (
