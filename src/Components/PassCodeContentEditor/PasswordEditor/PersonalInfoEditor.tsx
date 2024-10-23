@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import {
+  HelperText,
   Text,
   TextInput,
   useTheme,
@@ -50,7 +51,9 @@ const PersonalInfoEditor: React.FC = () => {
         error={Boolean(touched.passData?.firstName && errors.passData?.firstName)} />
 
       {touched.passData?.firstName && errors.passData?.firstName && (
-        <Text style={styles.errorText}>{errors.passData.firstName}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.firstName}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -64,7 +67,9 @@ const PersonalInfoEditor: React.FC = () => {
         error={Boolean(touched.passData?.lastName && errors.passData?.lastName)} />
 
       {touched.passData?.lastName && errors.passData?.lastName && (
-        <Text style={styles.errorText}>{errors.passData.lastName}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.lastName}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -79,7 +84,9 @@ const PersonalInfoEditor: React.FC = () => {
         error={Boolean(touched.passData?.email && errors.passData?.email)} />
 
       {touched.passData?.email && errors.passData?.email && (
-        <Text style={styles.errorText}>{errors.passData.email}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.email}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -92,7 +99,9 @@ const PersonalInfoEditor: React.FC = () => {
         error={Boolean(touched.passData?.phone && errors.passData?.phone)} />
 
       {touched.passData?.phone && errors.passData?.phone && (
-        <Text style={styles.errorText}>{errors.passData.phone}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.phone}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -133,9 +142,8 @@ const themeStyle = (colors: MD3Colors) =>
     transpBgrView: {
       backgroundColor: colors.background,
     },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
+    helperText: {
+      backgroundColor: colors.background,
     },
   });
 

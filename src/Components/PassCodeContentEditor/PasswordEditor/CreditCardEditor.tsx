@@ -1,5 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import {
+  HelperText,
   Text,
   TextInput,
   useTheme,
@@ -63,7 +64,9 @@ const CreditCardEditor: React.FC = () => {
         error={Boolean(touched.passData?.cardholder && errors.passData?.cardholder)} />
 
       {touched.passData?.cardholder && errors.passData?.cardholder && (
-        <Text style={styles.errorText}>{errors.passData.cardholder}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.cardholder}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -82,7 +85,9 @@ const CreditCardEditor: React.FC = () => {
         error={Boolean(touched.passData?.cardNumber && errors.passData?.cardNumber)} />
 
       {touched.passData?.cardNumber && errors.passData?.cardNumber && (
-        <Text style={styles.errorText}>{errors.passData.cardNumber}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.cardNumber}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -99,7 +104,9 @@ const CreditCardEditor: React.FC = () => {
         error={Boolean(touched.passData?.expirationDate && errors.passData?.expirationDate)} />
 
       {touched.passData?.expirationDate && errors.passData?.expirationDate && (
-        <Text style={styles.errorText}>{errors.passData.expirationDate}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.expirationDate}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -115,7 +122,9 @@ const CreditCardEditor: React.FC = () => {
         error={Boolean(touched.passData?.CVV && errors.passData?.CVV)} />
 
       {touched.passData?.CVV && errors.passData?.CVV && (
-        <Text style={styles.errorText}>{errors.passData.CVV}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.CVV}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -128,9 +137,10 @@ const CreditCardEditor: React.FC = () => {
         error={Boolean(touched.passData?.zipCode && errors.passData?.zipCode)} />
 
       {touched.passData?.zipCode && errors.passData?.zipCode && (
-        <Text style={styles.errorText}>{errors.passData.zipCode}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.zipCode}
+        </HelperText>
       )}
-
 
       <CommonField
         passData
@@ -169,9 +179,8 @@ const themeStyle = (colors: MD3Colors) =>
     transpBgrView: {
       backgroundColor: colors.background,
     },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
+    helperText: {
+      backgroundColor: colors.background,
     },
   });
 

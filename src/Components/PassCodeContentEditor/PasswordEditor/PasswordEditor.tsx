@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { find, isEqual } from 'lodash';
 import { View, StyleSheet } from 'react-native';
 import {
+  HelperText,
   Text,
   TextInput,
   useTheme,
@@ -97,7 +98,9 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
         error={Boolean(touched.passData?.username && errors.passData?.username)} />
 
       {touched.passData?.username && errors.passData?.username && (
-        <Text style={styles.errorText}>{errors.passData.username}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.username}
+        </HelperText>
       )}
 
       <TranspBgrViewProps paddingVertical={5} />
@@ -116,33 +119,33 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
         } />
 
       {touched.passData?.password && errors.passData?.password && (
-        <Text style={styles.errorText}>{errors.passData.password}</Text>
+        <HelperText type="error" style={styles.helperText}>
+          {errors.passData.password}
+        </HelperText>
       )}
 
       {isEqual(
-        checkPasswordStrength(values.passData.password),
-        'STRONG',
-      ) && (
-        <Text
-          variant="titleSmall"
-          style={styles.passwordStrengthTextSTRONG}>
+        checkPasswordStrength(values.passData.password), 'STRONG') && (
+        <HelperText
+          type="info"
+          style={[styles.passwordStrengthTextSTRONG, styles.helperText]} >
           Strong Password
-        </Text>
+        </HelperText>
       )}
       {isEqual(
-        checkPasswordStrength(values.passData.password),
-        'MEDIUM',
-      ) && (
-        <Text
-          variant="titleSmall"
-          style={styles.passwordStrengthTextMEDIUM}>
+        checkPasswordStrength(values.passData.password), 'MEDIUM') && (
+        <HelperText
+          type="info"
+          style={[styles.passwordStrengthTextMEDIUM, styles.helperText]}>
           Medium Password
-        </Text>
+        </HelperText>
       )}
       {isEqual(checkPasswordStrength(values.passData.password), 'WEAK') && (
-        <Text variant="titleSmall" style={styles.passwordStrengthTextWEAK}>
+        <HelperText
+          type="error"
+          style={styles.helperText}>
           Weak Password
-        </Text>
+        </HelperText>
       )}
 
       <CommonField
@@ -184,19 +187,12 @@ const themeStyle = (colors: MD3Colors) =>
     },
     passwordStrengthTextSTRONG: {
       color: 'green',
-      backgroundColor: colors.background,
     },
     passwordStrengthTextMEDIUM: {
       color: '#FFA500',
-      backgroundColor: colors.background,
     },
-    passwordStrengthTextWEAK: {
-      color: 'red',
+    helperText: {
       backgroundColor: colors.background,
-    },
-    errorText: {
-      color: 'red',
-      fontSize: 12,
     },
   });
 
