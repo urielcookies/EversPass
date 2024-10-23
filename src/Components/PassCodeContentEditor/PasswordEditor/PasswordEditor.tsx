@@ -152,7 +152,7 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
         passData
         keyName="website"
         type="simple"
-        title="Website / App"
+        title="Website / App*"
         keyboardType="url"
         value={values.passData.website} />
 
