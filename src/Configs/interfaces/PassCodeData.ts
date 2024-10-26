@@ -71,9 +71,9 @@ interface SecureNote {
   customFields: CustomField[];
 }
 
-interface CustomField {
-  [key: string]: string;
-}
+type CustomField = {
+  [key in 'name' | 'value']: string;
+};
 
 // interface SecurityType {
 //   [key: string]: Password | CreditCard | PersonalInfo | SecureNote;

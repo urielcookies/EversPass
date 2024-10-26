@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { useFormikContext } from 'formik';
 import { map, cloneDeep, some, isEqual, isEmpty } from 'lodash';
 import {
@@ -13,6 +13,7 @@ import {
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import BottomDrawer from '../BottomDrawer/BottomDrawer';
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 import {
   CreditCardData,
@@ -37,6 +38,7 @@ const CustomFieldEditor = ({ customFields }: CustomFieldEditorProps) => {
   const [newField, setNewField] = useState('');
   const [showCustomFieldModal, setShowCustomFieldModal] = useState(false);
   const [showDialogError, setShowDialogError] = useState('');
+  const [selectedField, setSelectedField] = useState<CustomField | {}>({});
 
   const { colors } = useTheme();
   const styles = themeStyle(colors);
@@ -94,7 +96,7 @@ const CustomFieldEditor = ({ customFields }: CustomFieldEditorProps) => {
               setFieldValue('passData.customFields', clonedCustomFields);
             }}
             right={
-              <TextInput.Icon icon="dots-vertical" onPress={console.log} />
+              <TextInput.Icon icon="dots-vertical" onPress={() => setSelectedField(customField)} />
             }
             error={
               Boolean(
@@ -173,6 +175,46 @@ const CustomFieldEditor = ({ customFields }: CustomFieldEditorProps) => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      {!isEmpty(selectedField) && (
+        <BottomDrawer
+          handleCloseBottomSheet={() => setSelectedField({})}
+          height={.20}>
+          <View style={styles.bottomDrawerContent}>
+            <View style={styles.bottomDrawerTitle}>
+              <Text style={styles.bottomDrawerTitleText}>
+                Actions for {('name' in selectedField) ? selectedField.name : ''}
+              </Text>
+            </View>
+
+            <View style={styles.bottomDrawerOptions}>
+              <TouchableWithoutFeedback onPress={console.log}>
+                <View style={styles.bottomDrawerOption}>
+                  <MaterialCommunityIcons
+                    name="account-edit-outline"
+                    style={styles.bottomDrawerOptionIcons}
+                    size={25} />
+                  <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                    &nbsp;Rename
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+
+              <TouchableWithoutFeedback onPress={console.log}>
+                <View style={styles.bottomDrawerOption}>
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    style={styles.bottomDrawerOptionIcons}
+                    size={25} />
+                  <Text variant="titleMedium" style={styles.bottomDrawerOptionFont}>
+                    &nbsp;Delete
+                  </Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+          </View>
+        </BottomDrawer>
+      )}
     </>
   );
 };
@@ -200,6 +242,33 @@ const themeStyle = (colors: MD3Colors) =>
     errorText: {
       color: 'red',
       fontSize: 12,
+    },
+    bottomDrawerContent: {
+      height: '100%',
+      // justifyContent: "space-between",
+      // backgroundColor: 'blue',
+    },
+    bottomDrawerTitle: {
+      height: '25%',
+      // backgroundColor: 'yellow',
+    },
+    bottomDrawerTitleText: {
+      fontSize: 25,
+      fontWeight: 'bold',
+    },
+    bottomDrawerOptions: {
+      justifyContent: 'space-evenly',
+      height: '85%',
+      // backgroundColor: 'red',
+    },
+    bottomDrawerOption: {
+      flexDirection: 'row',
+    },
+      bottomDrawerOptionIcons: {
+        color: colors.onSecondaryContainer,
+    },
+    bottomDrawerOptionFont: {
+      fontSize: 20,
     },
   });
 

@@ -95,7 +95,7 @@ const CreatePassDrawer = (props: Props) => {
 			height={calculateCustomHeight(data)}>
 			<View style={styles.bottomDrawerContent}>
 				<View style={styles.bottomDrawerTitle}>
-					<Text style={styles.bottomDrawerTitleText} variant="headlineSmall">UPDATE</Text>
+					<Text style={styles.bottomDrawerTitleText} variant="headlineSmall">Update</Text>
 				</View>
 
 				<View style={styles.bottomDrawerOptions}>
