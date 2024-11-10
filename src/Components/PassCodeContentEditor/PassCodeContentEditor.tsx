@@ -15,10 +15,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import useStoredDataStore from '../../Store/useStoredDataStore';
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
-import PasswordEditor from './PasswordEditor/PasswordEditor';
-import CreditCardEditor from './PasswordEditor/CreditCardEditor';
-import PersonalInfoEditor from './PasswordEditor/PersonalInfoEditor';
-import SecureNoteEditor from './PasswordEditor/SecureNoteEditor';
+import PasswordEditor from './PassCodeFields/PasswordEditor';
+import CreditCardEditor from './PassCodeFields/CreditCardEditor';
+import PersonalInfoEditor from './PassCodeFields/PersonalInfoEditor';
+import SecureNoteEditor from './PassCodeFields/SecureNoteEditor';
 import {
   CreditCardData,
   PasswordData,
