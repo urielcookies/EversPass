@@ -1,5 +1,5 @@
+import { FC, useState } from 'react';
 import {
-  Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
   ScrollView,
@@ -7,44 +7,38 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import {
   useNavigation,
   NavigationProp,
   RouteProp,
 } from '@react-navigation/native';
 import { List, Text, useTheme } from 'react-native-paper';
-import { MD3Colors } from 'react-native-paper/lib/typescript/types';
-import ViewWrapper from '../ViewWrapper/ViewWrapper';
-import { FC, useState } from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import PassCodeFields from './PassCodeFields';
 import { isEmpty, map } from 'lodash';
-import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
+import { MD3Colors } from 'react-native-paper/lib/typescript/types';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import PassCodeFields from './PassCodeFields';
+import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import useSubscriptionPlanStore from '../../Store/useSubscriptionPlanStore';
-import FastImage from 'react-native-fast-image';
+import {
+  CreditCardData,
+  PasswordData,
+  PersonalInfoData,
+  SecureNoteData,
+} from '../../Configs/interfaces/PassCodeData';
 
 const PassCodeContent: FC<PassCodeContentProps> = props => {
   const { data } = props.route.params;
-
   const navigation = useNavigation<Nav>();
   const { isSubscriber } = useSubscriptionPlanStore();
   const { colors } = useTheme();
-
-  const numberofFields: { [key: string]: number } = {
-    PASSWORD: 210,
-    CREDITCARD: 350,
-    PERSONALINFO: 280,
-    SECURENOTE: 0,
-  };
-
-  const styles = themeStyle(colors, numberofFields[data.securityType]);
+  const styles = themeStyle(colors);
 
   const [navBarStyles, setNavBarStyles] = useState(styles.navIcons);
   const [showTitle, setShowTitle] = useState(false);
 
   const gotoTestStackScreen = () => {
-    // navigation.navigate('Home');
-    // navigation.navigate('Tabs', { screen: 'Home' });
     navigation.goBack();
   };
 
@@ -111,7 +105,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
         {(data.passData.website && !offlineMode) && (
           <View style={styles.logoIcon}>
             <FastImage
-              style={styles.logoIcon.logo}
+              style={styles.logo}
               source={{
                 uri: websiteIcons,
               }}
@@ -171,8 +165,8 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
         {Boolean(data.passData.website) && (
           <View style={styles.webApp}>
             <List.Item
-              titleStyle={{ fontSize: 15, color: 'grey' }}
-              descriptionStyle={{ fontSize: 15 }}
+              titleStyle={[styles.titleSize, styles.titleColor]}
+              descriptionStyle={styles.titleSize}
               title="Website or App Name"
               description={data.passData.website}
             />
@@ -184,8 +178,8 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
             {map(data.passData.customFields, element => (
               <List.Item
                 key={element.name}
-                titleStyle={{ fontSize: 15, color: 'grey' }}
-                descriptionStyle={{ fontSize: 15 }}
+                titleStyle={[styles.titleSize, styles.titleColor]}
+                descriptionStyle={styles.titleSize}
                 title={element.name}
                 description={element.value}
               />
@@ -195,8 +189,8 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
         {!isEmpty(data.passData.note) && (
           <View style={styles.note}>
             <List.Item
-              titleStyle={{ fontSize: 15, color: 'grey' }}
-              descriptionStyle={{ fontSize: 15 }}
+              titleStyle={[styles.titleSize, styles.titleColor]}
+              descriptionStyle={styles.titleSize}
               descriptionNumberOfLines={
                 data.passData.note?.length ? data.passData.note.length * 100 : 0
               }
@@ -210,7 +204,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
   );
 };
 
-const themeStyle = (colors: MD3Colors, totalFields: number) =>
+const themeStyle = (colors: MD3Colors) =>
   StyleSheet.create({
     navIcons: {
       flexDirection: 'row',
@@ -248,12 +242,18 @@ const themeStyle = (colors: MD3Colors, totalFields: number) =>
       marginBottom: 7.5,
       alignItems: 'center',
       justifyContent: 'center',
-      logo: {
-        width: undefined,
-        height: '100%',
-        aspectRatio: 1,
-        borderRadius: 10,
-      },
+    },
+    logo: {
+      width: undefined,
+      height: '100%',
+      aspectRatio: 1,
+      borderRadius: 10,
+    },
+    titleColor: {
+      color: 'grey',
+    },
+    titleSize: {
+      fontSize: 15,
     },
     title: {
       // flex: 2,
@@ -287,7 +287,7 @@ const themeStyle = (colors: MD3Colors, totalFields: number) =>
       backgroundColor: colors.onPrimary,
       height: '100%',
       width: 118.5,
-      fontSize: '20px',
+      fontSize: 20,
       borderRadius: 10,
       gap: 10,
     },
@@ -342,8 +342,9 @@ const themeStyle = (colors: MD3Colors, totalFields: number) =>
   });
 
 type RootStackParamList = {
-  // Home: undefined;
-  PassCodeContent: { data: PassCodeType };
+  PassCodeContent: {
+    data: PasswordData | CreditCardData | PersonalInfoData | SecureNoteData
+  };
 };
 
 interface PassCodeContentProps {
@@ -355,33 +356,5 @@ type Nav = {
   goBack: () => void;
   navigate: (screen: string, params?: object) => void;
 };
-
-// export interface PassCodeProps {
-//   id: number;
-//   securityType: string;
-//   title: string;
-//   passData: PassData;
-// }
-
-// interface PassData {
-//   firstName?: string;
-//   lastName?: string;
-//   username: string;
-//   password?: string;
-//   phone?: string;
-//   email?: string;
-//   website?: string;
-//   note?: string;
-//   cardholder?: string;
-//   cardNumber?: string;
-//   expirationDate?: string;
-//   CVV?: string;
-//   zipCode?: string;
-//   customFields?: CustomField[];
-// }
-
-// interface CustomField {
-//   [key: string]: string;
-// }
 
 export default PassCodeContent;

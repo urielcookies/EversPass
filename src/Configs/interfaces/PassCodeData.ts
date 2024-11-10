@@ -1,8 +1,3 @@
-// interface PassCodeData {
-//   title: string;
-//   passData: Password | CreditCard | PersonalInfo | SecureNote;
-// }
-
 interface PasswordData {
   id: number;
   securityType: string;
@@ -30,11 +25,6 @@ interface SecureNoteData {
   title: string;
   passData: SecureNote;
 }
-
-// interface PassCodeType extends PassCodeData {
-//   id: number;
-//   securityType: string;
-// }
 
 interface Password {
   username: string;
@@ -75,22 +65,15 @@ type CustomField = {
   [key in 'name' | 'value']: string;
 };
 
-// interface SecurityType {
-//   [key: string]: Password | CreditCard | PersonalInfo | SecureNote;
-// }
-
 export type {
-  // PassCodeType,
-  // PassCodeData,
-  // Password,
-  // CreditCard,
-  // PersonalInfo,
-  // CustomField,
-  // SecureNote,
-  // SecurityType,
   PasswordData,
   CreditCardData,
   PersonalInfoData,
   SecureNoteData,
   CustomField,
+
+  Password,
+  CreditCard,
+  PersonalInfo,
+  SecureNote,
 };

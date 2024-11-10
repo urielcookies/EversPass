@@ -24,6 +24,10 @@ import {
   PasswordData,
   PersonalInfoData,
   SecureNoteData,
+  Password,
+  CreditCard,
+  PersonalInfo,
+  SecureNote,
 } from '../../Configs/interfaces/PassCodeData';
 
 
@@ -35,7 +39,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
   const { colors } = useTheme();
   const styles = themeStyle(colors);
 
-  const securityTypeObj: SecurityType = {
+  const securityTypeObj: SecurityTypeObj = {
     PASSWORD: {
       username: '',
       password: '',
@@ -73,7 +77,9 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     id: data.id,
     title: data.title,
     securityType: data.securityType,
-    passData: data.id ? data.passData : securityTypeObj[data.securityType],
+    passData: data.id
+      ? data.passData
+      : securityTypeObj[data.securityType as keyof SecurityTypeObj],
   };
 
 
@@ -321,10 +327,20 @@ const themeStyle = (colors: MD3Colors) =>
     },
   });
 
+  interface SecurityTypeObj {
+    PASSWORD: Password,
+    CREDITCARD: CreditCard,
+    PERSONALINFO:PersonalInfo,
+    SECURENOTE: SecureNote,
+  }
+
+
 type PassCodeType = PasswordData | CreditCardData | PersonalInfoData | SecureNoteData;
 
 type RootStackParamList = {
-  PassCodeContent: { data: PassCodeType };
+  PassCodeContent: {
+    data: PassCodeType
+  };
 };
 
 interface PassCodeContentProps {
