@@ -43,7 +43,9 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
   const [showTitle, setShowTitle] = useState(false);
 
   const gotoTestStackScreen = () => {
-    navigation.navigate('Home');
+    // navigation.navigate('Home');
+    // navigation.navigate('Tabs', { screen: 'Home' });
+    navigation.goBack();
   };
 
   const gotoEditorStackScreen = () => {
@@ -350,7 +352,8 @@ interface PassCodeContentProps {
 }
 
 type Nav = {
-  navigate: (value: string, data?: { data: PassCodeType }) => void;
+  goBack: () => void;
+  navigate: (screen: string, params?: object) => void;
 };
 
 // export interface PassCodeProps {
