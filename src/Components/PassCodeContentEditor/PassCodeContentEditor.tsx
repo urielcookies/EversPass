@@ -289,7 +289,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
 const themeStyle = (colors: MD3Colors) =>
   StyleSheet.create({
     header: {
-      backgroundColor: colors.onPrimary,
+      backgroundColor: colors.background,
     },
     navIcons: {
       flexDirection: 'row',

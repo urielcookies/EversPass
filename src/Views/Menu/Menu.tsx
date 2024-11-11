@@ -8,6 +8,8 @@ import { clearLocalData } from '../../Configs/utils/storeData';
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 import ViewWrapper from '../../Components/ViewWrapper/ViewWrapper';
 import useAuthenticatedStore from '../../Store/useAuthenticatedStore';
+import useStoredDataStore from '../../Store/useStoredDataStore';
+import { isEmpty } from 'lodash';
 
 
 function HomeScreen() {
@@ -15,6 +17,7 @@ function HomeScreen() {
   const { themeState, updateThemeState } = useContext(ThemesContext);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { setIsAuthenticated } = useAuthenticatedStore();
+  const { storedSecrets, setMockSecrets, setClearSecrets } = useStoredDataStore();
 
   const resetApp = async () => {
     // await AsyncStorage.removeItem('isDatabaseInitialized');
@@ -28,32 +31,57 @@ function HomeScreen() {
   return (
     <ViewWrapper>
       <ScrollView>
-      <View>
-        <View style={styles.container}>
-          <Text style={styles.label}>Dark mode</Text>
-          <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
-        </View>
-
-        <View style={styles.container}>
-          <Text style={styles.label}>Always Log In After Close</Text>
-          <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
-        </View>
-
-        <View style={styles.container}>
-          <Text style={styles.label}>Biometrics</Text>
-          <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
-        </View>
-      </View>
-
-      <View>
-        <TranspBgrViewProps paddingVertical={5} />
         <View>
-          <Button
-            mode="outlined"
-            onPress={resetApp}>
-            Clear All Data
-          </Button>
+          <View style={styles.container}>
+            <Text style={styles.label}>Dark mode</Text>
+            <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
+          </View>
+
+          <View style={styles.container}>
+            <Text style={styles.label}>Always Log In After Close</Text>
+            <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
+          </View>
+
+          <View style={styles.container}>
+            <Text style={styles.label}>Biometrics</Text>
+            <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
+          </View>
         </View>
+
+        <View>
+          <TranspBgrViewProps paddingVertical={5} />
+          <View>
+            <Button
+              mode="outlined"
+              onPress={resetApp}>
+              Clear All Data
+            </Button>
+          </View>
+          {!isEmpty(storedSecrets)
+            ? (
+              <>
+                <TranspBgrViewProps paddingVertical={5} />
+                <View>
+                  <Button
+                    mode="outlined"
+                    onPress={setClearSecrets}>
+                    Delete data in Phone Storage
+                  </Button>
+                </View>
+              </>
+            )
+            : (
+              <>
+                <TranspBgrViewProps paddingVertical={5} />
+                <View>
+                  <Button
+                    mode="outlined"
+                    onPress={setMockSecrets}>
+                    Create Fake Data Unto Phone Storage
+                  </Button>
+                </View>
+              </>
+          )}
         </View>
       </ScrollView>
     </ViewWrapper>
@@ -77,38 +105,3 @@ const themeStyle = () => StyleSheet.create({
 });
 
 export default HomeScreen;
-
-// const { storedSecrets, setMockSecrets, setClearSecrets } = useStoredDataStore();
-// {!isEmpty(storedSecrets)
-//   ? (
-//     <>
-//       <TranspBgrViewProps paddingVertical={5} />
-//       <View>
-//         <Button
-//           mode="outlined"
-//           onPress={() => {
-//             setClearSecrets();
-//             // storeLocalData('stored-secrets', []);
-//             // clearLocalData();
-//             // setStoredSecretsToggle(false);
-//           }}>
-//           Delete data in Phone Storage
-//         </Button>
-//       </View>
-//     </>
-//   )
-//   : (
-//     <>
-//       <TranspBgrViewProps paddingVertical={5} />
-//       <View>
-//         <Button
-//           mode="outlined"
-//           onPress={() => {
-//             setMockSecrets();
-//             // setStoredSecretsToggle(true);
-//           }}>
-//           Create Data Unto Phone Storage
-//         </Button>
-//       </View>
-//     </>
-// )}

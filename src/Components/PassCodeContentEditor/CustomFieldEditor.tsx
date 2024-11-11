@@ -119,14 +119,15 @@ const CustomFieldEditor = ({ customFields }: CustomFieldEditorProps) => {
 
       <Button
         style={styles.addFieldBtn}
-        icon={({ color, size }) => (
+        icon={({ size }) => (
           <MaterialCommunityIcons
             name="plus-circle-outline"
-            color={color}
+            color={colors.primary}
             size={size + 5}
           />
         )}
         mode="contained"
+        labelStyle={{ color: colors.primary }}
         onPress={() => setShowCustomFieldModal(true)}>
         Add Field
       </Button>
@@ -235,6 +236,9 @@ const themeStyle = (colors: MD3Colors) =>
     },
     addFieldBtn: {
       borderRadius: 0,
+      color: colors.primary,
+      backgroundColor: colors.secondaryContainer,
+      // backgroundColor: colors.background,
     },
     viewDivider: {
       height: 10,

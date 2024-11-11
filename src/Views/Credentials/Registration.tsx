@@ -27,7 +27,8 @@ const Registration = () => {
   };
 
   const continueHandler = async () => {
-    if (!isEqual(credentials.email, '') && !isEqual(credentials.password, '')) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(credentials.email) && !isEqual(credentials.password, '')) {
       await AsyncStorage.setItem('isAuthenticated', 'true');
       await AsyncStorage.setItem('email', credentials.email);
       await AsyncStorage.setItem('password',  credentials.password);
@@ -84,7 +85,7 @@ const Registration = () => {
 const themeStyle = (colors: MD3Colors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d1116',
+    backgroundColor: colors.background,
   },
   logoContainer: {
     flex: 0.25,
