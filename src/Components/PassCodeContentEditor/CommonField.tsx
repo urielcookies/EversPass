@@ -46,7 +46,11 @@ const CommonField: React.FC<CommonFieldProps> = (props) => {
         </>
       )}
       <TextInput
-        style={[isEqual(type, 'note') ? styles.note : null, customStyles]}
+        style={[
+          customStyles,
+          isEqual(type, 'note') ? styles.note : null,
+          !isEmpty(errors) ? styles.noteError : null,
+        ]}
         label={capitalize(keyName)}
         autoCapitalize="none"
         multiline={isEqual(type, 'note')}
@@ -111,6 +115,12 @@ const themeStyle = (colors: MD3Colors) =>
     },
     note: {
       maxHeight: 350,
+    },
+    noteError: {
+      borderColor: 'rgb(255, 180, 171)',
+      borderLeftWidth: 2,
+      borderTopWidth: 2,
+      borderRightWidth: 2,
     },
   });
 

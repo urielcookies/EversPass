@@ -238,8 +238,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       <MaterialCommunityIcons
                         name="arrow-left"
                         size={30}
-                        color={colors.primary}
-                      />
+                        color={colors.primary} />
                     </View>
                   </TouchableWithoutFeedback>
 
