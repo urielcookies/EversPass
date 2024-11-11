@@ -1,24 +1,40 @@
 import {
   View,
   StyleSheet,
-  TextInput,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
-import { Button, Text, useTheme } from 'react-native-paper';
+import { Button, Text, TextInput, useTheme } from 'react-native-paper';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
 import ViewWrapper from '../../Components/ViewWrapper/ViewWrapper';
+import { useState } from 'react';
+import { isEqual } from 'lodash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Login = () => {
   const { colors } = useTheme();
   const styles = themeStyle(colors);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
 
   const navigate = () => {
     navigation.navigate('registration');
+  };
+
+  const continueHandler = async () => {
+    const localEmail = await AsyncStorage.getItem('email');
+    const localPassword = await AsyncStorage.getItem('password');
+    const localCredentials = { email: localEmail, password: localPassword };
+    if (isEqual(credentials, localCredentials)) {
+      AsyncStorage.setItem('isAuthenticated', 'true');
+      AsyncStorage.setItem('isAuthenticated', 'true');
+    } else {
+      Alert.alert('Error', 'Incorrect credentials');
+    }
   };
 
   return (
@@ -31,17 +47,24 @@ const Login = () => {
         <Text variant="headlineLarge" style={styles.title}>Login</Text>
         <TranspBgrViewProps paddingVertical={5} />
         <TextInput
+          mode="outlined"
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="email-address"
           style={styles.input}
           placeholder="Email"
-          placeholderTextColor="grey"
-        />
+          onChangeText={(text) => setCredentials((state) => ({ ...state, email: text }))} />
+        <TextInput
+          mode="outlined"
+          autoCapitalize="none"
+          secureTextEntry
+          style={styles.input}
+          placeholder="Password"
+          onChangeText={(text) => setCredentials((state) => ({ ...state, password: text }))} />
         <TranspBgrViewProps paddingVertical={5} />
         <Button
           mode="contained"
-          onPress={() => {}}>
+          onPress={continueHandler}>
           Continue
         </Button>
 
@@ -85,7 +108,7 @@ const themeStyle = (colors: MD3Colors) => StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
-    backgroundColor: colors.onPrimary,
+    // backgroundColor: colors.onPrimary,
     color: colors.onPrimaryContainer,
     borderRadius: 5,
   },

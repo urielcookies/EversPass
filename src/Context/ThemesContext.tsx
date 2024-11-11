@@ -16,14 +16,14 @@ interface Props {
 
 export const ThemesContext = createContext<StateHandlers>({
   themeState: {
-    darkMode: false,
+    darkMode: true,
   },
   updateThemeState: () => noop(),
 });
 
 const ThemeProvider = ({ children }: Props) => {
   const [themeState, setThemeState] = useState<ThemeState>({
-    darkMode: false,
+    darkMode: true,
   });
 
   const updateThemeState = () =>

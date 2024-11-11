@@ -1,140 +1,114 @@
-import { PropsWithChildren, useCallback, useContext, useEffect, useState } from "react";
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from "react-native";
-import { Colors, DebugInstructions, Header, LearnMoreLinks, ReloadInstructions } from "react-native/Libraries/NewAppScreen";
+import { useContext } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { Button, Switch, Text } from 'react-native-paper';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+
 import { ThemesContext } from '../../Context/ThemesContext';
-import { List, Divider } from 'react-native-paper';
-import { Button } from "react-native-paper";
+import { clearLocalData } from '../../Configs/utils/storeData';
 import TranspBgrViewProps from '../../RenderProps/TranspBgrView';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ViewWrapper from '../../Components/ViewWrapper/ViewWrapper';
+import useAuthenticatedStore from '../../Store/useAuthenticatedStore';
 
-import fakeData from '../../Configs/constants/fakeData';
-import { useFocusEffect } from "@react-navigation/native";
-import useStoredDataStore from '../../Store/useStoredDataStore';
-import { clearLocalData, getLocalData, storeLocalData } from "../../Configs/utils/storeData";
-import { isEmpty } from "lodash";
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 function HomeScreen() {
+  const styles = themeStyle();
   const { themeState, updateThemeState } = useContext(ThemesContext);
-  const isDarkMode = useColorScheme() === 'dark';
-  // const [storedSecretsToggle, setStoredSecretsToggle] = useState(false);
-  const { storedSecrets, setMockSecrets, setClearSecrets } = useStoredDataStore();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { setIsAuthenticated } = useAuthenticatedStore();
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const resetApp = async () => {
+    // await AsyncStorage.removeItem('isDatabaseInitialized');
+    clearLocalData();
+    setIsAuthenticated(false); // Should reset all state
+    // resetDatabase();
+    console.log('App reset: database and initialization flag cleared');
+    navigation.navigate('registration');
   };
 
-  // useFocusEffect(() => {
-  //   console.log("menu");
-  //   setStoredSecretsToggle(!isEmpty(storedSecrets));
-  // });
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-					<View>
-						<Button
-							mode="outlined"
-							onPress={updateThemeState}>
-							Dark mode is currently {themeState.darkMode ? 'on' : 'off'}
-						</Button>
-					</View>
-          {!isEmpty(storedSecrets)
-          ? (
-            <>
-              <TranspBgrViewProps paddingVertical={5} />
-              <View>
-                <Button
-                  mode="outlined"
-                  onPress={() => {
-                    setClearSecrets();
-                    // storeLocalData('stored-secrets', []);
-                    // clearLocalData();
-                    // setStoredSecretsToggle(false);
-                  }}>
-                  Delete data in Phone Storage
-                </Button>
-              </View>
-            </>
-          )
-          : (
-            <>
-              <TranspBgrViewProps paddingVertical={5} />
-              <View>
-                <Button
-                  mode="outlined"
-                  onPress={() => {
-                    setMockSecrets();
-                    // setStoredSecretsToggle(true);
-                  }}>
-                  Create Data Unto Phone Storage
-                </Button>
-              </View>
-            </>
-        )}
+    <ViewWrapper>
+      <ScrollView>
+      <View>
+        <View style={styles.container}>
+          <Text style={styles.label}>Dark mode</Text>
+          <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
+        </View>
 
+        <View style={styles.container}>
+          <Text style={styles.label}>Always Log In After Close</Text>
+          <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
+        </View>
+
+        <View style={styles.container}>
+          <Text style={styles.label}>Biometrics</Text>
+          <Switch value={themeState.darkMode} onValueChange={updateThemeState} />
+        </View>
+      </View>
+
+      <View>
+        <TranspBgrViewProps paddingVertical={5} />
+        <View>
+          <Button
+            mode="outlined"
+            onPress={resetApp}>
+            Clear All Data
+          </Button>
+        </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </ViewWrapper>
   );
 }
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+export type RootStackParamList = {
+  registration: undefined;
+};
+
+const themeStyle = () => StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Aligns text and switch to opposite ends
+    padding: 16,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  label: {
+    fontSize: 16,
   },
 });
 
 export default HomeScreen;
+
+// const { storedSecrets, setMockSecrets, setClearSecrets } = useStoredDataStore();
+// {!isEmpty(storedSecrets)
+//   ? (
+//     <>
+//       <TranspBgrViewProps paddingVertical={5} />
+//       <View>
+//         <Button
+//           mode="outlined"
+//           onPress={() => {
+//             setClearSecrets();
+//             // storeLocalData('stored-secrets', []);
+//             // clearLocalData();
+//             // setStoredSecretsToggle(false);
+//           }}>
+//           Delete data in Phone Storage
+//         </Button>
+//       </View>
+//     </>
+//   )
+//   : (
+//     <>
+//       <TranspBgrViewProps paddingVertical={5} />
+//       <View>
+//         <Button
+//           mode="outlined"
+//           onPress={() => {
+//             setMockSecrets();
+//             // setStoredSecretsToggle(true);
+//           }}>
+//           Create Data Unto Phone Storage
+//         </Button>
+//       </View>
+//     </>
+// )}

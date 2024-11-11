@@ -37,7 +37,8 @@ const SearchList = () => {
   }, [search, searchHandler, storedSecrets]);
 
   const gotoTestStackScreen = () => {
-    navigation.navigate('Home');
+    // navigation.navigate('Home');
+    navigation.goBack();
   };
 
   const [isCreateActive, setIsCreateActive] = useState(false);
@@ -236,6 +237,7 @@ type Nav = {
     value: string,
     data?: { data: PassCodeType } | { data: PassCodeType[] },
   ) => void;
+  goBack: () => void,
 };
 
 export default SearchList;

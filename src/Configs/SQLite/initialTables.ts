@@ -111,7 +111,7 @@ const initializeDatabase = async () => {
   const isDatabaseInitialized = await AsyncStorage.getItem('isDatabaseInitialized');
 
   if (!isDatabaseInitialized) {
-    // createTables(); // Uncomment when ready for use
+    createTables();
     await AsyncStorage.setItem('isDatabaseInitialized', 'true');
     console.log('Database initialized for the first time');
   } else {
@@ -120,8 +120,25 @@ const initializeDatabase = async () => {
 };
 
 // Call this function in your main component's initialization
-initializeDatabase();
+// initializeDatabase();
 
+
+
+const resetDatabase = () => {
+  db.transaction((tx) => {
+    tx.executeSql('DROP TABLE IF EXISTS users;');
+    tx.executeSql('DROP TABLE IF EXISTS password_data;');
+    tx.executeSql('DROP TABLE IF EXISTS credit_card_data;');
+    tx.executeSql('DROP TABLE IF EXISTS personal_info_data;');
+    tx.executeSql('DROP TABLE IF EXISTS secure_note_data;');
+    tx.executeSql('DROP TABLE IF EXISTS custom_fields;');
+  },
+    (error) => console.log('Error resetting database', error),
+    () => console.log('Database reset successfully'));
+};
+
+// Call this function to reset the database
+// resetDatabase();
 
 
 

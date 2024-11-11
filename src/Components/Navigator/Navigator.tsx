@@ -1,9 +1,9 @@
-import { ComponentType, useEffect, useState } from 'react';
+import { ComponentType } from 'react';
+import { isNil } from 'lodash';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import SearchList from '../SearchList/SearchList';
 import TestScreen from '../TestScreen';
@@ -15,32 +15,14 @@ import Menu from '../../Views/Menu/Menu';
 import Tools from '../../Views/Tools/Tools';
 import Login from '../../Views/Credentials/Login';
 import Registration from '../../Views/Credentials/Registration';
+import useAuthenticatedStore from '../../Store/useAuthenticatedStore';
 
 
 const Navigator = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
 
-  // AsyncStorage.setItem('email', 'urielcookies@outlook');
-  // AsyncStorage.setItem('password', 'Mercerst.13');
-
-  useEffect(() => {
-    const checkCredentials = async () => {
-      const email = await AsyncStorage.getItem('email');
-      const password = await AsyncStorage.getItem('password');
-      // await AsyncStorage.removeItem('email');
-      // await AsyncStorage.removeItem('password');
-      console.log({ email, password });
-
-      if (email && password) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    };
-    checkCredentials();
-  }, []);
+  const { isAuthenticated } = useAuthenticatedStore();
 
   function MyTabs() {
     const { colors } = useTheme();
@@ -110,20 +92,23 @@ const Navigator = () => {
     );
   }
 
-  console.log('isAuthenticated', isAuthenticated);
   return (
-    <Stack.Navigator
-      screenOptions={{ headerShown: false }}
-      initialRouteName={isAuthenticated ? 'Tabs' : 'login'}>
-      <Stack.Screen name="searchList" component={SearchList} />
-      <Stack.Screen name="login" component={Login} />
-      <Stack.Screen name="registration" component={Registration} />
-      <Stack.Screen name="Tabs" component={MyTabs} />
-      <Stack.Screen name="TestScreen" component={TestScreen} />
-      {/* Screen takes props */}
-      <Stack.Screen name="PassCodeContent" component={PassCodeContent as ComponentType} />
-      <Stack.Screen name="PassCodeContentEditor" component={PassCodeContentEditor as ComponentType} />
-    </Stack.Navigator>
+    isNil(isAuthenticated)
+    ? null
+    : (
+        <Stack.Navigator
+          screenOptions={{ headerShown: false }}
+          initialRouteName={isAuthenticated ? 'Tabs' : 'registration'}>
+          <Stack.Screen name="searchList" component={SearchList} />
+          <Stack.Screen name="login" component={Login} />
+          <Stack.Screen name="registration" component={Registration} />
+          <Stack.Screen name="Tabs" component={MyTabs} />
+          <Stack.Screen name="TestScreen" component={TestScreen} />
+          {/* Screen takes props */}
+          <Stack.Screen name="PassCodeContent" component={PassCodeContent as ComponentType} />
+          <Stack.Screen name="PassCodeContentEditor" component={PassCodeContentEditor as ComponentType} />
+        </Stack.Navigator>
+      )
   );
 };
 
