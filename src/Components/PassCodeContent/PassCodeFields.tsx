@@ -1,11 +1,11 @@
 import { isEqual } from 'lodash';
 import React, { FC, useState } from 'react';
-import { ScrollView, View } from 'react-native';
-import { List, Divider } from 'react-native-paper';
+import { List, Divider, useTheme } from 'react-native-paper';
 
 import { PassCodeProps } from './PassCodeContent';
 
 const PassCodeFields: FC<IPassCodeFields> = ({ data }) => {
+  const { colors } = useTheme();
   const [passwordVisibility, setPasswordVisibility] = useState(false);
   const togglePasswordVisibility = () =>
     setPasswordVisibility(!passwordVisibility);
@@ -66,6 +66,7 @@ const PassCodeFields: FC<IPassCodeFields> = ({ data }) => {
               <List.Icon
                 {...props}
                 icon={passwordVisibility ? 'eye' : 'eye-off'}
+                color={colors.primary}
               />
             )}
           />

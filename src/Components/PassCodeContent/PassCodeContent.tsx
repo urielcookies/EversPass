@@ -52,8 +52,8 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
       setNavBarStyles({
         ...styles.navIcons,
         ...{
-          backgroundColor: colors.onPrimary,
-          borderBottomColor: colors.onSecondaryContainer,
+          backgroundColor: colors.background,
+          borderBottomColor: colors.primary,
           borderBottomWidth: 2,
           // opacity: 0.5/* Change the opacity value as desired */
         },
@@ -80,7 +80,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
                 <MaterialCommunityIcons
                   name="arrow-left"
                   size={30}
-                  color={colors.onSecondaryContainer}
+                  color={colors.primary}
                 />
               </View>
             </TouchableWithoutFeedback>
@@ -96,7 +96,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
                 <MaterialCommunityIcons
                   name="pencil-outline"
                   size={30}
-                  color={colors.onSecondaryContainer}
+                  color={colors.primary}
                 />
               </View>
             </TouchableWithoutFeedback>
@@ -138,7 +138,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
                 <MaterialCommunityIcons
                   name="account-plus-outline"
                   size={30}
-                  color={colors.onSecondaryContainer}
+                  color={colors.primary}
                 />
                 <Text>Share</Text>
               </View>
@@ -150,7 +150,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
                 <MaterialCommunityIcons
                   name="dots-vertical"
                   size={30}
-                  color={colors.onSecondaryContainer}
+                  color={colors.primary}
                 />
                 <Text>More</Text>
               </View>
@@ -284,7 +284,7 @@ const themeStyle = (colors: MD3Colors) =>
     actionButton: {
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: colors.backdrop,
+      backgroundColor: colors.background,
       height: '100%',
       width: 118.5,
       fontSize: 20,
@@ -296,7 +296,9 @@ const themeStyle = (colors: MD3Colors) =>
       // height: '60%',
       // height: totalFields, // recent
       // backgroundColor: 'pink',
-      backgroundColor: colors.backdrop,
+      backgroundColor: colors.background,
+      borderColor: colors.secondary,
+      borderWidth: 1,
       borderRadius: 10,
       marginLeft: 10,
       marginRight: 10,
@@ -307,7 +309,9 @@ const themeStyle = (colors: MD3Colors) =>
       // flex: 2,
       // height: '15%',
       // backgroundColor: 'green',
-      backgroundColor: colors.backdrop,
+      backgroundColor: colors.background,
+      borderColor: colors.secondary,
+      borderWidth: 1,
       borderRadius: 10,
       marginLeft: 10,
       marginRight: 10,
@@ -317,7 +321,9 @@ const themeStyle = (colors: MD3Colors) =>
     customFields: {
       // flex: 2,
       // height: '15%',
-      backgroundColor: colors.backdrop,
+      backgroundColor: colors.background,
+      borderColor: colors.secondary,
+      borderWidth: 1,
       borderRadius: 10,
       marginLeft: 10,
       marginRight: 10,
@@ -328,7 +334,9 @@ const themeStyle = (colors: MD3Colors) =>
       // flex: 2,
       // height: '15%',
       // backgroundColor: 'green',
-      backgroundColor: colors.backdrop,
+      backgroundColor: colors.background,
+      borderColor: colors.secondary,
+      borderWidth: 1,
       borderRadius: 10,
       marginLeft: 10,
       marginRight: 10,

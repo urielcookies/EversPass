@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { find, isEqual } from 'lodash';
+import { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import {
   HelperText,
@@ -10,7 +9,6 @@ import {
 import { useFormikContext } from 'formik';
 
 import TranspBgrViewProps from '../../../RenderProps/TranspBgrView';
-import { getLocalData } from '../../../Configs/utils/storeData';
 import { PasswordData } from '../../../Configs/interfaces/PassCodeData';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import React from 'react';
@@ -115,6 +113,7 @@ const PasswordEditor: React.FC<PasswordEditorProps> = ({ passwordId }) => {
         right={
           <TextInput.Icon
             icon={passwordVisibility ? 'eye' : 'eye-off'}
+            color={colors.primary}
             onPress={() => setPasswordVisibility(!passwordVisibility)} />
         } />
 

@@ -96,7 +96,10 @@ const CustomFieldEditor = ({ customFields }: CustomFieldEditorProps) => {
               setFieldValue('passData.customFields', clonedCustomFields);
             }}
             right={
-              <TextInput.Icon icon="dots-vertical" onPress={() => setSelectedField(customField)} />
+              <TextInput.Icon
+                icon="dots-vertical"
+                color={colors.primary}
+                onPress={() => setSelectedField(customField)} />
             }
             error={
               Boolean(

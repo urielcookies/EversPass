@@ -238,7 +238,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       <MaterialCommunityIcons
                         name="arrow-left"
                         size={30}
-                        color={colors.onSecondaryContainer}
+                        color={colors.primary}
                       />
                     </View>
                   </TouchableWithoutFeedback>
@@ -251,7 +251,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                     <MaterialCommunityIcons
                       name="check"
                       size={30}
-                      color={colors.onSecondaryContainer}
+                      color={colors.primary}
                     />
                   </View>
                 ) : (
@@ -260,7 +260,7 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
                       <MaterialCommunityIcons
                         name="check"
                         size={30}
-                        color={colors.onSecondaryContainer}
+                        color={colors.primary}
                       />
                     </View>
                   </TouchableWithoutFeedback>
@@ -290,6 +290,8 @@ const themeStyle = (colors: MD3Colors) =>
   StyleSheet.create({
     header: {
       backgroundColor: colors.background,
+      borderBottomColor: colors.primary,
+      borderBottomWidth: 2,
     },
     navIcons: {
       flexDirection: 'row',

@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   TouchableWithoutFeedback,
-  Alert,
 } from 'react-native';
 import { isEqual } from 'lodash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
