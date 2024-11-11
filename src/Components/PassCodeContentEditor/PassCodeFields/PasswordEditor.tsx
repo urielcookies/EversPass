@@ -6,6 +6,7 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
+import { isEqual } from 'lodash';
 import { useFormikContext } from 'formik';
 
 import TranspBgrViewProps from '../../../RenderProps/TranspBgrView';
