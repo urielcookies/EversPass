@@ -37,15 +37,17 @@ const Home = () => {
     updateDrawerOpen: (pass: PassCodeType) => setIsEditActive(pass),
   };
 
-  const gotoTestStackScreen = () =>
+  const gotoTestStackScreen = () => {
     navigation.navigate('searchList', {
       data,
     });
+  };
 
-  const gotoPassCodeConentStackScreen = (data: PassCodeType) =>
+  const gotoPassCodeConentStackScreen = (data: PassCodeType) => {
     navigation.navigate('PassCodeContent', {
       data,
     });
+  };
 
   const gotoTestScreen = () => {
     drawerActions.createDrawerClose();
