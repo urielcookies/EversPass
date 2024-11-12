@@ -29,7 +29,7 @@ const Home = () => {
   const { setActivePassCode } = useActivePassCodeStore();
 
   useFocusEffect(() => {
-      setData(storedSecrets);
+    setData(storedSecrets);
   });
 
   const drawerActions = {

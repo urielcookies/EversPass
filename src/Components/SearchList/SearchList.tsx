@@ -1,19 +1,22 @@
-import { useNavigation } from '@react-navigation/native';
-import { filter, includes, isEmpty, isEqual, sortBy, toLower, toUpper, upperCase } from 'lodash';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Image, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { Divider, List, Searchbar, Text, useTheme } from 'react-native-paper';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
+import { useNavigation } from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { filter, includes, isEmpty, isEqual, sortBy, toLower, toUpper, upperCase } from 'lodash';
+
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 import CreatePassDrawer from '../PassEditor/CreatePassDrawer';
 import UpdatePassDrawer from '../PassEditor/UpdatePassDrawer';
 import useStoredDataStore from '../../Store/useStoredDataStore';
-import FastImage from 'react-native-fast-image';
+import useActivePassCodeStore from '../../Store/useActivePassCodeStore';
 
 const SearchList = () => {
   const { storedSecrets } = useStoredDataStore();
+  const { setActivePassCode } = useActivePassCodeStore();
   const navigation = useNavigation<Nav>();
   const [search, setSearch] = useState<string>('');
   const [filteredList, setFilteredList] = useState<any[]>([]);
@@ -63,10 +66,10 @@ const SearchList = () => {
     const logoToken = 'pk_OLd8oa6tSJuxHARkGM-lew';
     const websiteIcons = `https://img.logo.dev/${data.passData.website}?token=${logoToken}`;
 
-    const gotoPassCodeConentStackScreen = (data: PassCodeType) =>
-      navigation.navigate('PassCodeContent', {
-        data,
-      });
+    const gotoPassCodeConentStackScreen = (data: PassCodeType) => {
+      setActivePassCode(data);
+      navigation.navigate('PassCodeContent');
+    };
 
     return (
       <List.Section>
