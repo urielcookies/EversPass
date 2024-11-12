@@ -49,7 +49,7 @@ const CommonField: React.FC<CommonFieldProps> = (props) => {
         style={[
           customStyles,
           isEqual(type, 'note') ? styles.note : null,
-          !isEmpty(errors) ? styles.noteError : null,
+          isEqual(type, 'note') && !isEmpty(errors) ? styles.noteError : null,
         ]}
         label={capitalize(keyName)}
         autoCapitalize="none"

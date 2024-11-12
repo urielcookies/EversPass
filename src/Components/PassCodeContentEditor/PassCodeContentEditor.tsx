@@ -1,9 +1,8 @@
-import { FC } from 'react';
 import { Text, useTheme } from 'react-native-paper';
 import { Formik } from 'formik';
 import { z } from 'zod';
 import { isEmpty, isEqual } from 'lodash';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
 import {
   ScrollView,
@@ -29,10 +28,12 @@ import {
   PersonalInfo,
   SecureNote,
 } from '../../Configs/interfaces/PassCodeData';
+import useActivePassCodeStore from '../../Store/useActivePassCodeStore';
 
 
-const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
-  const { data } = props.route.params;
+const PassCodeContentEditor = () => {
+  // const { data } = props.route.params;
+  const { activePassCode: data, setActivePassCode } = useActivePassCodeStore();
   const { addStoredSecret, updateStoredSecret } = useStoredDataStore();
   const navigation = useNavigation<Nav>();
 
@@ -89,7 +90,9 @@ const PassCodeContentEditor: FC<PassCodeContentProps> = props => {
     } else {
       updateStoredSecret(formikForm);
     }
-    navigation.navigate('PassCodeContent', { data: formikForm });
+    setActivePassCode(formikForm);
+    // navigation.navigate('PassCodeContent');
+    navigation.goBack();
   };
 
   const CustomFieldSchema = z.object({
@@ -338,18 +341,8 @@ const themeStyle = (colors: MD3Colors) =>
 
 type PassCodeType = PasswordData | CreditCardData | PersonalInfoData | SecureNoteData;
 
-type RootStackParamList = {
-  PassCodeContent: {
-    data: PassCodeType
-  };
-};
-
-interface PassCodeContentProps {
-  route: RouteProp<RootStackParamList, 'PassCodeContent'>;
-}
-
 type Nav = {
-  navigate: (value: string, data: { data: PassCodeType }) => void;
+  navigate: (value: string) => void;
   goBack: () => void;
 };
 

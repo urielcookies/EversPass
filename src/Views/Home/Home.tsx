@@ -15,6 +15,7 @@ import UpdatePassDrawer from '../../Components/PassEditor/UpdatePassDrawer';
 import { PassCodeType } from '../../Configs/interfaces/PassCodeData';
 import useStoredDataStore from '../../Store/useStoredDataStore';
 import FastImage from 'react-native-fast-image';
+import useActivePassCodeStore from '../../Store/useActivePassCodeStore';
 
 const Home = () => {
   const { colors } = useTheme();
@@ -25,6 +26,7 @@ const Home = () => {
   const [data, setData] = useState<PassCodeType[]>([]);
   const [isCreateActive, setIsCreateActive] = useState(false);
   const [isEditActive, setIsEditActive] = useState({});
+  const { setActivePassCode } = useActivePassCodeStore();
 
   useFocusEffect(() => {
       setData(storedSecrets);
@@ -43,10 +45,9 @@ const Home = () => {
     });
   };
 
-  const gotoPassCodeConentStackScreen = (data: PassCodeType) => {
-    navigation.navigate('PassCodeContent', {
-      data,
-    });
+  const gotoPassCodeConentStackScreen = (selectedData: PassCodeType) => {
+    setActivePassCode(selectedData);
+    navigation.navigate('PassCodeContent');
   };
 
   const gotoTestScreen = () => {

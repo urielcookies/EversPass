@@ -8,11 +8,7 @@ import {
   View,
 } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import {
-  useNavigation,
-  NavigationProp,
-  RouteProp,
-} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { List, Text, useTheme } from 'react-native-paper';
 import { isEmpty, map } from 'lodash';
 import { MD3Colors } from 'react-native-paper/lib/typescript/types';
@@ -21,15 +17,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import PassCodeFields from './PassCodeFields';
 import ViewWrapper from '../ViewWrapper/ViewWrapper';
 import useSubscriptionPlanStore from '../../Store/useSubscriptionPlanStore';
-import {
-  CreditCardData,
-  PasswordData,
-  PersonalInfoData,
-  SecureNoteData,
-} from '../../Configs/interfaces/PassCodeData';
+import useActivePassCodeStore from '../../Store/useActivePassCodeStore';
 
-const PassCodeContent: FC<PassCodeContentProps> = props => {
-  const { data } = props.route.params;
+const PassCodeContent = () => {
+  const { activePassCode: data, resetActivePassCode } = useActivePassCodeStore();
   const navigation = useNavigation<Nav>();
   const { isSubscriber } = useSubscriptionPlanStore();
   const { colors } = useTheme();
@@ -40,6 +31,7 @@ const PassCodeContent: FC<PassCodeContentProps> = props => {
 
   const gotoTestStackScreen = () => {
     navigation.goBack();
+    resetActivePassCode();
   };
 
   const gotoEditorStackScreen = () => {
@@ -349,16 +341,11 @@ const themeStyle = (colors: MD3Colors) =>
     },
   });
 
-type RootStackParamList = {
-  PassCodeContent: {
-    data: PasswordData | CreditCardData | PersonalInfoData | SecureNoteData
-  };
-};
-
-interface PassCodeContentProps {
-  navigation: NavigationProp<Nav>;
-  route: RouteProp<RootStackParamList, 'PassCodeContent'>;
-}
+// type RootStackParamList = {
+//   PassCodeContent: {
+//     data: PasswordData | CreditCardData | PersonalInfoData | SecureNoteData
+//   };
+// };
 
 type Nav = {
   goBack: () => void;
