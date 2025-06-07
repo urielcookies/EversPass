@@ -1,6 +1,8 @@
 ---
 // src/layouts/Layout.astro
+import './src/styles/global.css'
 import Navbar from '../components/Navbar.astro';
+import { ClientRouter } from "astro:transitions";
 
 const { title, currentPage } = Astro.props;
 ---
@@ -10,15 +12,24 @@ const { title, currentPage } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{title || 'EversPass'}</title>
+    <ClientRouter />
 
-    {/* This script prevents a flash of the wrong theme */}
+    {/* This script is the single source of truth for applying the theme */}
     <script is:inline>
-      const theme = localStorage.getItem('theme') || 'dark';
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      const applyTheme = () => {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      };
+
+      // Run on initial page load
+      applyTheme();
+
+      // Run after every page swap to maintain consistency
+      document.addEventListener('astro:after-swap', applyTheme);
     </script>
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
