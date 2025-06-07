@@ -1,0 +1,142 @@
+---
+// src/components/Navbar.astro
+const { currentPage } = Astro.props;
+
+// --- Styling variables for links ---
+const linkClasses = "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300";
+const activeLinkClasses = "bg-slate-200 dark:bg-slate-700 text-sky-600 dark:text-sky-400";
+const inactiveLinkClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100";
+---
+
+<nav id="main-nav" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {/* We now use a 3-column grid for the layout */}
+    <div class="grid grid-cols-3 items-center h-16">
+
+      <div class="justify-self-start">
+        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500">
+          <span class="sr-only">Toggle theme</span>
+          <svg id="theme-toggle-light-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <svg id="theme-toggle-dark-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        </button>
+      </div>
+
+      <div class="justify-self-center">
+        <a href="/" class="text-2xl font-bold text-slate-800 dark:text-white">EversPass</a>
+      </div>
+
+      <div class="justify-self-end flex items-center">
+        <div class="hidden md:flex items-center space-x-4">
+          <a href="/" class:list={[linkClasses, currentPage === "/" ? activeLinkClasses : inactiveLinkClasses]}>Home</a>
+          <a href="/about" class:list={[linkClasses, currentPage === "/about" ? activeLinkClasses : inactiveLinkClasses]}>About</a>
+          <a href="/contact" class:list={[linkClasses, currentPage === "/contact" ? activeLinkClasses : inactiveLinkClasses]}>Contact</a>
+        </div>
+        <div class="flex md:hidden ml-4"> {/* Added ml-4 for spacing */}
+          <button id="menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
+            <span class="sr-only">Open main menu</span>
+            <svg id="menu-open-icon" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg id="menu-close-icon" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <div
+    id="mobile-menu"
+    class="
+      absolute top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 p-4 md:hidden
+      transition-all duration-300 ease-in-out transform origin-top 
+      opacity-0 scale-95 pointer-events-none
+    "
+  >
+    <div class="space-y-1">
+      <a href="/" class:list={["block", linkClasses, currentPage === "/" ? activeLinkClasses : inactiveLinkClasses]}>Home</a>
+      <a href="/about" class:list={["block", linkClasses, currentPage === "/about" ? activeLinkClasses : inactiveLinkClasses]}>About</a>
+      <a href="/contact" class:list={["block", linkClasses, currentPage === "/contact" ? activeLinkClasses : inactiveLinkClasses]}>Contact</a>
+    </div>
+  </div>
+</nav>
+
+{/* --- THE SCRIPT TAG REMAINS EXACTLY THE SAME --- */}
+<script>
+  (() => {
+    const nav = document.getElementById('main-nav');
+    const menuButton = document.getElementById('menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const openIcon = document.getElementById('menu-open-icon');
+    const closeIcon = document.getElementById('menu-close-icon');
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const lightIcon = document.getElementById('theme-toggle-light-icon');
+    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+
+    if (!nav || !menuButton || !mobileMenu || !openIcon || !closeIcon || !themeToggleButton || !lightIcon || !darkIcon) {
+      console.error("Navbar script failed: Not all required HTML elements were found. Please check element IDs.");
+      return;
+    }
+
+    function applyTheme(theme: 'light' | 'dark') {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        if (lightIcon && darkIcon) {
+          lightIcon.classList.remove('hidden');
+          darkIcon.classList.add('hidden');
+        }
+      } else {
+        document.documentElement.classList.remove('dark');
+        if (lightIcon && darkIcon) {
+          lightIcon.classList.add('hidden');
+          darkIcon.classList.remove('hidden');
+        }
+      }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme as 'light' | 'dark');
+
+    themeToggleButton.addEventListener('click', () => {
+      const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('theme', newTheme);
+      applyTheme(newTheme);
+    });
+
+    function openMobileMenu() {
+      if (mobileMenu && openIcon && closeIcon) {
+        mobileMenu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+        mobileMenu.classList.add('opacity-100', 'scale-100', 'pointer-events-auto');
+        openIcon.classList.add('hidden');
+        closeIcon.classList.remove('hidden');
+      }
+    }
+
+    function closeMobileMenu() {
+      if (mobileMenu && openIcon && closeIcon) {
+        mobileMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        mobileMenu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
+        openIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+      }
+    }
+
+    menuButton.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isMenuOpen = mobileMenu.classList.contains('opacity-100');
+      if (isMenuOpen) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      const isMenuOpen = mobileMenu.classList.contains('opacity-100');
+      const isClickInsideNav = nav.contains(event.target as Node);
+
+      if (isMenuOpen && !isClickInsideNav) {
+        closeMobileMenu();
+      }
+    });
+  })();
+</script>
