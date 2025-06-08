@@ -30,10 +30,9 @@ import { deleteSessionById } from "@/services/deleteSession";
 
 interface LoadSessionContentProps {
   deviceId: string;
-  username: string;
 }
 
-const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => {
+const LoadSessionContent = ({ deviceId }: LoadSessionContentProps) => {
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null); 
@@ -42,7 +41,6 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
   const [form, setForm] = useState({
     deviceId,
     name: '',
-    username,
   });
 
   useEffect(() => {
@@ -164,18 +162,6 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
                   className="col-span-3"
                   onChange={(e) => formStateHandler('name', e.target.value)} />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">Username</Label>
-                <div className="col-span-3 flex items-center gap-2">
-                  <Input
-                    id="username"
-                    autoComplete="off"
-                    value={form.username}
-                    disabled
-                    className="text-xs text-slate-500"
-                    onChange={(e) => formStateHandler('username', e.target.value)} />
-                </div>
-              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>
@@ -183,7 +169,7 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name) || isEmpty(form.username)}>Create Session</Button>
+              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
             </DialogFooter>
           </form>
         </DialogContent>

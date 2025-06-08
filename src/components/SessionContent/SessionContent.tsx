@@ -17,13 +17,11 @@ const SessionContent = () => {
     (async () => {
       const queryParams = new URLSearchParams(window.location.search);
       const deviceIdParams = queryParams.get('deviceId');
-      const usernameParams = queryParams.get('username');
 
       if (!isNull(deviceIdParams)) {
         const deviceIdExists = await checkDeviceIdExists(deviceIdParams)
         if (deviceIdExists?.exists) {
           setDeviceId(deviceIdExists.device_id)
-          setUsername(usernameParams)
         }
       }
 
@@ -38,8 +36,8 @@ const SessionContent = () => {
   }, [deviceId, username]);
 
   return (deviceId && username)
-    ? <LoadSession deviceId={deviceId} username={username} />
-    : <CreateSession setDeviceId={setDeviceId} setUsername={setUsername} />;
+    ? <LoadSession deviceId={deviceId} />
+    : <CreateSession setDeviceId={setDeviceId} />;
 };
 
 export default SessionContent;
