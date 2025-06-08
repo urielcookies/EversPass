@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Dispatch, FormEvent, SetStateAction } from 'react';
+import { isEmpty } from 'lodash-es';
 import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { createSession, type SessionData } from '../../services/createSession';
 interface SessionContentProps {
   setDeviceId: Dispatch<SetStateAction<string | null>>;
   storageKey: {
@@ -61,13 +63,22 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
     setTimeout(() => setCopied(false), 1000);
   };
 
-  const formSubmitHandler = (event: FormEvent<HTMLFormElement>) => {
+  const formSubmitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setIsDialogOpen(false);
     setDeviceId(form.deviceId);
     localStorage.setItem(storageKey.deviceId, form.deviceId);
     localStorage.setItem(storageKey.username, form.username);
+
+      const data: SessionData = {
+        device_id: form.deviceId,
+        name: form.name,
+        expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+        status: 'active'
+      };
+
+      createSession(data);
   };
 
   return (
@@ -87,7 +98,7 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[600px]">
           <form autoComplete="off" onSubmit={formSubmitHandler}>
             <DialogHeader>
               <DialogTitle>Start New Session</DialogTitle>
@@ -114,7 +125,7 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
                 </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name-1" className="text-right">Name</Label>
+                <Label htmlFor="name-1" className="text-right">Session Name</Label>
                 <Input
                   id="name-1"
                   name="name"
@@ -138,7 +149,7 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta">Create Session</Button>
+              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
             </DialogFooter>
           </form>
         </DialogContent>
