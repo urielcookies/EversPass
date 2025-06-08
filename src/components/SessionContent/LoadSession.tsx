@@ -1,9 +1,19 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { isEmpty } from "lodash-es";
-import { Copy, PlusCircle } from "lucide-react";
+import { isEmpty, isNull } from "lodash-es";
+import { Copy, PlusCircle, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Dialog,
   DialogClose,
@@ -13,9 +23,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { loadSessionsByDeviceId, type SessionRecord } from "@/services/loadSessions";
 import SessionsTable from "./SessionsTable";
 import { createSession, type SessionData } from "@/services/createSession";
+import { loadSessionsByDeviceId, type SessionRecord } from "@/services/loadSessions";
+import { deleteSessionById } from "@/services/deleteSession";
 
 interface LoadSessionContentProps {
   deviceId: string;
@@ -24,6 +35,8 @@ interface LoadSessionContentProps {
 
 const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => {
   const [sessions, setSessions] = useState<SessionRecord[]>([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null); 
   const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [form, setForm] = useState({
@@ -68,6 +81,29 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
     createSession(data);
   };
 
+  const handleOpenDeleteDialog = (session: SessionRecord) => {
+    setSessionToDelete(session);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!sessionToDelete) return;
+
+    try {
+      await deleteSessionById(sessionToDelete.id);
+      // If successful, remove the session from the local state // temp... to be replaced with pcoketbase web sockets
+      setSessions(currentSessions =>
+        currentSessions.filter(s => s.id !== sessionToDelete.id)
+      );
+    } catch (error) {
+      console.error("Delete failed:", error);
+    } finally {
+      // Close the dialog regardless of success or failure
+      setIsDeleteDialogOpen(false);
+      setSessionToDelete(null);
+    }
+  }
+
   return (
     <>
       <div className="flex justify-between items-center mb-8">
@@ -88,8 +124,9 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
         </Button>
       </div>
 
-      <SessionsTable sessions={sessions} />
+      <SessionsTable sessions={sessions} onDeleteSession={handleOpenDeleteDialog} />
 
+      {/* --- CREATE SESSSION DIALOG --- */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <form autoComplete="off" onSubmit={formSubmitHandler}>
@@ -100,6 +137,20 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="device-id" className="text-right">Device ID</Label>
+                <div className="col-span-3 flex items-center gap-2">
+                  <Input
+                    id="device-id"
+                    autoComplete="off"
+                    value={form.deviceId}
+                    disabled
+                    className="text-xs text-slate-500" />
+                  <Button type="button" variant="outline" size="icon" onClick={handleCopy}>
+                    <Copy className={`h-4 w-4 transition-transform ${copied ? 'scale-125 text-green-500' : ''}`} />
+                  </Button>
+                </div>
+              </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="session-name" className="text-right">
                   Name
@@ -114,26 +165,15 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
                   onChange={(e) => formStateHandler('name', e.target.value)} />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="device-id" className="text-right">Device ID</Label>
+                <Label htmlFor="username" className="text-right">Username</Label>
                 <div className="col-span-3 flex items-center gap-2">
                   <Input
-                    id="device-id"
-                    value={form.deviceId}
-                    disabled
-                    className="text-xs text-slate-500" />
-                  <Button type="button" variant="outline" size="icon" onClick={handleCopy}>
-                    <Copy className={`h-4 w-4 transition-transform ${copied ? 'scale-125 text-green-500' : ''}`} />
-                  </Button>
-                </div>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="device-id" className="text-right">Username</Label>
-                <div className="col-span-3 flex items-center gap-2">
-                  <Input
-                    id="device-id"
+                    id="username"
+                    autoComplete="off"
                     value={form.username}
                     disabled
-                    className="text-xs text-slate-500" />
+                    className="text-xs text-slate-500"
+                    onChange={(e) => formStateHandler('username', e.target.value)} />
                 </div>
               </div>
             </div>
@@ -143,11 +183,32 @@ const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => 
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
+              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name) || isEmpty(form.username)}>Create Session</Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* --- DELETE CONFIRMATION DIALOG --- */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              session named <span className="font-semibold text-slate-900 dark:text-white">"{sessionToDelete?.name}"</span> and all of its data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800">
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

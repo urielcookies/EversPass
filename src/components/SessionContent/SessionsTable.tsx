@@ -9,8 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge"; // Assuming you have a Badge component from shadcn
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import type { SessionRecord } from "@/services/loadSessions";
+import { Button } from "../ui/button";
+import { Trash2 } from "lucide-react";
 
 interface Session {
   id: string;
@@ -24,6 +27,7 @@ interface Session {
 
 interface SessionsTableProps {
   sessions: Session[];
+  onDeleteSession: (session: SessionRecord) => void;
 }
 
 // Helper: format ms to "Xd Xh Xm Xs"
@@ -81,7 +85,7 @@ const StatusBadge = ({ status }: { status: Session['status'] }) => {
 };
 
 
-const SessionsTable = ({ sessions }: SessionsTableProps) => {
+const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
   if (sessions.length === 0) {
     return (
       <div className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
@@ -102,7 +106,8 @@ const SessionsTable = ({ sessions }: SessionsTableProps) => {
             <TableHead className="w-[40%]">Name</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Expires In</TableHead>
-            <TableHead className="text-right">Created</TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -115,7 +120,16 @@ const SessionsTable = ({ sessions }: SessionsTableProps) => {
               <TableCell>
                 <TimeRemaining expiresAt={session.expires_at} />
               </TableCell>
-              <TableCell className="text-right text-slate-500 dark:text-slate-400">{new Date(session.created).toLocaleDateString()}</TableCell>
+              <TableCell className="text-slate-500 dark:text-slate-400">{new Date(session.created).toLocaleDateString()}</TableCell>
+              <TableCell className="text-right">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDeleteSession(session)}>
+                  <Trash2 className="h-4 w-4 text-slate-500 hover:text-red-600" />
+                  <span className="sr-only">Delete session</span>
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

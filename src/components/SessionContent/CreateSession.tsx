@@ -18,19 +18,16 @@ import {
 import { createSession, type SessionData } from '@/services/createSession';
 interface SessionContentProps {
   setDeviceId: Dispatch<SetStateAction<string | null>>;
-  storageKey: {
-    deviceId: string;
-    username: string;
-  }
+  setUsername: Dispatch<SetStateAction<string | null>>;
 }
 
-const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
+const SessionContent = ({ setDeviceId, setUsername }: SessionContentProps) => {
   const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [form, setForm] = useState({
     deviceId: '',
-    name: 'Hiking Trip',
-    username: '@urielcookies',
+    name: '',
+    username: '',
   });
 
   useEffect(() => {
@@ -68,8 +65,7 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
 
     setIsDialogOpen(false);
     setDeviceId(form.deviceId);
-    localStorage.setItem(storageKey.deviceId, form.deviceId);
-    localStorage.setItem(storageKey.username, form.username);
+    setUsername(form.username);
 
     const data: SessionData = {
       device_id: form.deviceId,
@@ -111,7 +107,7 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
                   <Input
                     id="device-1"
                     name="deviceId"
-                    defaultValue={form.deviceId}
+                    value={form.deviceId}
                     autoComplete="off"
                     disabled />
                   <button
@@ -127,7 +123,8 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
                 <Input
                   id="name-1"
                   name="name"
-                  defaultValue={form.name}
+                  value={form.name}
+                  placeholder="Hiking Trip"
                   autoComplete="off"
                   className="col-span-3"
                   onChange={(event) => formStateHandler(event.target.name, event.target.value)} />
@@ -137,7 +134,8 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
                 <Input
                   id="username-1"
                   name="username"
-                  defaultValue={form.username}
+                  value={form.username}
+                  placeholder="@urielcookies"
                   autoComplete="off"
                   className="col-span-3"
                   onChange={(event) => formStateHandler(event.target.name, event.target.value)} />
@@ -147,7 +145,7 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
+              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name) || isEmpty(form.username)}>Create Session</Button>
             </DialogFooter>
           </form>
         </DialogContent>
