@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { createSession, type SessionData } from '../../services/createSession';
+import { createSession, type SessionData } from '@/services/createSession';
 interface SessionContentProps {
   setDeviceId: Dispatch<SetStateAction<string | null>>;
   storageKey: {
@@ -71,14 +71,14 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
     localStorage.setItem(storageKey.deviceId, form.deviceId);
     localStorage.setItem(storageKey.username, form.username);
 
-      const data: SessionData = {
-        device_id: form.deviceId,
-        name: form.name,
-        expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-        status: 'active'
-      };
+    const data: SessionData = {
+      device_id: form.deviceId,
+      name: form.name,
+      expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+      status: 'active'
+    };
 
-      createSession(data);
+    createSession(data);
   };
 
   return (

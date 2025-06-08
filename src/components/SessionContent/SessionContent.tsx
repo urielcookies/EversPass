@@ -4,6 +4,7 @@ import LoadSession from '../SessionContent/LoadSession';
 
 const SessionContent = () => {
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   const storageKey = {
     deviceId: 'eversPassDeviceId',
@@ -11,13 +12,14 @@ const SessionContent = () => {
   };
 
   useEffect(() => {
-    const storageKey = 'eversPassDeviceId';
-    const id = localStorage.getItem(storageKey);
-    setDeviceId(id);
+    const _deviceId = localStorage.getItem(storageKey.deviceId);
+    const _username = localStorage.getItem(storageKey.username);
+    setDeviceId(_deviceId);
+    setUsername(_username);
   }, []);
 
   return deviceId
-    ? <LoadSession storageKey={storageKey} />
+    ? <LoadSession deviceId={deviceId} username={username} />
     : <CreateSession storageKey={storageKey} setDeviceId={setDeviceId} />;
 };
 

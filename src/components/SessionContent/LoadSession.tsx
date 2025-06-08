@@ -1,5 +1,4 @@
-import { useState } from "react";
-import type { Dispatch, SetStateAction } from 'react';
+import { useEffect, useState } from "react";
 import { Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,15 +12,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { loadSessionsByDeviceId, type SessionRecord } from "@/services/loadSessions";
 
 interface LoadSessionContentProps {
-  storageKey: {
-    deviceId: string;
-    username: string;
-  }
+  deviceId: string;
+  username: string | null;
 }
 
-const LoadSessionContent = ({ storageKey }: LoadSessionContentProps) => {
+const LoadSessionContent = ({ deviceId, username }: LoadSessionContentProps) => {
+  const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [form, setForm] = useState({
@@ -29,16 +28,22 @@ const LoadSessionContent = ({ storageKey }: LoadSessionContentProps) => {
     username: '',
   });
 
+  useEffect(() => {
+    (async () => {
+      const sessions = await loadSessionsByDeviceId(deviceId);
+      if (sessions) {
+        setSessions(sessions);
+      }
+    })()
+  }, []);
+
   const formHandler = (key: string, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const handleLoadSession = () => {
-    const deviceId = localStorage.getItem(storageKey.deviceId) || '';
-    const storedUsername = localStorage.getItem(storageKey.username) || '';
-
     setForm({
       deviceId,
-      username: storedUsername,
+      username,
     });
 
     setIsDialogOpen(true);
@@ -50,6 +55,7 @@ const LoadSessionContent = ({ storageKey }: LoadSessionContentProps) => {
     setTimeout(() => setCopied(false), 1000);
   };
 
+  console.log('sessions-->>', sessions);
   return (
     <>
       <div className="text-center">
