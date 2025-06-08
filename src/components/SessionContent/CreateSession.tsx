@@ -74,8 +74,6 @@ const SessionContent = ({ setDeviceId, storageKey }: SessionContentProps) => {
     const data: SessionData = {
       device_id: form.deviceId,
       name: form.name,
-      expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-      status: 'active'
     };
 
     createSession(data);

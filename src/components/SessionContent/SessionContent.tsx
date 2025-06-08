@@ -18,7 +18,7 @@ const SessionContent = () => {
     setUsername(_username);
   }, []);
 
-  return deviceId
+  return deviceId && username
     ? <LoadSession deviceId={deviceId} username={username} />
     : <CreateSession storageKey={storageKey} setDeviceId={setDeviceId} />;
 };

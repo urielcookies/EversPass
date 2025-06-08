@@ -1,4 +1,5 @@
-import pb from './pocketbase';
+import axios from 'axios';
+import { BACKEND_API } from '@/lib/constants';
 
 interface SessionRecord {
   id: string;
@@ -12,11 +13,8 @@ interface SessionRecord {
 
 const loadSessionsByDeviceId = async (deviceId: string): Promise<SessionRecord[] | undefined> => {
   try {
-    const records = await pb
-      .collection('everspass_sessions')
-      .getFullList(10, {
-        filter: `device_id = "${deviceId}"`
-      });
+    const response = await axios.get(`${BACKEND_API}/load-session?deviceId=${deviceId}`)
+    const records: SessionRecord[] = response.data;
 
     // Map raw PocketBase records to your defined SessionRecord structure
     const typedRecords: SessionRecord[] = records.map((record) => ({
