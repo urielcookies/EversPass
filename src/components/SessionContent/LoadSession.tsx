@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import SessionsTable from "./SessionsTable";
 import { createSession, type SessionData } from "@/services/createSession";
-import { loadSessionsByDeviceId, type SessionRecord } from "@/services/loadSessions";
+import { type SessionRecord } from "@/services/loadSessions";
 import { deleteSessionById } from "@/services/deleteSession";
 
 interface LoadSessionContentProps {
@@ -34,7 +34,6 @@ interface LoadSessionContentProps {
 }
 
 const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => {
-  // const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null); 
   const [copied, setCopied] = useState(false);
