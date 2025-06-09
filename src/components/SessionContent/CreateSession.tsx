@@ -18,16 +18,14 @@ import {
 import { createSession, type SessionData } from '@/services/createSession';
 interface SessionContentProps {
   setDeviceId: Dispatch<SetStateAction<string | null>>;
-  setUsername: Dispatch<SetStateAction<string | null>>;
 }
 
-const SessionContent = ({ setDeviceId, setUsername }: SessionContentProps) => {
+const SessionContent = ({ setDeviceId }: SessionContentProps) => {
   const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [form, setForm] = useState({
     deviceId: '',
     name: '',
-    username: '',
   });
 
   useEffect(() => {
@@ -51,7 +49,6 @@ const SessionContent = ({ setDeviceId, setUsername }: SessionContentProps) => {
     setForm({
       deviceId: '',
       name: '',
-      username: '',
     })
 
   const handleCopy = () => {
@@ -65,7 +62,6 @@ const SessionContent = ({ setDeviceId, setUsername }: SessionContentProps) => {
 
     setIsDialogOpen(false);
     setDeviceId(form.deviceId);
-    setUsername(form.username);
 
     const data: SessionData = {
       device_id: form.deviceId,
@@ -129,23 +125,12 @@ const SessionContent = ({ setDeviceId, setUsername }: SessionContentProps) => {
                   className="col-span-3"
                   onChange={(event) => formStateHandler(event.target.name, event.target.value)} />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username-1" className="text-right">Username</Label>
-                <Input
-                  id="username-1"
-                  name="username"
-                  value={form.username}
-                  placeholder="@urielcookies"
-                  autoComplete="off"
-                  className="col-span-3"
-                  onChange={(event) => formStateHandler(event.target.name, event.target.value)} />
-              </div>
             </div>
             <DialogFooter>
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name) || isEmpty(form.username)}>Create Session</Button>
+              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
             </DialogFooter>
           </form>
         </DialogContent>

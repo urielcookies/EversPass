@@ -30,10 +30,11 @@ import { deleteSessionById } from "@/services/deleteSession";
 
 interface LoadSessionContentProps {
   deviceId: string;
+  sessions: SessionRecord[]
 }
 
-const LoadSessionContent = ({ deviceId }: LoadSessionContentProps) => {
-  const [sessions, setSessions] = useState<SessionRecord[]>([]);
+const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => {
+  // const [sessions, setSessions] = useState<SessionRecord[]>([]);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null); 
   const [copied, setCopied] = useState(false);
@@ -42,15 +43,6 @@ const LoadSessionContent = ({ deviceId }: LoadSessionContentProps) => {
     deviceId,
     name: '',
   });
-
-  useEffect(() => {
-    (async () => {
-      const sessionsData = await loadSessionsByDeviceId(deviceId);
-      if (sessionsData) {
-        setSessions(sessionsData);
-      }
-    })()
-  }, []);
 
   const formStateHandler = (key: string, value: string) =>
     setForm((prevState) => ({
@@ -90,9 +82,9 @@ const LoadSessionContent = ({ deviceId }: LoadSessionContentProps) => {
     try {
       await deleteSessionById(sessionToDelete.id);
       // If successful, remove the session from the local state // temp... to be replaced with pcoketbase web sockets
-      setSessions(currentSessions =>
-        currentSessions.filter(s => s.id !== sessionToDelete.id)
-      );
+      // setSessions(currentSessions =>
+      //   currentSessions.filter(s => s.id !== sessionToDelete.id)
+      // );
     } catch (error) {
       console.error("Delete failed:", error);
     } finally {
