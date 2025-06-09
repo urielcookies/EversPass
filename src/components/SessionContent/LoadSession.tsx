@@ -60,14 +60,14 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
   const formSubmitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setIsDialogOpen(false);
-
     const data: SessionData = {
       device_id: form.deviceId,
       name: form.name,
     };
 
-    createSession(data);
+    await createSession(data);
+    formStateHandler('name', '')
+    setIsDialogOpen(false);
   };
 
   const handleOpenDeleteDialog = (session: SessionRecord) => {
@@ -79,11 +79,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     if (!sessionToDelete) return;
 
     try {
-      await deleteSessionById(sessionToDelete.id);
-      // If successful, remove the session from the local state // temp... to be replaced with pcoketbase web sockets
-      // setSessions(currentSessions =>
-      //   currentSessions.filter(s => s.id !== sessionToDelete.id)
-      // );
+      deleteSessionById(sessionToDelete.id);
     } catch (error) {
       console.error("Delete failed:", error);
     } finally {

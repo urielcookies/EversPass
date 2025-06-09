@@ -21,6 +21,7 @@ interface SessionContentProps {
 }
 
 const SessionContent = ({ setDeviceId }: SessionContentProps) => {
+  const [isCreationLoading, setIsCreationLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [form, setForm] = useState({
@@ -60,15 +61,17 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
   const formSubmitHandler = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setIsDialogOpen(false);
-    setDeviceId(form.deviceId);
-
     const data: SessionData = {
       device_id: form.deviceId,
       name: form.name,
     };
 
-    createSession(data);
+    setIsCreationLoading(true)
+    await createSession(data);
+    setIsCreationLoading(false)
+    setIsDialogOpen(false);
+    setDeviceId(form.deviceId);
+    resetForm();
   };
 
   return (
@@ -130,7 +133,13 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
+              <Button
+                type="submit"
+                variant="primary-cta"
+                loading={isCreationLoading}
+                disabled={isEmpty(form.name) || isCreationLoading}>
+                Create Session
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
