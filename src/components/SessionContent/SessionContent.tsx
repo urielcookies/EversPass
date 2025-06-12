@@ -6,7 +6,15 @@ import useRealtimeSessions from '@/hooks/useRealtimeSessions';
 
 const SessionContent = () => {
   const { sessions, deviceId: deviceIdSession } = useStore($sessions);
-  const { deviceId, setDeviceId } = useRealtimeSessions(deviceIdSession);
+  const { deviceId, setDeviceId, isLoading } = useRealtimeSessions(deviceIdSession);
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-slate-600 dark:text-slate-400">Loading Sessions...</p>
+      </div>
+    );
+  }
 
   return deviceId
     ? <LoadSession deviceId={deviceId} sessions={sessions} />

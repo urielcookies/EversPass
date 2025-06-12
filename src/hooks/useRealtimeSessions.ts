@@ -9,6 +9,7 @@ const storageKey = {
 
 const useRealtimeSessions = (deviceIdSession: string | null) => {
   const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const clearData = () => {
     // localStorage.removeItem(storageKey.deviceId);
@@ -26,7 +27,7 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
   useEffect(() => {
     (async () => {
       if (!deviceIdLocal) return;
-
+      setIsLoading(true);
       const deviceIdExists = await checkDeviceIdExists(deviceIdLocal);
 
       if (deviceIdExists?.exists) {       
@@ -38,7 +39,7 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
         window.history.replaceState({ path: currentUrl.href }, '', currentUrl.href);
 
         // Load initial data
-        fetchSessions(deviceIdExists.device_id);
+        await fetchSessions(deviceIdExists.device_id);
 
         // Setup real-time subscription
         pb.collection('everspass_sessions').subscribe('*', (e) => {
@@ -49,6 +50,7 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
       } else { // if does not exist remove localstorage and url params
         clearData();
       }
+      setIsLoading(false);
     })()
 
     // Clean up on unmount
@@ -57,7 +59,7 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
     };
   }, [deviceId]);
 
-  return { deviceId, setDeviceId };
+  return { deviceId, setDeviceId, isLoading };
 };
 
 export default useRealtimeSessions;
