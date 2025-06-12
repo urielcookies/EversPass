@@ -1,32 +1,24 @@
 import { useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { map } from "lodash-es";
+import { navigate } from 'astro:transitions/client';
+import { useStore } from '@nanostores/react';
+import { $sessions } from "@/stores/sessionsStore";
+import type { SessionRecord } from "@/services/loadSessions";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import type { SessionRecord } from "@/services/loadSessions";
-import { Button } from "../ui/button";
-import { Trash2 } from "lucide-react";
-
-interface Session {
-  id: string;
-  device_id: string;
-  name: string;
-  status: 'active' | 'expired' | 'deleting' | 'deleted';
-  created: string;
-  updated: string;
-  expires_at: string;
-}
 
 interface SessionsTableProps {
-  sessions: Session[];
+  sessions: SessionRecord[];
   onDeleteSession: (session: SessionRecord) => void;
 }
 
@@ -67,7 +59,7 @@ const TimeRemaining = ({ expiresAt }: { expiresAt: string }) => {
   return <span className={cn(timeLeft <= 0 ? "text-red-500" : "text-slate-500 dark:text-slate-400")}>{formatDuration(timeLeft)}</span>;
 };
 
-const StatusBadge = ({ status }: { status: Session['status'] }) => {
+const StatusBadge = ({ status }: { status: SessionRecord['status'] }) => {
   const statusStyles = {
     active: "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300",
     expired: "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-400",
@@ -86,6 +78,7 @@ const StatusBadge = ({ status }: { status: Session['status'] }) => {
 
 
 const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
+  const { deviceId } = useStore($sessions);
   if (sessions.length === 0) {
     return (
       <div className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
@@ -97,6 +90,10 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
       </div>
     )
   }
+
+  const handleRowClick = async (sessionId: string) => {
+    navigate(`/sessions/photos?eversPassDeviceId=${deviceId}&sessionId=${sessionId}`);
+  };
 
   return (
     <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
@@ -112,7 +109,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
         </TableHeader>
         <TableBody>
           {map(sessions, (session) => (
-            <TableRow key={session.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 cursor-pointer">
+            <TableRow key={session.id} onClick={() => handleRowClick(session.id)} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 cursor-pointer">
               <TableCell className="font-medium text-slate-900 dark:text-slate-100">{session.name}</TableCell>
               <TableCell>
                 <StatusBadge status={session.status} />
@@ -125,7 +122,10 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => onDeleteSession(session)}>
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteSession(session);
+                  }}>
                   <Trash2 className="h-4 w-4 text-slate-500 hover:text-red-600" />
                   <span className="sr-only">Delete session</span>
                 </Button>
