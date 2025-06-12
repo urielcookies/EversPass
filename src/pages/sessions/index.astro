@@ -1,0 +1,7 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import SessionContent from '@/components/SessionContent/SessionContent';
+---
+<Layout title="Sessions" currentPage="/sessions">
+  <SessionContent client:only="react" />
+</Layout>

@@ -1,8 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import PhotoSession from '@/components/PhotoContent/PhotoSession';
+import PhotoSessionContent from '@/components/PhotoContent/PhotoSessionContent';
 ---
-
-<Layout title="Photos" currentPage="/photos">
-  <PhotoSession client:only="react" />
+<Layout title="Photo Session" currentPage="/photos">
+  <PhotoSessionContent client:only="react" />
 </Layout>
