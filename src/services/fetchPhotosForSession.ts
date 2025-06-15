@@ -25,7 +25,7 @@ const fetchPhotosForSession = async (
   }
   try {
     const response = await axios.get(
-      `${BACKEND_API}/sessions/${sessionId}/photos?page=${page}&perPage=${perPage}`
+      `${BACKEND_API}/photosession/${sessionId}/photos?page=${page}&perPage=${perPage}`
     );
     return response.data;
   } catch (error) {
