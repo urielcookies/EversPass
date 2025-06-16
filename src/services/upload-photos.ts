@@ -1,17 +1,25 @@
 import axios from 'axios';
 import { BACKEND_API } from '@/lib/constants';
 
-interface UploadedPhoto {
-  id: string;
-  url: string;
-  originalFilename: string;
-  created: string;
-  session_id: string;
+interface FileUploadResult {
+  filename: string;
+  record_id?: string;
+  record_data?: any;
+  error?: string;
+  details?: any;
+  status_code?: number;
+  reason?: string;
 }
 
 interface UploadResponse {
   message: string;
-  uploaded_photos: UploadedPhoto[];
+  total_files_processed: number;
+  successful_uploads_count: number;
+  successful_uploads: FileUploadResult[];
+  failed_uploads_count: number;
+  failed_uploads: FileUploadResult[];
+  skipped_uploads_count: number;
+  skipped_uploads: FileUploadResult[];
 }
 
 interface UploadPhotosParams {
@@ -19,27 +27,24 @@ interface UploadPhotosParams {
   files: File[]; 
 }
 
-const uploadPhotosForSession = async ({ sessionId, files }: UploadPhotosParams): Promise<UploadResponse | undefined> => {
+const uploadPhotosForSession = async ({ sessionId, files }: UploadPhotosParams): Promise<UploadResponse> => {
   try {
     const formData = new FormData();
 
     files.forEach(file => {
-      formData.append('photos', file);
+      formData.append('image', file);
     });
 
     const response = await axios.post<UploadResponse>(
-      `${BACKEND_API}/upload-photos/${sessionId}`, // Construct the full API endpoint URL
-      formData, // The FormData object containing the files
+      `${BACKEND_API}/upload-photos/${sessionId}`,
+      formData,
       {
-        // Optional: Add headers like Authorization if your API requires authentication
-        // headers: {
-        //   'Authorization': `Bearer ${yourAuthToken}`,
-        // },
-        // Optional: onUploadProgress for showing a progress bar
-        // onUploadProgress: (progressEvent) => {
-        //   const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        //   console.log(`Upload progress: ${percentCompleted}%`);
-        // }
+        onUploadProgress: (progressEvent: any) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            console.log(`Client Upload progress to Flask: ${percentCompleted}%`);
+          }
+        },
       }
     );
 
@@ -47,8 +52,22 @@ const uploadPhotosForSession = async ({ sessionId, files }: UploadPhotosParams):
 
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('Failed to upload photos (Axios error):', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || 'Failed to upload photos. Please try again.');
+      const errorResponseData = error.response?.data;
+      
+      console.error('Failed to upload photos (Axios error):', errorResponseData || error.message);
+
+      if (errorResponseData && typeof errorResponseData === 'object' && 'message' in errorResponseData) {
+        const partialResponse: Partial<UploadResponse> = errorResponseData;
+        
+        partialResponse.successful_uploads = partialResponse.successful_uploads || [];
+        partialResponse.failed_uploads = partialResponse.failed_uploads || [];
+        partialResponse.skipped_uploads = partialResponse.skipped_uploads || [];
+        
+        throw new Error(partialResponse.message || 'An error occurred during upload processing.');
+
+      } else {
+        throw new Error(error.message || 'An unexpected network error occurred.');
+      }
     } else {
       console.error('An unexpected error occurred during photo upload:', error);
       throw new Error('An unexpected error occurred during photo upload.');
@@ -57,4 +76,4 @@ const uploadPhotosForSession = async ({ sessionId, files }: UploadPhotosParams):
 };
 
 export { uploadPhotosForSession };
-export type { UploadedPhoto, UploadResponse, UploadPhotosParams };
+export type { FileUploadResult, UploadResponse, UploadPhotosParams };

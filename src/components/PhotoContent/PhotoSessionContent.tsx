@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { find, isEqual, isUndefined } from 'lodash-es';
+import { navigate } from 'astro:transitions/client';
+import { useStore } from '@nanostores/react';
 import PhotoSession from '@/components/PhotoContent/PhotoSession';
 import checkDeviceIdExists from '@/services/checkDeviceIdExists';
 import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
 import { $activePhotoSession, clearPhotos, fetchPhotoSession } from '@/stores/photoSessionStore';
 import { $sessions, fetchSessions } from '@/stores/sessionsStore'; 
-import { useStore } from '@nanostores/react';
-import { find, isEqual } from 'lodash-es';
 
 
 const PhotoSessionContent = () => {
@@ -14,8 +15,8 @@ const PhotoSessionContent = () => {
   const deviceIdParams = url.searchParams.get("eversPassDeviceId");
   const sessionIdParams = url.searchParams.get("sessionId");
 
-  const { sessions } = useStore($sessions);
-  const { photos, isLoadingMore, error, page, totalPages } = useStore($activePhotoSession);
+  const { sessions, isLoading: sessionLoading } = useStore($sessions);
+  const { photos, isLoading: photosLoading, isLoadingMore, error, page, totalPages } = useStore($activePhotoSession);
 
   useEffect(() => {
     if (!deviceIdParams || !sessionIdParams) return
@@ -38,7 +39,7 @@ const PhotoSessionContent = () => {
     }
   }, []);
 
-  if (isLoading) {
+  if (isLoading || sessionLoading || photosLoading) {
     return (
       <div className="text-center py-20">
         <p className="text-slate-600 dark:text-slate-400">Loading Photo Session...</p>
@@ -55,7 +56,21 @@ const PhotoSessionContent = () => {
   }
 
   const session = find(sessions, ({ id }) => isEqual(id, sessionIdParams));
-  return session && <PhotoSession session={session} photoSession={photos} isLoadingMore={isLoadingMore} />
+  if (isUndefined(session)) {
+    // url.search = '';
+    // window.history.replaceState({}, '', url);
+    // navigate('/sessions')
+    return;
+  }
+
+
+  return (
+    <PhotoSession
+      session={session}
+      photoSession={photos}
+      isLoadingMore={isLoadingMore}
+      onPhotosUploaded={() => fetchPhotoSession(session.id, 1)} />
+  )
 };
 
 export default PhotoSessionContent;

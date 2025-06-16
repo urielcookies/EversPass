@@ -15,13 +15,10 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 
-// Import the new upload service function and its types
-
 interface PhotoSessionContentProps {
   session: SessionRecord;
   photoSession: PhotoRecord[];
   isLoadingMore: boolean;
-  // Add a prop to trigger parent data refetch after successful upload
   onPhotosUploaded: () => void;
 }
 
@@ -157,7 +154,7 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
 
       <section className="mt-8">
         {photoSession && photoSession.length > 0 ? (
-          <div id="photo-grid" className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
+          <div id="photo-grid" className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
             {photoSession.map(photo => (
               <div key={photo.id} className="aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden">
                 <img src={photo.url} alt={photo.alt || 'Session photo'} className="w-full h-full object-cover" />
@@ -204,8 +201,7 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
                 onChange={handleFileChange}
                 multiple
                 accept="image/*"
-                className="hidden"
-              />
+                className="hidden" />
               <Button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}

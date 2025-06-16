@@ -3,7 +3,7 @@ import { BACKEND_API } from "@/lib/constants";
 
 interface PhotoRecord {
   id: string;
-  url: string;
+  image_url: string;
   created: string;
   session_id: string;
 }
@@ -16,7 +16,7 @@ interface PagedPhotoResponse {
 }
 
 const fetchPhotosForSession = async (
-  sessionId: string | null | undefined,
+  sessionId: string,
   page: number = 1,
   perPage: number = 50
 ): Promise<PagedPhotoResponse> => {
