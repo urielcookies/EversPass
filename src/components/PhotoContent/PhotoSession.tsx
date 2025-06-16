@@ -1,26 +1,38 @@
-import { useState, useRef, ChangeEvent, FormEvent } from 'react';
-import { type PhotoRecord } from '@/services/fetchPhotosForSession';
-import { Button } from "@/components/ui/button";
-// No need for DialogTrigger import, as we'll manage open state directly
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Camera, Clock, Share, Upload, XCircle } from 'lucide-react';
-import { type SessionRecord } from '@/stores/sessionsStore';
+import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
+import { Camera, Clock, Share, Upload, XCircle, Loader2 } from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import { type PhotoRecord } from '@/services/fetchPhotosForSession';
+import { uploadPhotosForSession, type UploadResponse } from '@/services/upload-photos';
+import { Button } from "@/components/ui/button";
+import { type SessionRecord } from '@/stores/sessionsStore';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+
+// Import the new upload service function and its types
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
   photoSession: PhotoRecord[];
   isLoadingMore: boolean;
+  // Add a prop to trigger parent data refetch after successful upload
+  onPhotosUploaded: () => void;
 }
 
 interface FileWithPreview extends File {
   preview: string;
 }
 
-const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps) => {
+const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoSessionContentProps) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
-  const [isUploading, setIsUploading] = useState(false); // Loading state for upload
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const formatExpiration = (expiresAt: string) =>
@@ -34,9 +46,24 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
           preview: URL.createObjectURL(file)
         })
       );
-      setSelectedFiles(prevFiles => [...prevFiles, ...filesWithPreviews]);
+
+      setSelectedFiles(prevFiles => {
+        const existingFileNames = new Set(prevFiles.map(file => file.name));
+        const newUniqueFiles = filesWithPreviews.filter(file =>
+          !existingFileNames.has(file.name)
+        );
+
+        // Revoke URLs for files that were selected but are duplicates and won't be added to state
+        filesWithPreviews.forEach(file => {
+          if (!newUniqueFiles.includes(file)) {
+            URL.revokeObjectURL(file.preview);
+          }
+        });
+
+        return [...prevFiles, ...newUniqueFiles];
+      });
     }
-    event.target.value = ''; // Clear the input's value
+    event.target.value = '';
   };
 
   const handleRemoveFile = (fileName: string) => {
@@ -44,57 +71,60 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
       const updatedFiles = prevFiles.filter(file => file.name !== fileName);
       const removedFile = prevFiles.find(file => file.name === fileName);
       if (removedFile) {
-        URL.revokeObjectURL(removedFile.preview);
+        URL.revokeObjectURL(removedFile.preview); // Clean up the object URL
       }
       return updatedFiles;
     });
   };
 
   const handleClearSelectedFiles = () => {
-    selectedFiles.forEach(file => URL.revokeObjectURL(file.preview));
+    selectedFiles.forEach(file => URL.revokeObjectURL(file.preview)); // Clean up all object URLs
     setSelectedFiles([]);
   };
 
   const handleOpenDialog = () => setIsUploadModalOpen(true);
-  const handleCloseDialog = () => {
-    // Only clear files if not currently uploading, or if forced to close by explicit cancel
-    // If the modal is closed by X or outside click during upload, we want files to persist.
-    // However, since we disable buttons during upload, the only way to close it
-    // during upload is by a direct state change from handleUploadSubmit.
-    // For "Cancel" button, handleClearSelectedFiles() is called directly.
-    setIsUploadModalOpen(false);
-    // setIsUploading(false) //added
-    // If the user closes by clicking outside or 'X' button, we don't clear files.
-    // Files are cleared only on 'Cancel' or successful 'Confirm Upload'.
 
+  const handleCloseDialog = () => {
+    setIsUploadModalOpen(false);
     if (!isUploading) {
       handleClearSelectedFiles();   
     }
   };
 
   const handleUploadSubmit = async (event: FormEvent) => {
-    console.log('???')
     event.preventDefault();
-    setIsUploading(true); // Set loading to true when upload starts
+    setIsUploading(true);
+
+    // Ensure session and selectedFiles are available before proceeding
+    if (!session?.id || selectedFiles.length === 0) {
+      alert("Error: Session not found or no files selected.");
+      setIsUploading(false);
+      return;
+    }
 
     try {
-      // For demonstration, simulate an API call delay:
-      await new Promise(resolve => setTimeout(2000)); // Simulate 2-second upload
+      const result: UploadResponse | undefined = await uploadPhotosForSession({
+        sessionId: session.id,
+        files: selectedFiles,
+      });
 
-      console.log("Simulating upload of files:", selectedFiles);
-      alert(`Simulating upload of ${selectedFiles.length} photos.`);
-
-      setIsUploadModalOpen(false); // Close modal on success
-      handleClearSelectedFiles(); // Clear files on success
-    } catch (error) {
-      console.error("Error during photo upload:", error);
-      alert("Failed to upload photos. Please try again."); // Show error to user
+      if (result) {
+        console.log("Upload successful:", result);
+        alert(result.message);
+        setIsUploadModalOpen(false);
+        handleClearSelectedFiles();
+        onPhotosUploaded(); // Notify parent component to refetch data
+      } else {
+        alert("Upload failed: No response received from server.");
+      }
+    } catch (error: any) {
+      console.error("Error during photo upload in component:", error);
+      alert(error.message || "Failed to upload photos. Please try again.");
     } finally {
-      setIsUploading(false); // Set loading to false regardless of success or failure
+      setIsUploading(false);
     }
   };
 
-  console.log('isUploading-->>', isUploading)
   return (
     <main className="max-w-7xl mx-auto">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
@@ -105,7 +135,7 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
           <div className="mt-2 flex items-center gap-x-4 text-sm text-slate-600 dark:text-slate-400">
             <div className="flex items-center gap-1.5">
               <Camera className="h-4 w-4" />
-              <span>{photoSession?.length || 0} Photos</span> {/* Use optional chaining and default to 0 */}
+              <span>{photoSession?.length || 0} Photos</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
@@ -118,7 +148,6 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
             <Share className="mr-2 h-4 w-4" />
             Share
           </Button>
-          {/* Direct onClick to open the single Dialog */}
           <Button variant="primary-cta" onClick={handleOpenDialog}>
             <Upload className="mr-2 h-4 w-4" />
             Upload Photos
@@ -145,7 +174,6 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
               Upload the first photos to get started.
             </p>
             <div className="mt-6">
-              {/* Direct onClick to open the single Dialog */}
               <Button variant="primary-cta" size="lg" onClick={handleOpenDialog}>
                 Upload Your First Photo
               </Button>
@@ -154,7 +182,6 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
         )}
       </section>
 
-      {/* SINGLE SHARED DIALOG COMPONENT - Placed outside conditional rendering */}
       <Dialog open={isUploadModalOpen}>
         <DialogContent
           hideClose
@@ -180,10 +207,10 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
                 className="hidden"
               />
               <Button
+                type="button"
                 onClick={() => fileInputRef.current?.click()}
                 variant="primary-cta"
-                disabled={isUploading} // Disable while uploading
-              >
+                disabled={isUploading}>
                 <Upload className="mr-2 h-4 w-4" /> Select Photos
               </Button>
 
@@ -191,15 +218,25 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                   {selectedFiles.map((file) => (
                     <div key={file.name} className="relative aspect-square rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
-                      <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
+                      <img
+                        src={file.preview}
+                        alt={file.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = 'https://placehold.co/150x150/CCCCCC/000000?text=Error'; // Placeholder for failed image
+                          target.alt = `Could not load ${file.name}`;
+                          console.error(`Error loading image preview for: ${file.name}`);
+                        }}
+                      />
                       <Button
                         type="button"
                         variant="destructive"
                         size="icon"
                         className="absolute top-1 right-1 h-6 w-6 rounded-full"
                         onClick={() => handleRemoveFile(file.name)}
-                        disabled={isUploading} // Disable while uploading
-                      >
+                        disabled={isUploading}>
                         <XCircle className="h-4 w-4" />
                         <span className="sr-only">Remove photo</span>
                       </Button>
@@ -215,6 +252,7 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
             <DialogFooter>
               <DialogClose asChild>
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handleCloseDialog}
                   disabled={isUploading}>
@@ -225,10 +263,14 @@ const PhotoSessionContent = ({ session, photoSession }: PhotoSessionContentProps
               <Button
                 type="submit"
                 disabled={selectedFiles.length === 0 || isUploading}
-                loading={isUploading}
-                variant="primary-cta"
-              >
-                Confirm Upload ({selectedFiles.length} {selectedFiles.length === 1 ? 'photo' : 'photos'})
+                variant="primary-cta">
+                {isUploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...
+                  </>
+                ) : (
+                  `Confirm Upload (${selectedFiles.length} ${selectedFiles.length === 1 ? 'photo' : 'photos'})`
+                )}
               </Button>
             </DialogFooter>
           </form>
