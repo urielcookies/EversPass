@@ -14,7 +14,7 @@ import {
   Loader2,
   Grid3x3,
   Image,
-  Download, // Import the Download icon
+  Download,
 } from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
@@ -55,6 +55,9 @@ const PhotoSessionContent = ({
   const [isUploading, setIsUploading] = useState(false);
   const [oneView, setOneView] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
+  const [modalViewOn, setModalViewOn] = useState(false);
+  const [photoToViewUrl, setPhotoToViewUrl] = useState<string | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const photoRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -153,6 +156,18 @@ const PhotoSessionContent = ({
     }
   }, [oneView, selectedPhotoId]);
 
+  // Function to handle opening the photo view modal
+  const handleOpenPhotoViewModal = (photoUrl: string) => {
+    setPhotoToViewUrl(photoUrl);
+    setModalViewOn(true); // Ensure modal view is on when this modal is open
+  };
+
+  // Function to handle closing the photo view modal
+  const handleClosePhotoViewModal = () => {
+    setPhotoToViewUrl(null);
+    setModalViewOn(false); // Reset modal view on close
+  };
+
   return (
     <main className="max-w-7xl mx-auto">
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
@@ -224,10 +239,13 @@ const PhotoSessionContent = ({
                   ref={el => (photoRefs.current[photo.id] = el)}
                   onClick={() => {
                     setSelectedPhotoId(photo.id);
-                    setOneView(true);
+                    if (window.innerWidth <= 768) {
+                      setOneView(true);
+                    } else {
+                      handleOpenPhotoViewModal(photo.image_url);
+                    }
                   }}
                   className="relative aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden flex flex-col cursor-pointer">
-                  {/* Filename overlay for oneView */}
                   {oneView && (
                     <div className="absolute top-0 left-0 w-full p-3 bg-gradient-to-b from-black/60 to-transparent text-white text-sm font-semibold truncate z-10">
                       {photo.originalFilename || 'Unnamed Photo'}
@@ -276,7 +294,10 @@ const PhotoSessionContent = ({
               Upload the first photos to get started.
             </p>
             <div className="mt-6">
-              <Button variant="primary-cta" size="lg" onClick={handleOpenDialog}>
+              <Button
+                variant="primary-cta"
+                size="lg"
+                onClick={handleOpenDialog}>
                 Upload Your First Photo
               </Button>
             </div>
@@ -381,6 +402,46 @@ const PhotoSessionContent = ({
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Photo View Modal */}
+      <Dialog open={modalViewOn && photoToViewUrl !== null}>
+        <DialogContent
+          className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] h-[90vh] flex flex-col"
+          onInteractOutside={handleClosePhotoViewModal}
+          hideClose>
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="sr-only">View Photo</DialogTitle>
+            <DialogDescription className="sr-only">
+              Large view of the selected photo.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-grow flex items-center justify-center p-2 overflow-hidden">
+            {photoToViewUrl && (
+              <img
+                src={photoToViewUrl}
+                alt="Enlarged session photo"
+                className="max-w-full max-h-full object-contain"
+              />
+            )}
+          </div>
+          <DialogFooter className="flex-shrink-0 flex justify-between items-center w-full mt-4">
+            <Button
+              variant="outline"
+              onClick={handleClosePhotoViewModal}
+              className="px-4 py-2">
+              <XCircle className="mr-2 h-4 w-4" /> Close
+            </Button>
+            {photoToViewUrl && (
+              <Button
+                variant="primary-cta"
+                onClick={() => window.open(photoToViewUrl, '_blank')}
+                className="px-4 py-2">
+                <Download className="mr-2 h-4 w-4" /> Download
+              </Button>
+            )}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </main>
