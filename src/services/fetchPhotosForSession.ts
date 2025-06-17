@@ -3,6 +3,7 @@ import { BACKEND_API } from "@/lib/constants";
 
 interface PhotoRecord {
   id: string;
+  originalFilename: string;
   image_url: string;
   created: string;
   session_id: string;

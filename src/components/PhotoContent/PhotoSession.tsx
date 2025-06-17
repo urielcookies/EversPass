@@ -1,9 +1,28 @@
-import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
-import { Camera, Clock, Share, Upload, XCircle, Loader2 } from 'lucide-react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react';
+import {
+  Camera,
+  Clock,
+  Share,
+  Upload,
+  XCircle,
+  Loader2,
+  Grid3x3,
+  Image,
+  Download, // Import the Download icon
+} from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
-import { uploadPhotosForSession, type UploadResponse } from '@/services/upload-photos';
-import { Button } from "@/components/ui/button";
+import {
+  uploadPhotosForSession,
+  type UploadResponse,
+} from '@/services/upload-photos';
+import { Button } from '@/components/ui/button';
 import { type SessionRecord } from '@/stores/sessionsStore';
 import {
   Dialog,
@@ -12,8 +31,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -26,11 +45,18 @@ interface FileWithPreview extends File {
   preview: string;
 }
 
-const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoSessionContentProps) => {
+const PhotoSessionContent = ({
+  session,
+  photoSession,
+  onPhotosUploaded,
+}: PhotoSessionContentProps) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [oneView, setOneView] = useState(false);
+  const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const formatExpiration = (expiresAt: string) =>
     `Expires in ${formatDistanceToNow(parseISO(expiresAt))}`;
@@ -40,17 +66,16 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
       const files = Array.from(event.target.files);
       const filesWithPreviews: FileWithPreview[] = files.map(file =>
         Object.assign(file, {
-          preview: URL.createObjectURL(file)
+          preview: URL.createObjectURL(file),
         })
       );
 
       setSelectedFiles(prevFiles => {
         const existingFileNames = new Set(prevFiles.map(file => file.name));
-        const newUniqueFiles = filesWithPreviews.filter(file =>
-          !existingFileNames.has(file.name)
+        const newUniqueFiles = filesWithPreviews.filter(
+          file => !existingFileNames.has(file.name)
         );
 
-        // Revoke URLs for files that were selected but are duplicates and won't be added to state
         filesWithPreviews.forEach(file => {
           if (!newUniqueFiles.includes(file)) {
             URL.revokeObjectURL(file.preview);
@@ -68,14 +93,14 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
       const updatedFiles = prevFiles.filter(file => file.name !== fileName);
       const removedFile = prevFiles.find(file => file.name === fileName);
       if (removedFile) {
-        URL.revokeObjectURL(removedFile.preview); // Clean up the object URL
+        URL.revokeObjectURL(removedFile.preview);
       }
       return updatedFiles;
     });
   };
 
   const handleClearSelectedFiles = () => {
-    selectedFiles.forEach(file => URL.revokeObjectURL(file.preview)); // Clean up all object URLs
+    selectedFiles.forEach(file => URL.revokeObjectURL(file.preview));
     setSelectedFiles([]);
   };
 
@@ -84,7 +109,7 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
   const handleCloseDialog = () => {
     setIsUploadModalOpen(false);
     if (!isUploading) {
-      handleClearSelectedFiles();   
+      handleClearSelectedFiles();
     }
   };
 
@@ -92,9 +117,8 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
     event.preventDefault();
     setIsUploading(true);
 
-    // Ensure session and selectedFiles are available before proceeding
     if (!session?.id || selectedFiles.length === 0) {
-      alert("Error: Session not found or no files selected.");
+      alert('Error: Session not found or no files selected.');
       setIsUploading(false);
       return;
     }
@@ -106,21 +130,28 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
       });
 
       if (result) {
-        console.log("Upload successful:", result);
-        alert(result.message);
         setIsUploadModalOpen(false);
         handleClearSelectedFiles();
-        onPhotosUploaded(); // Notify parent component to refetch data
+        onPhotosUploaded();
       } else {
-        alert("Upload failed: No response received from server.");
+        alert('Upload failed: No response received from server.');
       }
     } catch (error: any) {
-      console.error("Error during photo upload in component:", error);
-      alert(error.message || "Failed to upload photos. Please try again.");
+      console.error('Error during photo upload in component:', error);
+      alert(error.message || 'Failed to upload photos. Please try again.');
     } finally {
       setIsUploading(false);
     }
   };
+
+  useEffect(() => {
+    if (oneView && selectedPhotoId) {
+      const el = photoRefs.current[selectedPhotoId];
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, [oneView, selectedPhotoId]);
 
   return (
     <main className="max-w-7xl mx-auto">
@@ -153,20 +184,94 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
       </header>
 
       <section className="mt-8">
-        {photoSession && photoSession.length > 0 ? (
-          <div id="photo-grid" className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
-            {photoSession.map(photo => (
-              <div key={photo.id} className="aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden">
-                <img src={photo.url} alt={photo.alt || 'Session photo'} className="w-full h-full object-cover" />
+        {photoSession.length > 0 ? (
+          <>
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:hidden z-40">
+              <div className="flex items-center space-x-2 p-2 rounded-full shadow-lg bg-gradient-to-r from-sky-500 to-blue-600">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setOneView(false)}
+                  className={`rounded-full text-white ${
+                    !oneView ? 'bg-white/20' : ''
+                  }`}
+                  aria-label="Grid View">
+                  <Grid3x3 className="h-6 w-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setOneView(true)}
+                  className={`rounded-full text-white ${
+                    oneView ? 'bg-white/20' : ''
+                  }`}
+                  aria-label="Single View">
+                  <Image className="h-6 w-6" />
+                </Button>
               </div>
-            ))}
-          </div>
+            </div>
+
+            <div
+              id="photo-grid"
+              className={
+                oneView
+                  ? 'grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 sm:gap-4'
+                  : 'grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4'
+              }>
+              {photoSession.map(photo => (
+                <div
+                  key={photo.id}
+                  ref={el => (photoRefs.current[photo.id] = el)}
+                  onClick={() => {
+                    setSelectedPhotoId(photo.id);
+                    setOneView(true);
+                  }}
+                  className="relative aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden flex flex-col cursor-pointer">
+                  {/* Filename overlay for oneView */}
+                  {oneView && (
+                    <div className="absolute top-0 left-0 w-full p-3 bg-gradient-to-b from-black/60 to-transparent text-white text-sm font-semibold truncate z-10">
+                      {photo.originalFilename || 'Unnamed Photo'}
+                    </div>
+                  )}
+
+                  <img
+                    src={photo.image_url}
+                    alt={photo.originalFilename || 'Session photo'}
+                    className={
+                      oneView
+                        ? 'w-full h-auto object-contain p-2 flex-grow'
+                        : 'w-full h-full object-cover'
+                    }
+                  />
+                  {oneView && (
+                    <div className="absolute bottom-2 right-2 z-10">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={e => {
+                          e.stopPropagation();
+                          window.open(photo.image_url, '_blank');
+                        }}
+                        className="bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-full shadow-md">
+                        <Download className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                        <span className="sr-only">Download</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
-          <div id="empty-state" className="text-center py-20 px-4 rounded-xl bg-slate-100 dark:bg-slate-900/50">
+          <div
+            id="empty-state"
+            className="text-center py-20 px-4 rounded-xl bg-slate-100 dark:bg-slate-900/50">
             <div className="flex-shrink-0 mx-auto h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
               <Camera className="h-6 w-6 text-sky-600 dark:text-sky-400" />
             </div>
-            <h3 className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">Your Session is Ready</h3>
+            <h3 className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
+              Your Session is Ready
+            </h3>
             <p className="mt-2 text-slate-600 dark:text-slate-400">
               Upload the first photos to get started.
             </p>
@@ -179,11 +284,12 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
         )}
       </section>
 
+      {/* Upload Modal */}
       <Dialog open={isUploadModalOpen}>
         <DialogContent
           hideClose
           className="sm:max-w-[800px]"
-          onInteractOutside={(e) => {
+          onInteractOutside={e => {
             if (isUploading) e.preventDefault();
             else handleCloseDialog();
           }}>
@@ -201,7 +307,8 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
                 onChange={handleFileChange}
                 multiple
                 accept="image/*"
-                className="hidden" />
+                className="hidden"
+              />
               <Button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
@@ -212,18 +319,20 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
 
               {selectedFiles.length > 0 ? (
                 <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {selectedFiles.map((file) => (
-                    <div key={file.name} className="relative aspect-square rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
+                  {selectedFiles.map(file => (
+                    <div
+                      key={file.name}
+                      className="relative aspect-square rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
                       <img
                         src={file.preview}
                         alt={file.name}
                         className="w-full h-full object-cover"
-                        onError={(e) => {
+                        onError={e => {
                           const target = e.target as HTMLImageElement;
                           target.onerror = null;
-                          target.src = 'https://placehold.co/150x150/CCCCCC/000000?text=Error'; // Placeholder for failed image
+                          target.src =
+                            'https://placehold.co/150x150/CCCCCC/000000?text=Error';
                           target.alt = `Could not load ${file.name}`;
-                          console.error(`Error loading image preview for: ${file.name}`);
                         }}
                       />
                       <Button
@@ -265,7 +374,9 @@ const PhotoSessionContent = ({ session, photoSession, onPhotosUploaded }: PhotoS
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...
                   </>
                 ) : (
-                  `Confirm Upload (${selectedFiles.length} ${selectedFiles.length === 1 ? 'photo' : 'photos'})`
+                  `Confirm Upload (${selectedFiles.length} ${
+                    selectedFiles.length === 1 ? 'photo' : 'photos'
+                  })`
                 )}
               </Button>
             </DialogFooter>
