@@ -30,6 +30,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import UploadPhotosModal from './UploadPhotosModal'; 
+import UploadPhotosMessage from './UploadPhotosMessage';
+import PhotoGrid from './PhotoGrid';
+import PhotoViewModal from './PhotoViewModal';
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -141,131 +144,28 @@ const PhotoSessionContent = ({
               </div>
             </div>
 
-            <div
-              id="photo-grid"
-              className={
-                oneView
-                  ? 'grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-2 sm:gap-4'
-                  : 'grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4'
-              }>
-              {photoSession.map(photo => (
-                <div
-                  key={photo.id}
-                  ref={el => (photoRefs.current[photo.id] = el)}
-                  onClick={() => {
-                    setSelectedPhotoId(photo.id);
-                    if (window.innerWidth <= 768) {
-                      setOneView(true);
-                    } else {
-                      handleOpenPhotoViewModal(photo.image_url);
-                    }
-                  }}
-                  className="relative aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden flex flex-col cursor-pointer">
-                  {oneView && (
-                    <div className="absolute top-0 left-0 w-full p-3 bg-gradient-to-b from-black/60 to-transparent text-white text-sm font-semibold truncate z-10">
-                      {photo.originalFilename || 'Unnamed Photo'}
-                    </div>
-                  )}
-
-                  <img
-                    src={photo.image_url}
-                    alt={photo.originalFilename || 'Session photo'}
-                    className={
-                      oneView
-                        ? 'w-full h-auto object-contain p-2 flex-grow'
-                        : 'w-full h-full object-cover'
-                    }
-                  />
-                  {oneView && (
-                    <div className="absolute bottom-2 right-2 z-10">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={e => {
-                          e.stopPropagation();
-                          window.open(photo.image_url, '_blank');
-                        }}
-                        className="bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-full shadow-md">
-                        <Download className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-                        <span className="sr-only">Download</span>
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <PhotoGrid
+              photoSession={photoSession}
+              oneView={oneView}
+              setOneView={setOneView}
+              selectedPhotoId={selectedPhotoId}
+              setSelectedPhotoId={setSelectedPhotoId}
+              handleOpenPhotoViewModal={handleOpenPhotoViewModal}
+            />
           </>
-        ) : (
-          <div
-            id="empty-state"
-            className="text-center py-20 px-4 rounded-xl bg-slate-100 dark:bg-slate-900/50">
-            <div className="flex-shrink-0 mx-auto h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-900/50 flex items-center justify-center">
-              <Camera className="h-6 w-6 text-sky-600 dark:text-sky-400" />
-            </div>
-            <h3 className="mt-4 text-xl font-semibold text-slate-900 dark:text-white">
-              Your Session is Ready
-            </h3>
-            <p className="mt-2 text-slate-600 dark:text-slate-400">
-              Upload the first photos to get started.
-            </p>
-            <div className="mt-6">
-              <Button
-                variant="primary-cta"
-                size="lg"
-                onClick={handleOpenUploadModal}>
-                Upload Your First Photo
-              </Button>
-            </div>
-          </div>
-        )}
+        ) : <UploadPhotosMessage handleOpenUploadModal={handleOpenUploadModal} /> }
       </section>
 
-      {/* Upload Modal */}
       <UploadPhotosModal
         isOpen={isUploadModalOpen}
         onClose={handleCloseUploadModal}
         session={session}
         onPhotosUploaded={onPhotosUploaded} />
 
-      {/* Photo View Modal */}
-      <Dialog open={modalViewOn && photoToViewUrl !== null}>
-        <DialogContent
-          className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] h-[90vh] flex flex-col"
-          onInteractOutside={handleClosePhotoViewModal}
-          hideClose>
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle className="sr-only">View Photo</DialogTitle>
-            <DialogDescription className="sr-only">
-              Large view of the selected photo.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex-grow flex items-center justify-center p-2 overflow-hidden">
-            {photoToViewUrl && (
-              <img
-                src={photoToViewUrl}
-                alt="Enlarged session photo"
-                className="max-w-full max-h-full object-contain"
-              />
-            )}
-          </div>
-          <DialogFooter className="flex-shrink-0 flex justify-between items-center w-full mt-4">
-            <Button
-              variant="outline"
-              onClick={handleClosePhotoViewModal}
-              className="px-4 py-2">
-              <XCircle className="mr-2 h-4 w-4" /> Close
-            </Button>
-            {photoToViewUrl && (
-              <Button
-                variant="primary-cta"
-                onClick={() => window.open(photoToViewUrl, '_blank')}
-                className="px-4 py-2">
-                <Download className="mr-2 h-4 w-4" /> Download
-              </Button>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <PhotoViewModal
+        isOpen={modalViewOn && photoToViewUrl !== null}
+        photoUrl={photoToViewUrl}
+        onClose={handleClosePhotoViewModal} />
     </main>
   );
 };
