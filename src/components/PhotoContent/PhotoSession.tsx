@@ -18,10 +18,6 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
-import {
-  uploadPhotosForSession,
-  type UploadResponse,
-} from '@/services/upload-photos';
 import { Button } from '@/components/ui/button';
 import { type SessionRecord } from '@/stores/sessionsStore';
 import {
@@ -33,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import UploadPhotosModal from './UploadPhotosModal'; 
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -51,101 +48,19 @@ const PhotoSessionContent = ({
   onPhotosUploaded,
 }: PhotoSessionContentProps) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
   const [oneView, setOneView] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const [modalViewOn, setModalViewOn] = useState(false);
   const [photoToViewUrl, setPhotoToViewUrl] = useState<string | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const photoRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const formatExpiration = (expiresAt: string) =>
     `Expires in ${formatDistanceToNow(parseISO(expiresAt))}`;
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const files = Array.from(event.target.files);
-      const filesWithPreviews: FileWithPreview[] = files.map(file =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
 
-      setSelectedFiles(prevFiles => {
-        const existingFileNames = new Set(prevFiles.map(file => file.name));
-        const newUniqueFiles = filesWithPreviews.filter(
-          file => !existingFileNames.has(file.name)
-        );
-
-        filesWithPreviews.forEach(file => {
-          if (!newUniqueFiles.includes(file)) {
-            URL.revokeObjectURL(file.preview);
-          }
-        });
-
-        return [...prevFiles, ...newUniqueFiles];
-      });
-    }
-    event.target.value = '';
-  };
-
-  const handleRemoveFile = (fileName: string) => {
-    setSelectedFiles(prevFiles => {
-      const updatedFiles = prevFiles.filter(file => file.name !== fileName);
-      const removedFile = prevFiles.find(file => file.name === fileName);
-      if (removedFile) {
-        URL.revokeObjectURL(removedFile.preview);
-      }
-      return updatedFiles;
-    });
-  };
-
-  const handleClearSelectedFiles = () => {
-    selectedFiles.forEach(file => URL.revokeObjectURL(file.preview));
-    setSelectedFiles([]);
-  };
-
-  const handleOpenDialog = () => setIsUploadModalOpen(true);
-
-  const handleCloseDialog = () => {
-    setIsUploadModalOpen(false);
-    if (!isUploading) {
-      handleClearSelectedFiles();
-    }
-  };
-
-  const handleUploadSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    setIsUploading(true);
-
-    if (!session?.id || selectedFiles.length === 0) {
-      alert('Error: Session not found or no files selected.');
-      setIsUploading(false);
-      return;
-    }
-
-    try {
-      const result: UploadResponse | undefined = await uploadPhotosForSession({
-        sessionId: session.id,
-        files: selectedFiles,
-      });
-
-      if (result) {
-        setIsUploadModalOpen(false);
-        handleClearSelectedFiles();
-        onPhotosUploaded();
-      } else {
-        alert('Upload failed: No response received from server.');
-      }
-    } catch (error: any) {
-      console.error('Error during photo upload in component:', error);
-      alert(error.message || 'Failed to upload photos. Please try again.');
-    } finally {
-      setIsUploading(false);
-    }
-  };
+  const handleOpenUploadModal = () => setIsUploadModalOpen(true);
+  const handleCloseUploadModal = () => setIsUploadModalOpen(false);
 
   useEffect(() => {
     if (oneView && selectedPhotoId) {
@@ -191,7 +106,7 @@ const PhotoSessionContent = ({
             <Share className="mr-2 h-4 w-4" />
             Share
           </Button>
-          <Button variant="primary-cta" onClick={handleOpenDialog}>
+          <Button variant="primary-cta" onClick={handleOpenUploadModal}>
             <Upload className="mr-2 h-4 w-4" />
             Upload Photos
           </Button>
@@ -297,7 +212,7 @@ const PhotoSessionContent = ({
               <Button
                 variant="primary-cta"
                 size="lg"
-                onClick={handleOpenDialog}>
+                onClick={handleOpenUploadModal}>
                 Upload Your First Photo
               </Button>
             </div>
@@ -306,104 +221,11 @@ const PhotoSessionContent = ({
       </section>
 
       {/* Upload Modal */}
-      <Dialog open={isUploadModalOpen}>
-        <DialogContent
-          hideClose
-          className="sm:max-w-[800px]"
-          onInteractOutside={e => {
-            if (isUploading) e.preventDefault();
-            else handleCloseDialog();
-          }}>
-          <DialogHeader>
-            <DialogTitle>Upload Photos to {session?.name}</DialogTitle>
-            <DialogDescription>
-              Select photos from your device to upload to this session.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleUploadSubmit}>
-            <div className="grid gap-4 py-4">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                multiple
-                accept="image/*"
-                className="hidden"
-              />
-              <Button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                variant="primary-cta"
-                disabled={isUploading}>
-                <Upload className="mr-2 h-4 w-4" /> Select Photos
-              </Button>
-
-              {selectedFiles.length > 0 ? (
-                <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {selectedFiles.map(file => (
-                    <div
-                      key={file.name}
-                      className="relative aspect-square rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
-                      <img
-                        src={file.preview}
-                        alt={file.name}
-                        className="w-full h-full object-cover"
-                        onError={e => {
-                          const target = e.target as HTMLImageElement;
-                          target.onerror = null;
-                          target.src =
-                            'https://placehold.co/150x150/CCCCCC/000000?text=Error';
-                          target.alt = `Could not load ${file.name}`;
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-1 right-1 h-6 w-6 rounded-full"
-                        onClick={() => handleRemoveFile(file.name)}
-                        disabled={isUploading}>
-                        <XCircle className="h-4 w-4" />
-                        <span className="sr-only">Remove photo</span>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400">
-                  No photos selected yet.
-                </div>
-              )}
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCloseDialog}
-                  disabled={isUploading}>
-                  Cancel
-                </Button>
-              </DialogClose>
-
-              <Button
-                type="submit"
-                disabled={selectedFiles.length === 0 || isUploading}
-                variant="primary-cta">
-                {isUploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Uploading...
-                  </>
-                ) : (
-                  `Confirm Upload (${selectedFiles.length} ${
-                    selectedFiles.length === 1 ? 'photo' : 'photos'
-                  })`
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <UploadPhotosModal
+        isOpen={isUploadModalOpen}
+        onClose={handleCloseUploadModal}
+        session={session}
+        onPhotosUploaded={onPhotosUploaded} />
 
       {/* Photo View Modal */}
       <Dialog open={modalViewOn && photoToViewUrl !== null}>
