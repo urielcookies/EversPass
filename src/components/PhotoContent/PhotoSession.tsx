@@ -20,6 +20,7 @@ import UploadPhotosMessage from './UploadPhotosMessage';
 import PhotoGrid from './PhotoGrid';
 import PhotoViewModal from './PhotoViewModal';
 import PhotoViewTabs from './PhotoViewTabs';
+import SharePageModal from './SharePageModal';
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -38,6 +39,7 @@ const PhotoSessionContent = ({
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const [modalViewOn, setModalViewOn] = useState(false);
   const [photoToViewUrl, setPhotoToViewUrl] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Ref for the PhotoViewTabs component - still needed for IntersectionObserver
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -50,6 +52,10 @@ const PhotoSessionContent = ({
 
   const handleOpenUploadModal = () => setIsUploadModalOpen(true);
   const handleCloseUploadModal = () => setIsUploadModalOpen(false);
+
+  // --- NEW HANDLERS FOR SHARE MODAL ---
+  const handleOpenShareModal = () => setShowShareModal(true);
+  const handleCloseShareModal = () => setShowShareModal(false);
 
   // Function to handle opening the photo view modal
   const handleOpenPhotoViewModal = (photoUrl: string) => {
@@ -108,7 +114,7 @@ const PhotoSessionContent = ({
         </div>
 
         <div className="flex items-center justify-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-          <Button variant="outline" className="flex-1 min-w-0">
+          <Button onClick={handleOpenShareModal} variant="outline" className="flex-1 min-w-0">
             <Share className="mr-2 h-4 w-4" />
             <span className="truncate">Share</span>
           </Button>
@@ -178,6 +184,10 @@ const PhotoSessionContent = ({
         isOpen={modalViewOn && photoToViewUrl !== null}
         photoUrl={photoToViewUrl}
         onClose={handleClosePhotoViewModal} />
+
+      <SharePageModal
+        isOpen={showShareModal}
+        onClose={handleCloseShareModal} />
     </main>
   );
 };

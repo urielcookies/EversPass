@@ -101,7 +101,6 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
         <TableHeader>
           <TableRow className="bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900/50">
             <TableHead className="w-[40%]">Name</TableHead>
-            <TableHead>Status</TableHead>
             <TableHead>Expires In</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -111,9 +110,6 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
           {map(sessions, (session) => (
             <TableRow key={session.id} onClick={() => handleRowClick(session.id)} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 cursor-pointer">
               <TableCell className="font-medium text-slate-900 dark:text-slate-100">{session.name}</TableCell>
-              <TableCell>
-                <StatusBadge status={session.status} />
-              </TableCell>
               <TableCell>
                 <TimeRemaining expiresAt={session.expires_at} />
               </TableCell>
@@ -126,7 +122,8 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
                     e.stopPropagation();
                     onDeleteSession(session);
                   }}>
-                  <Trash2 className="h-4 w-4 text-slate-500 hover:text-red-600" />
+                    {/* used to be text-slate-500 maybe switch back */}
+                  <Trash2 className="h-4 w-4 text-red-600 hover:text-red-600" />
                   <span className="sr-only">Delete session</span>
                 </Button>
               </TableCell>
