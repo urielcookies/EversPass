@@ -79,7 +79,8 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
       },
       {
         root: null, // Observe relative to the viewport
-        rootMargin: '0px 0px -100px 0px', // Adjust as needed
+        // rootMargin: '0px 0px -100px 0px', // Adjust as needed
+        rootMargin: '0px 0px -20px 0px',
         threshold: 0, // Trigger when 0% of the target is visible
       }
     );
