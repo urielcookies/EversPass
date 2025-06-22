@@ -27,7 +27,7 @@ const PhotoViewTabs = React.forwardRef<HTMLDivElement, PhotoViewTabsProps>(
             ${!oneView ? 'text-blue-600 dark:text-blue-400' : ''}
             focus:outline-none focus:ring-0 focus:bg-transparent active:bg-transparent
           `}>
-          <Grid3x3 className="mx-auto !w-5 !h-5" />
+          <Grid3x3 className="mx-auto !w-6 !h-6" />
           {!oneView && (
             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400" />
           )}
@@ -44,7 +44,7 @@ const PhotoViewTabs = React.forwardRef<HTMLDivElement, PhotoViewTabsProps>(
             ${oneView ? 'text-blue-600 dark:text-blue-400' : ''}
             focus:outline-none focus:ring-0 focus:bg-transparent active:bg-transparent
           `}>
-          <ImageIcon className="mx-auto !w-5 !h-5" />
+          <ImageIcon className="mx-auto !w-6 !h-6" />
           {oneView && (
             <span className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 dark:bg-blue-400" />
           )}

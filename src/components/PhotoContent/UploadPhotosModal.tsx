@@ -28,14 +28,12 @@ interface UploadPhotosModalProps {
   isOpen: boolean;
   onClose: () => void;
   session: SessionRecord | null;
-  onPhotosUploaded: () => void;
 }
 
 const UploadPhotosModal = ({
   isOpen,
   onClose,
   session,
-  onPhotosUploaded,
 }: UploadPhotosModalProps) => {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -112,7 +110,6 @@ const UploadPhotosModal = ({
       if (result) {
         onClose(); // Close modal on successful upload
         handleClearSelectedFiles(); // Clear files after successful upload
-        onPhotosUploaded(); // Notify parent component
       } else {
         alert('Upload failed: No response received from server.');
       }

@@ -15,37 +15,38 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
 import { Button } from '@/components/ui/button';
 import { type SessionRecord } from '@/stores/sessionsStore';
+import toggleLike from '@/services/togglePhotoLikes';
 import UploadPhotosModal from './UploadPhotosModal';
 import UploadPhotosMessage from './UploadPhotosMessage';
 import PhotoGrid from './PhotoGrid';
 import PhotoViewModal from './PhotoViewModal';
 import PhotoViewTabs from './PhotoViewTabs';
 import SharePageModal from './SharePageModal';
+import { find, includes, isEmpty, isEqual } from 'lodash-es';
+import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
   photoSession: PhotoRecord[];
   isLoadingMore: boolean;
-  onPhotosUploaded: () => void;
+  fetchPhotoSession: () => void;
 }
 
-const PhotoSessionContent = ({
-  session,
-  photoSession,
-  onPhotosUploaded,
-}: PhotoSessionContentProps) => {
+const PhotoSessionContent = (props: PhotoSessionContentProps) => {
+  const {session, photoSession, fetchPhotoSession } = props;
+
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
   const [modalViewOn, setModalViewOn] = useState(false);
-  const [photoToViewUrl, setPhotoToViewUrl] = useState<string | null>(null);
+  const [activePhoto, setActivePhoto] = useState<PhotoRecord | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
-
   // Ref for the PhotoViewTabs component - still needed for IntersectionObserver
   const tabsRef = useRef<HTMLDivElement>(null);
-
   // State for the floating mobile toggle - this will be conditionally rendered
   const [showFloatingToggle, setShowFloatingToggle] = useState(false);
+
+  useSessionSubscription(session.id, fetchPhotoSession);
 
   const formatExpiration = (expiresAt: string) =>
     `Expires in ${formatDistanceToNow(parseISO(expiresAt))}`;
@@ -58,14 +59,14 @@ const PhotoSessionContent = ({
   const handleCloseShareModal = () => setShowShareModal(false);
 
   // Function to handle opening the photo view modal
-  const handleOpenPhotoViewModal = (photoUrl: string) => {
-    setPhotoToViewUrl(photoUrl);
+  const handleOpenPhotoViewModal = (photo: PhotoRecord) => {
+    setActivePhoto(photo);
     setModalViewOn(true); // Ensure modal view is on when this modal is open
   };
 
   // Function to handle closing the photo view modal
   const handleClosePhotoViewModal = () => {
-    setPhotoToViewUrl(null);
+    setActivePhoto(null);
     setModalViewOn(false); // Reset modal view on close
   };
 
@@ -93,6 +94,52 @@ const PhotoSessionContent = ({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (activePhoto) {
+      const newActivePhoto = find(photoSession, ({ id }) => isEqual(id, activePhoto.id));
+      if (newActivePhoto) setActivePhoto(newActivePhoto)
+    }
+  }, [photoSession]);
+  
+  const handleToggleLike = async (photoId: string) => {
+    const likes: Record<string, string[]> = JSON.parse(localStorage.getItem('likes') || '{}');
+    const sessionId = session.id;
+
+    if (!likes[sessionId]) likes[sessionId] = [];
+
+    const likedPhotos = likes[sessionId];
+    const alreadyLikedIndex = likedPhotos.indexOf(photoId);
+
+    // Clone original state for potential rollback
+    const originalLikes = [...likedPhotos];
+
+    let action: 'like' | 'unlike';
+
+    if (isEqual(alreadyLikedIndex, -1)) {
+      likedPhotos.push(photoId);
+      action = 'like';
+    } else {
+      likedPhotos.splice(alreadyLikedIndex, 1);
+      action = 'unlike';
+    }
+
+    localStorage.setItem('likes', JSON.stringify(likes));
+
+    try {
+      await toggleLike(photoId, action);
+    } catch (error) {
+      // Rollback on failure
+      likes[sessionId] = originalLikes;
+      localStorage.setItem('likes', JSON.stringify(likes));
+      console.error(`Failed to ${action} photo:`, error);
+    }
+  };
+
+  const getIsLiked = (photoId: string) => {
+    const likes: Record<string, string[]> = JSON.parse(localStorage.getItem('likes') || '{}');
+    return includes(likes[session.id], photoId);
+  }
 
   return (
     <main className="max-w-7xl mx-auto">
@@ -165,11 +212,12 @@ const PhotoSessionContent = ({
             <PhotoGrid
               photoSession={photoSession}
               oneView={oneView}
-              setOneView={setOneView}
               selectedPhotoId={selectedPhotoId}
               setSelectedPhotoId={setSelectedPhotoId}
+              setOneView={setOneView}
               handleOpenPhotoViewModal={handleOpenPhotoViewModal}
-            />
+              handleToggleLike={handleToggleLike}
+              getIsLiked={getIsLiked} />
           </>
         ) : <UploadPhotosMessage handleOpenUploadModal={handleOpenUploadModal} /> }
       </section>
@@ -177,13 +225,14 @@ const PhotoSessionContent = ({
       <UploadPhotosModal
         isOpen={isUploadModalOpen}
         onClose={handleCloseUploadModal}
-        session={session}
-        onPhotosUploaded={onPhotosUploaded} />
+        session={session} />
 
       <PhotoViewModal
-        isOpen={modalViewOn && photoToViewUrl !== null}
-        photoUrl={photoToViewUrl}
-        onClose={handleClosePhotoViewModal} />
+        isOpen={modalViewOn && activePhoto !== null}
+        activePhoto={activePhoto as PhotoRecord}
+        onClose={handleClosePhotoViewModal}
+        handleToggleLike={handleToggleLike}
+        getIsLiked={getIsLiked} />
 
       <SharePageModal
         isOpen={showShareModal}

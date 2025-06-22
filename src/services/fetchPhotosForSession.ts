@@ -5,6 +5,7 @@ interface PhotoRecord {
   id: string;
   originalFilename: string;
   image_url: string;
+  likes: number;
   created: string;
   session_id: string;
 }

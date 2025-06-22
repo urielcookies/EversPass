@@ -39,13 +39,13 @@ const PhotoSessionContent = () => {
     }
   }, []);
 
-  if (isLoading || sessionLoading || photosLoading) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-slate-600 dark:text-slate-400">Loading Photo Session...</p>
-      </div>
-    );
-  }
+  // if (isLoading || sessionLoading || photosLoading) {
+  //   return (
+  //     <div className="text-center py-20">
+  //       <p className="text-slate-600 dark:text-slate-400">Loading Photo Session...</p>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -69,7 +69,7 @@ const PhotoSessionContent = () => {
       session={session}
       photoSession={photos}
       isLoadingMore={isLoadingMore}
-      onPhotosUploaded={() => fetchPhotoSession(session.id, 1)} />
+      fetchPhotoSession={() => fetchPhotoSession(session.id, 1)} />
   )
 };
 
