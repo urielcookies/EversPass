@@ -8,9 +8,8 @@ import {
   Clock,
   Share,
   Upload,
-  Grid3x3,
-  Image,
 } from 'lucide-react';
+import { find, includes, isEmpty, isEqual } from 'lodash-es';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
 import { Button } from '@/components/ui/button';
@@ -21,8 +20,8 @@ import UploadPhotosMessage from './UploadPhotosMessage';
 import PhotoGrid from './PhotoGrid';
 import PhotoViewModal from './PhotoViewModal';
 import PhotoViewTabs from './PhotoViewTabs';
+import PhotoViewTabsFloating from './PhotoViewTabsFloating';
 import SharePageModal from './SharePageModal';
-import { find, includes, isEmpty, isEqual } from 'lodash-es';
 import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 
 interface PhotoSessionContentProps {
@@ -174,34 +173,11 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
       </header>
 
       <section className="mt-8">
-        {photoSession.length > 0 ? (
+        {!isEmpty(photoSession) ? (
           <>
             {/* Note: This is *not* the PhotoViewTabs component, but the separate floating one */}
             {showFloatingToggle && ( // This ensures it only shows when tabs are not in their initial view
-              <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:hidden z-40">
-                <div className="flex items-center space-x-2 p-2 rounded-full shadow-lg bg-gradient-to-r from-sky-500 to-blue-600">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setOneView(false)}
-                    className={`rounded-full text-white ${
-                      !oneView ? 'bg-white/20' : ''
-                    }`}
-                    aria-label="Grid View">
-                    <Grid3x3 className="h-6 w-6" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setOneView(true)}
-                    className={`rounded-full text-white ${
-                      oneView ? 'bg-white/20' : ''
-                    }`}
-                    aria-label="Single View">
-                    <Image className="h-6 w-6" />
-                  </Button>
-                </div>
-              </div>
+              <PhotoViewTabsFloating viewState={{oneView, setOneView}} />
             )}
 
             {/* PhotoViewTabs - Now explicitly hidden on sm and larger screens */}
