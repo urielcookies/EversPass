@@ -5,8 +5,9 @@ import { useStore } from '@nanostores/react';
 import PhotoSession from '@/components/PhotoContent/PhotoSession';
 import checkDeviceIdExists from '@/services/checkDeviceIdExists';
 import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
-import { $activePhotoSession, clearPhotos, fetchPhotoSession } from '@/stores/photoSessionStore';
+import { $activePhotoSession, clearPhotos, fetchPhotoSession, fetchNextPageForActiveSession } from '@/stores/photoSessionStore';
 import { $sessions, fetchSessions } from '@/stores/sessionsStore'; 
+import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 
 
 const PhotoSessionContent = () => {
@@ -16,7 +17,7 @@ const PhotoSessionContent = () => {
   const sessionIdParams = url.searchParams.get("sessionId");
 
   const { sessions, isLoading: sessionLoading } = useStore($sessions);
-  const { photos, isLoading: photosLoading, isLoadingMore, error, page, totalPages } = useStore($activePhotoSession);
+  const { photos, isLoading: photosLoading, isLoadingMore, error, page, totalPages, totalItems } = useStore($activePhotoSession);
 
   useEffect(() => {
     if (!deviceIdParams || !sessionIdParams) return
@@ -38,6 +39,12 @@ const PhotoSessionContent = () => {
       clearPhotos();
     }
   }, []);
+
+  useInfiniteScroll(() => {
+    if (!photosLoading && !isLoadingMore && page < totalPages && session) {
+      fetchNextPageForActiveSession();
+    }
+  });
 
   // if (isLoading || sessionLoading || photosLoading) {
   //   return (
@@ -67,7 +74,9 @@ const PhotoSessionContent = () => {
   return (
     <PhotoSession
       session={session}
-      photoSession={photos} />
+      photoSession={photos}
+      isLoadingMore={isLoadingMore}
+      totalPhotos={totalItems} />
   )
 };
 

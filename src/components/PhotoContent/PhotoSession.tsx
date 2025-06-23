@@ -6,6 +6,7 @@ import {
 import {
   Camera,
   Clock,
+  Loader2,
   Share,
   Upload,
 } from 'lucide-react';
@@ -27,10 +28,12 @@ import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 interface PhotoSessionContentProps {
   session: SessionRecord;
   photoSession: PhotoRecord[];
+  isLoadingMore: boolean;
+  totalPhotos: number;
 }
 
 const PhotoSessionContent = (props: PhotoSessionContentProps) => {
-  const {session, photoSession } = props;
+  const {session, photoSession, isLoadingMore, totalPhotos } = props;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
@@ -149,7 +152,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
           <div className="mt-2 flex items-center gap-x-4 text-sm text-slate-600 dark:text-slate-400 justify-center sm:justify-normal">
             <div className="flex items-center gap-1.5">
               <Camera className="h-4 w-4" />
-              <span>{photoSession?.length || 0} Photos</span>
+              <span>{totalPhotos} Photos</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
@@ -193,6 +196,15 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
               handleOpenPhotoViewModal={handleOpenPhotoViewModal}
               handleToggleLike={handleToggleLike}
               getIsLiked={getIsLiked} />
+
+            {isLoadingMore && (
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-500 dark:text-blue-400" />
+                <p className="ml-4 text-lg text-gray-600 dark:text-gray-300">
+                  Loading more photos...
+                </p>
+              </div>
+            )}
           </>
         ) : <UploadPhotosMessage handleOpenUploadModal={handleOpenUploadModal} /> }
       </section>
