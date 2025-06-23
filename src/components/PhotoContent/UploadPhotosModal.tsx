@@ -179,8 +179,11 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
           </div>
 
           {isUploading && (
-            <div className="mb-2">
-              <Progress value={uploadProgress ?? 100} className="h-2" />
+            <div className="mb-2 flex items-center gap-2">
+              <Progress value={uploadProgress} className="h-2 flex-grow" />
+              <span className="text-sm text-slate-500 dark:text-slate-400 w-12 text-right">
+                {Math.round(uploadProgress)}%
+              </span>
             </div>
           )}
 
