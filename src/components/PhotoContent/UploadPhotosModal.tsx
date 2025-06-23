@@ -4,8 +4,11 @@ import {
   type ChangeEvent,
   type FormEvent,
   useEffect,
+  type Dispatch,
 } from 'react';
+import { map } from 'lodash-es';
 import { Loader2, Upload, XCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogClose,
@@ -16,8 +19,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { type SessionRecord } from '@/stores/sessionsStore';
 import { uploadPhotosForSession, type UploadResponse } from '@/services/upload-photos';
+import type { NewlyCreated } from '@/hooks/usePhotoSessionSubscription';
 
 // This type should ideally be defined in a shared types file if used elsewhere
 interface FileWithPreview extends File {
@@ -28,15 +33,17 @@ interface UploadPhotosModalProps {
   isOpen: boolean;
   onClose: () => void;
   session: SessionRecord | null;
+  createdRecordsState: {
+    newlyCreated: NewlyCreated | null;
+    setNewlyCreated: Dispatch<React.SetStateAction<NewlyCreated | null>>;
+  }
 }
 
-const UploadPhotosModal = ({
-  isOpen,
-  onClose,
-  session,
-}: UploadPhotosModalProps) => {
+const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: UploadPhotosModalProps) => {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -88,7 +95,11 @@ const UploadPhotosModal = ({
 
   const handleClearSelectedFiles = () => {
     selectedFiles.forEach(file => URL.revokeObjectURL(file.preview));
+    setIsUploading(false);
     setSelectedFiles([]);
+    setUploadProgress(0);
+    setUploadedFiles([]);
+    createdRecordsState.setNewlyCreated(null);
   };
 
   const handleUploadSubmit = async (event: FormEvent) => {
@@ -107,37 +118,54 @@ const UploadPhotosModal = ({
         files: selectedFiles,
       });
 
-      if (result) {
-        onClose(); // Close modal on successful upload
-        handleClearSelectedFiles(); // Clear files after successful upload
-      } else {
-        alert('Upload failed: No response received from server.');
-      }
+      if (result) onClose(); // Close modal on successful upload
+      else alert('Upload failed: No response received from server.');
+      
     } catch (error: any) {
       console.error('Error during photo upload:', error);
       alert(error.message || 'Failed to upload photos. Please try again.');
     } finally {
-      setIsUploading(false);
+      handleClearSelectedFiles();
     }
   };
 
+  useEffect(() => {
+    const newlyCreated = createdRecordsState.newlyCreated;
+    if (!newlyCreated) return;
+
+    toast.success(`Uploaded ${newlyCreated.originalFilename}`)
+    setUploadedFiles((state) => [...state, newlyCreated.originalFilename]);
+  }, [createdRecordsState.newlyCreated]);
+
+  // Update progress when uploadedFiles changes
+  useEffect(() => {
+    const totalFiles = selectedFiles.length;
+    const uploadedCount = uploadedFiles.length;
+
+    if (totalFiles > 0) {
+      const progressPercent = (uploadedCount / totalFiles) * 100;
+      setUploadProgress(progressPercent);
+    }
+  }, [uploadedFiles, selectedFiles.length]);
+
+  console.log('uploadedFiles', uploadedFiles.length)
   return (
     <Dialog open={isOpen}>
       <DialogContent
         hideClose
-        className="sm:max-w-[800px] flex flex-col max-h-[90vh]" // Added flex-col and max-h
+        className="sm:max-w-[800px] flex flex-col max-h-[90vh]"
         onInteractOutside={e => {
-          if (isUploading) e.preventDefault(); // Prevent closing if uploading
+          if (isUploading) e.preventDefault();
           else onClose();
         }}>
-        <DialogHeader className="flex-shrink-0"> {/* Ensure header doesn't shrink */}
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Upload Photos to {session?.name || 'Session'}</DialogTitle>
           <DialogDescription>
             Select photos from your device to upload to this session.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleUploadSubmit} className="flex flex-col flex-grow min-h-0"> {/* Added flex-col, flex-grow, min-h-0 */}
-          <div className="grid gap-4 py-4 flex-shrink-0"> {/* Ensure select photos button doesn't shrink */}
+        <form onSubmit={handleUploadSubmit} className="flex flex-col flex-grow min-h-0">
+          <div className="grid gap-4 py-4 flex-shrink-0">
             <input
               type="file"
               ref={fileInputRef}
@@ -155,8 +183,14 @@ const UploadPhotosModal = ({
             </Button>
           </div>
 
+          {isUploading && (
+            <div className="mb-2">
+              <Progress value={uploadProgress ?? 100} className="h-2" />
+            </div>
+          )}
+
           {selectedFiles.length > 0 ? (
-            <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar"> {/* Added flex-grow, overflow-y-auto, pr-2, custom-scrollbar */}
+            <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar">
               <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                 {selectedFiles.map(file => (
                   <div
@@ -169,8 +203,7 @@ const UploadPhotosModal = ({
                       onError={e => {
                         const target = e.target as HTMLImageElement;
                         target.onerror = null;
-                        target.src =
-                          'https://placehold.co/150x150/CCCCCC/000000?text=Error';
+                        target.src = 'https://placehold.co/150x150/CCCCCC/000000?text=Error';
                         target.alt = `Could not load ${file.name}`;
                       }}
                     />
@@ -189,12 +222,12 @@ const UploadPhotosModal = ({
               </div>
             </div>
           ) : (
-            <div className="text-center py-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 flex-grow flex items-center justify-center"> {/* Added flex-grow, flex, items-center, justify-center */}
+            <div className="text-center py-10 px-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 flex-grow flex items-center justify-center">
               No photos selected yet.
             </div>
           )}
-          
-          <DialogFooter className="flex-shrink-0 pt-4"> {/* Ensure footer doesn't shrink and has padding */}
+
+          <DialogFooter className="flex-shrink-0 pt-4">
             <DialogClose asChild>
               <Button
                 type="button"
