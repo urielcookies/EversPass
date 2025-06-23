@@ -46,9 +46,9 @@ const PhotoViewModal = ({
         className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] h-[90vh] flex flex-col"
         onInteractOutside={onClose}
         hideClose>
-        <DialogHeader className="flex-shrink-0">
+        <DialogHeader className="flex-shrink-0 bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-md px-4 py-3">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-semibold text-white">
+            <DialogTitle className="text-lg font-semibold">
               {originalFilename || 'Photo View'}
             </DialogTitle>
 
@@ -57,7 +57,7 @@ const PhotoViewModal = ({
                 <button
                   className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
                   aria-label="Options">
-                  <MoreVertical className="w-5 h-5 text-white" />
+                  <MoreVertical className="w-5 h-5" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
