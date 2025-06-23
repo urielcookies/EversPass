@@ -53,13 +53,13 @@ const PhotoGrid = (props: PhotoGridProps) => {
           ref={el => (photoRefs.current[photo.id] = el)}
           className={
             oneView
-              ? 'bg-slate-900 rounded-lg overflow-hidden flex flex-col shadow-lg'
+              ? 'bg-white dark:bg-slate-900 rounded-lg overflow-hidden flex flex-col shadow-lg'
               : 'relative aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg overflow-hidden flex flex-col cursor-pointer'
           }>
           {oneView ? (
             <div className="flex flex-col h-full">
               {/* Top */}
-              <div className="flex items-center p-3 sm:p-4 bg-slate-900 text-white">
+              <div className="flex items-center p-3 sm:p-4 bg-gray-100 text-gray-900 dark:bg-slate-900 dark:text-white">
                 <p className="text-sm font-semibold truncate flex-grow">
                   {photo.originalFilename || 'Unnamed Photo'}
                 </p>
@@ -83,9 +83,9 @@ const PhotoGrid = (props: PhotoGridProps) => {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center justify-between p-3 sm:p-4 bg-slate-900">
+              <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-100 dark:bg-slate-900">
                 <div className="flex items-center">
-                  {/* Like */}
+                  {/* Like Button */}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -93,23 +93,23 @@ const PhotoGrid = (props: PhotoGridProps) => {
                       e.stopPropagation();
                       handleToggleLike(photo.id);
                     }}
-                    className="bg-transparent hover:bg-slate-800">
+                    className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
                     <Heart
                       className={`!h-6 !w-6 transition-colors duration-200 ${
                         getIsLiked(photo.id)
                           ? 'text-red-500 fill-red-500'
-                          : 'text-white'
+                          : 'text-gray-500 dark:text-white'
                       }`}
                     />
                     {photo.likes > 0 && (
-                      <span className="!text-gray-600 dark:!text-gray-300 !text-sm !font-medium">
+                      <span className="!text-gray-600 dark:!text-gray-300 !text-sm !font-medium ml-1">
                         {photo.likes}
                       </span>
                     )}
                   </Button>
                 </div>
 
-                {/* Download */}
+                {/* Download Button */}
                 <Button
                   variant="ghost"
                   size="icon"
@@ -117,7 +117,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
                     e.stopPropagation();
                     window.open(photo.image_url, '_blank');
                   }}
-                  className="bg-transparent hover:bg-slate-800 text-white">
+                  className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
                   <Download className="!h-6 !w-6" />
                   <span className="sr-only">Download</span>
                 </Button>
