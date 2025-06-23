@@ -3,6 +3,7 @@
 import '@/styles/global.css'
 import Navbar from '../components/Navbar.astro';
 import { ClientRouter } from "astro:transitions";
+import ToastProvider from '@/components/ToastProvider';
 
 const { title, currentPage } = Astro.props;
 ---
@@ -38,6 +39,7 @@ const { title, currentPage } = Astro.props;
 
     <main class="pt-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ToastProvider client:load />
         <slot />
       </div>
     </main>

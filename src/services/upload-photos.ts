@@ -38,14 +38,6 @@ const uploadPhotosForSession = async ({ sessionId, files }: UploadPhotosParams):
     const response = await axios.post<UploadResponse>(
       `${BACKEND_API}/upload-photos/${sessionId}`,
       formData,
-      {
-        onUploadProgress: (progressEvent: any) => {
-          if (progressEvent.total) {
-            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            console.log(`Client Upload progress to Flask: ${percentCompleted}%`);
-          }
-        },
-      }
     );
 
     return response.data;
