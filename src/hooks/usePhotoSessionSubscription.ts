@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import pb from "@/services/pocketbase";
-import { type RecordSubscription } from 'pocketbase';
 import { isEqual } from 'lodash-es';
+import { toast } from 'sonner';
+import { type RecordSubscription } from 'pocketbase';
+import pb from "@/services/pocketbase";
+import { fetchPhotoSession } from '@/stores/photoSessionStore';
 
 export interface NewlyCreated {
   collectionId: string;
@@ -15,7 +17,7 @@ export interface NewlyCreated {
   updated: string;
 }
 
-const useSessionSubscription = (sessionId: string, fetchPhotoSession: () => void) => {
+const useSessionSubscription = (sessionId: string) => {
   const [newlyCreated, setNewlyCreated] = useState<NewlyCreated | null>(null);
   useEffect(() => {
     if (!sessionId) return;
@@ -29,9 +31,11 @@ const useSessionSubscription = (sessionId: string, fetchPhotoSession: () => void
           if (e.record.session_id !== sessionId) return;
           console.log('Event:', e.action, e.record);
           if (isEqual(e.action, 'create') && e.record) {
-            setNewlyCreated(e.record as NewlyCreated);
+            const record = e.record as NewlyCreated;
+            toast.success(`Uploaded ${record.originalFilename}`)
+            setNewlyCreated(record);
           }
-          fetchPhotoSession();
+          fetchPhotoSession(sessionId, 1);
         });
     };
 
@@ -41,7 +45,7 @@ const useSessionSubscription = (sessionId: string, fetchPhotoSession: () => void
       if (unsubscribe) unsubscribe();
       setNewlyCreated(null);
     };
-  }, [sessionId, fetchPhotoSession]);
+  }, []);
 
   return { createdRecordsState: { newlyCreated, setNewlyCreated } }
 };

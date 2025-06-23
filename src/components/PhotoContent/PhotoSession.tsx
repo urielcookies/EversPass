@@ -45,7 +45,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   // State for the floating mobile toggle - this will be conditionally rendered
   const [showFloatingToggle, setShowFloatingToggle] = useState(false);
 
-  const { createdRecordsState } = useSessionSubscription(session.id, fetchPhotoSession);
+  const { createdRecordsState } = useSessionSubscription(session.id);
 
   const formatExpiration = (expiresAt: string) =>
     `Expires in ${formatDistanceToNow(parseISO(expiresAt))}`;

@@ -6,9 +6,7 @@ import {
   useEffect,
   type Dispatch,
 } from 'react';
-import { map } from 'lodash-es';
 import { Loader2, Upload, XCircle } from 'lucide-react';
-import { toast } from 'sonner';
 import {
   Dialog,
   DialogClose,
@@ -47,12 +45,10 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Clear selected files when the modal closes
+  // Clear selected files when the modal opens or closes
   useEffect(() => {
-    if (!isOpen && !isUploading) {
-      handleClearSelectedFiles();
-    }
-  }, [isOpen, isUploading]);
+    handleClearSelectedFiles();
+  }, [isOpen]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -133,7 +129,6 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
     const newlyCreated = createdRecordsState.newlyCreated;
     if (!newlyCreated) return;
 
-    toast.success(`Uploaded ${newlyCreated.originalFilename}`)
     setUploadedFiles((state) => [...state, newlyCreated.originalFilename]);
   }, [createdRecordsState.newlyCreated]);
 
