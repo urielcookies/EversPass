@@ -35,6 +35,10 @@ const useSessionSubscription = (sessionId: string) => {
             toast.success(`Uploaded ${record.originalFilename}`)
             setNewlyCreated(record);
           }
+          if (isEqual(e.action, 'delete') && e.record) {
+            const record = e.record as NewlyCreated;
+            toast.success(`Photo deleted ${record.originalFilename}`);
+          }
           fetchPhotoSession(sessionId, 1);
         });
     };

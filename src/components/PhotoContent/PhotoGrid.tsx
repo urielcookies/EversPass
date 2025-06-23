@@ -1,8 +1,14 @@
 import { useRef, useEffect, useState } from 'react';
-import { Download, Heart } from 'lucide-react';
+import { Download, Heart, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
-
+import { deletePhotoById } from '@/services/deletePhotoById';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 interface PhotoGridProps {
   photoSession: PhotoRecord[];
   oneView: boolean;
@@ -38,6 +44,10 @@ const PhotoGrid = (props: PhotoGridProps) => {
     }
   }, [oneView, selectedPhotoId]);
 
+  const handleDeletePhoto = (photoId: string) => {
+    deletePhotoById(photoId);
+  };
+
   return (
     <div
       id="photo-grid"
@@ -63,6 +73,25 @@ const PhotoGrid = (props: PhotoGridProps) => {
                 <p className="text-sm font-semibold truncate flex-grow">
                   {photo.originalFilename || 'Unnamed Photo'}
                 </p>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
+                      aria-label="Options">
+                      <MoreVertical className="w-5 h-5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => handleDeletePhoto(photo.id)}
+                      className="text-red-600 focus:bg-red-50 dark:text-red-500 dark:focus:bg-red-900/30">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                    {/* You can add more items here like "Download", "Rename", etc. */}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               {/* Image */}

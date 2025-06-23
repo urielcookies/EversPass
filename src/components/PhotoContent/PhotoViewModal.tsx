@@ -1,6 +1,5 @@
-import { Download, XCircle, Heart } from 'lucide-react';
+import { Download, XCircle, Heart, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { PhotoRecord } from '@/services/fetchPhotosForSession';
 import {
   Dialog,
   DialogContent,
@@ -9,6 +8,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import type { PhotoRecord } from '@/services/fetchPhotosForSession';
+import { deletePhotoById } from '@/services/deletePhotoById';
+import { toast } from 'sonner';
 
 interface PhotoViewModalProps {
   isOpen: boolean;
@@ -18,9 +26,19 @@ interface PhotoViewModalProps {
   getIsLiked: (photoId: string) => boolean;
 }
 
-const PhotoViewModal = ({ isOpen, activePhoto, onClose, handleToggleLike, getIsLiked }: PhotoViewModalProps) => {
+const PhotoViewModal = ({
+  isOpen,
+  activePhoto,
+  onClose,
+  handleToggleLike,
+  getIsLiked,
+}: PhotoViewModalProps) => {
   if (!isOpen || !activePhoto) return null;
   const { id: photoId, image_url, originalFilename } = activePhoto;
+
+  const handleDeletePhoto = (photoId: string) => {
+    deletePhotoById(photoId);
+  };
 
   return (
     <Dialog open={isOpen}>
@@ -29,9 +47,30 @@ const PhotoViewModal = ({ isOpen, activePhoto, onClose, handleToggleLike, getIsL
         onInteractOutside={onClose}
         hideClose>
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="text-lg font-semibold text-white">
-            {originalFilename || 'Photo View'}
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-lg font-semibold text-white">
+              {originalFilename || 'Photo View'}
+            </DialogTitle>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
+                  aria-label="Options">
+                  <MoreVertical className="w-5 h-5 text-white" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => handleDeletePhoto(photoId)}
+                  className="text-red-600 focus:bg-red-50 dark:text-red-500 dark:focus:bg-red-900/30">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           <DialogDescription className="sr-only">
             Large view of the selected photo.
           </DialogDescription>
@@ -48,7 +87,9 @@ const PhotoViewModal = ({ isOpen, activePhoto, onClose, handleToggleLike, getIsL
           <div className="!flex !items-center !gap-2">
             <Heart
               className={`!h-6 !w-6 !cursor-pointer !transition-colors !duration-200 ${
-                getIsLiked(photoId) ? '!text-red-500 !fill-red-500' : '!text-gray-600 dark:!text-gray-300'
+                getIsLiked(photoId)
+                  ? '!text-red-500 !fill-red-500'
+                  : '!text-gray-600 dark:!text-gray-300'
               }`}
               onClick={() => handleToggleLike(photoId)}
             />
