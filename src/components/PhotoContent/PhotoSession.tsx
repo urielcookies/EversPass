@@ -205,6 +205,12 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
                 </p>
               </div>
             )}
+
+            {!isLoadingMore && isEqual(photoSession.length, totalPhotos) && (
+              <div className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+                You've reached the end of the session photos.
+              </div>
+            )}
           </>
         ) : <UploadPhotosMessage handleOpenUploadModal={handleOpenUploadModal} /> }
       </section>
