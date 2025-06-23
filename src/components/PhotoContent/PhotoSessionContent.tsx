@@ -67,9 +67,7 @@ const PhotoSessionContent = () => {
   return (
     <PhotoSession
       session={session}
-      photoSession={photos}
-      isLoadingMore={isLoadingMore}
-      fetchPhotoSession={() => fetchPhotoSession(session.id, 1)} />
+      photoSession={photos} />
   )
 };
 

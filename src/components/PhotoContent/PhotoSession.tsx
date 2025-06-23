@@ -27,12 +27,10 @@ import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 interface PhotoSessionContentProps {
   session: SessionRecord;
   photoSession: PhotoRecord[];
-  isLoadingMore: boolean;
-  fetchPhotoSession: () => void;
 }
 
 const PhotoSessionContent = (props: PhotoSessionContentProps) => {
-  const {session, photoSession, fetchPhotoSession } = props;
+  const {session, photoSession } = props;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
