@@ -98,7 +98,9 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
     createdRecordsState.setNewlyCreated(null);
   };
 
+  const totalFilesSelectedRef = useRef(0); // Holds the original count of selected files to calculate progress accurately
   const handleUploadSubmit = async (event: FormEvent) => {
+    totalFilesSelectedRef.current = selectedFiles.length;
     event.preventDefault();
     setIsUploading(true);
 
@@ -122,6 +124,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
       alert(error.message || 'Failed to upload photos. Please try again.');
     } finally {
       handleClearSelectedFiles();
+      totalFilesSelectedRef.current = 0
     }
   };
 
@@ -130,20 +133,23 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
     if (!newlyCreated) return;
 
     setUploadedFiles((state) => [...state, newlyCreated.originalFilename]);
+    setSelectedFiles((prevFiles) =>
+      prevFiles.filter((file) => file.name !== newlyCreated.originalFilename)
+    );
   }, [createdRecordsState.newlyCreated]);
 
   // Update progress when uploadedFiles changes
   useEffect(() => {
-    const totalFiles = selectedFiles.length;
+    // const totalFiles = selectedFiles.length;
+    const totalFiles = totalFilesSelectedRef.current
     const uploadedCount = uploadedFiles.length;
 
     if (totalFiles > 0) {
       const progressPercent = (uploadedCount / totalFiles) * 100;
       setUploadProgress(progressPercent);
     }
-  }, [uploadedFiles, selectedFiles.length]);
+  }, [uploadedFiles]); // [uploadedFiles, selectedFiles.length]
 
-  console.log('uploadedFiles', uploadedFiles.length)
   return (
     <Dialog open={isOpen}>
       <DialogContent
