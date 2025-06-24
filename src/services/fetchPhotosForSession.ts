@@ -14,6 +14,7 @@ interface PagedPhotoResponse {
   perPage: number;
   totalPages: number;
   totalItems: number;
+  sessionSize: number;
   items: PhotoRecord[];
 }
 

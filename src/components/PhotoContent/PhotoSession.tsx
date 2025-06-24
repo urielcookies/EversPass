@@ -14,6 +14,7 @@ import { find, includes, isEmpty, isEqual } from 'lodash-es';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
 import { Button } from '@/components/ui/button';
+import { Progress } from "@/components/ui/progress"
 import { type SessionRecord } from '@/stores/sessionsStore';
 import toggleLike from '@/services/togglePhotoLikes';
 import UploadPhotosModal from './UploadPhotosModal';
@@ -30,10 +31,11 @@ interface PhotoSessionContentProps {
   photoSession: PhotoRecord[];
   isLoadingMore: boolean;
   totalPhotos: number;
+  sessionSize: number;
 }
 
 const PhotoSessionContent = (props: PhotoSessionContentProps) => {
-  const {session, photoSession, isLoadingMore, totalPhotos } = props;
+  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize } = props;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
@@ -142,36 +144,69 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
     return includes(likes[session.id], photoId);
   }
 
+  const formatBytesToGB = (bytes: number) => {
+    if (bytes === 0) return '0.00 GB'
+    const gigabytes = bytes / (1024 ** 3); // Convert bytes to gigabytes
+    return gigabytes.toFixed(2); // Format to 2 decimal places
+  };
+
+  const storageLimitGB = 2;
+  const sessionSizeInGB = sessionSize / (1024 ** 3);
+  const remainingGB = (storageLimitGB - sessionSizeInGB).toFixed(2);
+  const progressBarValue = storageLimitGB > 0
+    ? Math.max(0, Math.min(100, (sessionSizeInGB / storageLimitGB) * 100))
+    : 0;
+
   return (
     <main className="max-w-7xl mx-auto">
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
-        <div className="text-center sm:text-left">
+    <header className="flex flex-col gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+
+      {/* Top Row: Session Info & Buttons (Desktop: side-by-side, Mobile: stacked) */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+
+        {/* Left Column: Session Name & Details */}
+        <div className="flex-grow text-center sm:text-left">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             {session?.name || 'Session'}
           </h1>
-          <div className="mt-2 flex items-center gap-x-4 text-sm text-slate-600 dark:text-slate-400 justify-center sm:justify-normal">
-            <div className="flex items-center gap-1.5">
-              <Camera className="h-4 w-4" />
-              <span>{totalPhotos} Photos</span>
-            </div>
-            <div className="flex items-center gap-1.5">
+
+          {/* Details Section: Always stacked vertically now */}
+          <div className="mt-2 flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
+            {/* Expiration (on top) */}
+            <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
               <Clock className="h-4 w-4" />
               <span>{formatExpiration(session?.expires_at)}</span>
             </div>
+            {/* Photos & Storage (underneath) */}
+            <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
+              <Camera className="h-4 w-4" />
+              <span>
+                {totalPhotos} Photos: {formatBytesToGB(sessionSize)} / {storageLimitGB} GB ({remainingGB} GB Remaining)
+              </span>
+            </div>
+          </div>
+
+          {/* Progress Bar (under details) */}
+          <div className="mt-4 w-full sm:max-w-sm mx-auto sm:mx-0">
+            <Progress value={progressBarValue} />
           </div>
         </div>
 
+        {/* Right Column: Action Buttons (Now inline on all screen sizes, like original) */}
         <div className="flex items-center justify-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
           <Button onClick={handleOpenShareModal} variant="outline" className="flex-1 min-w-0">
             <Share className="mr-2 h-4 w-4" />
             <span className="truncate">Share</span>
           </Button>
-          <Button variant="primary-cta" onClick={handleOpenUploadModal} className="flex-1 min-w-0">
-            <Upload className="mr-2 h-4 w-4" />
-            <span className="truncate">Upload Photos</span>
-          </Button>
+          {progressBarValue < 100 && (
+            <Button variant="primary-cta" onClick={handleOpenUploadModal} className="flex-1 min-w-0">
+              <Upload className="mr-2 h-4 w-4" />
+              <span className="truncate">Upload Photos</span>
+            </Button>
+          )}
         </div>
-      </header>
+      </div>
+    </header>
 
       <section className="mt-8">
         {!isEmpty(photoSession) ? (

@@ -17,7 +17,16 @@ const PhotoSessionContent = () => {
   const sessionIdParams = url.searchParams.get("sessionId");
 
   const { sessions, isLoading: sessionLoading } = useStore($sessions);
-  const { photos, isLoading: photosLoading, isLoadingMore, error, page, totalPages, totalItems } = useStore($activePhotoSession);
+  const {
+    photos,
+    isLoading: photosLoading,
+    isLoadingMore,
+    error,
+    page,
+    totalPages,
+    totalItems,
+    sessionSize
+  } = useStore($activePhotoSession);
 
   useEffect(() => {
     if (!deviceIdParams || !sessionIdParams) return
@@ -76,7 +85,8 @@ const PhotoSessionContent = () => {
       session={session}
       photoSession={photos}
       isLoadingMore={isLoadingMore}
-      totalPhotos={totalItems} />
+      totalPhotos={totalItems}
+      sessionSize={sessionSize} />
   )
 };
 

@@ -13,6 +13,7 @@ interface ActivePhotoSessionStore {
   perPage: number;
   totalPages: number;
   totalItems: number;
+  sessionSize: number;
 }
 
 const $activePhotoSession = atom<ActivePhotoSessionStore>({
@@ -25,6 +26,7 @@ const $activePhotoSession = atom<ActivePhotoSessionStore>({
   perPage: 50,
   totalPages: 0,
   totalItems: 0,
+  sessionSize: 0,
 });
 
 /**
@@ -70,6 +72,7 @@ const fetchPhotoSession = async (sessionId: string, pageToFetch: number = 1) => 
       perPage: response.perPage,
       totalPages: response.totalPages,
       totalItems: response.totalItems,
+      sessionSize: response.sessionSize,
     });
 
   } catch (e: any) {
@@ -102,6 +105,7 @@ const clearPhotos = () => {
     page: 0,
     totalPages: 0,
     totalItems: 0,
+    sessionSize: 0,
     sessionId: null, // Optionally clear the sessionId if clearing photos implies no active session
     isLoading: false, // Ensure loading states are reset
     isLoadingMore: false,
