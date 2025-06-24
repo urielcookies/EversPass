@@ -10,7 +10,14 @@ import {
   Share,
   Upload,
 } from 'lucide-react';
-import { find, includes, isEmpty, isEqual } from 'lodash-es';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { cloneDeep, find, includes, isEmpty, isEqual, orderBy } from 'lodash-es';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
 import { Button } from '@/components/ui/button';
@@ -47,6 +54,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   const tabsRef = useRef<HTMLDivElement>(null);
   // State for the floating mobile toggle - this will be conditionally rendered
   const [showFloatingToggle, setShowFloatingToggle] = useState(false);
+  const [sortOption, setSortOption] = useState('newest');
 
   const { createdRecordsState } = useSessionSubscription(session.id);
 
@@ -157,59 +165,80 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
     ? Math.max(0, Math.min(100, (sessionSizeInGB / storageLimitGB) * 100))
     : 0;
 
+  const photoSessionSorted = () => {
+    let newPhotosession = cloneDeep(photoSession);
+    if (isEqual(sortOption, 'newest')) {
+      newPhotosession = orderBy(newPhotosession, ['created'], ['desc']);
+    } else if (isEqual(sortOption, 'oldest')) {
+      newPhotosession = orderBy(newPhotosession, ['created'], ['asc']);
+    } else if (isEqual(sortOption, 'most-liked')) {
+      newPhotosession = orderBy(newPhotosession, ['likes'], ['desc']);
+    }
+    return newPhotosession;
+  }
+
   return (
     <main className="max-w-7xl mx-auto">
-    <header className="flex flex-col gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+      <header className="flex flex-col gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+        {/* Top Row: Session Info & Buttons (Desktop: side-by-side, Mobile: stacked) */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+          {/* Left Column */}
+          <div className="flex-grow text-center sm:text-left">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              {session?.name || 'Session'}
+            </h1>
 
-      {/* Top Row: Session Info & Buttons (Desktop: side-by-side, Mobile: stacked) */}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-
-        {/* Left Column: Session Name & Details */}
-        <div className="flex-grow text-center sm:text-left">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            {session?.name || 'Session'}
-          </h1>
-
-          {/* Details Section: Always stacked vertically now */}
-          <div className="mt-2 flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
-            {/* Expiration (on top) */}
-            <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
-              <Clock className="h-4 w-4" />
-              <span>{formatExpiration(session?.expires_at)}</span>
+            <div className="mt-2 flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
+                <Clock className="h-4 w-4" />
+                <span>{formatExpiration(session?.expires_at)}</span>
+              </div>
+              <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
+                <Camera className="h-4 w-4" />
+                <span>
+                  {totalPhotos} Photos: {formatBytesToGB(sessionSize)} / {storageLimitGB} GB ({remainingGB} GB Remaining)
+                </span>
+              </div>
             </div>
-            {/* Photos & Storage (underneath) */}
-            <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
-              <Camera className="h-4 w-4" />
-              <span>
-                {totalPhotos} Photos: {formatBytesToGB(sessionSize)} / {storageLimitGB} GB ({remainingGB} GB Remaining)
-              </span>
+
+            <div className="mt-4 w-full sm:max-w-sm mx-auto sm:mx-0">
+              <Progress value={progressBarValue} />
             </div>
           </div>
 
-          {/* Progress Bar (under details) */}
-          <div className="mt-4 w-full sm:max-w-sm mx-auto sm:mx-0">
-            <Progress value={progressBarValue} />
+          {/* Right Column: Buttons + Select */}
+          <div className="inline-flex flex-col items-stretch gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
+            {/* Button Row */}
+            <div className="flex items-center justify-center gap-2 w-full">
+              <Button onClick={handleOpenShareModal} variant="outline" className="flex-1 min-w-0">
+                <Share className="mr-2 h-4 w-4" />
+                <span className="truncate">Share</span>
+              </Button>
+              {progressBarValue < 100 && (
+                <Button variant="primary-cta" onClick={handleOpenUploadModal} className="flex-1 min-w-0">
+                  <Upload className="mr-2 h-4 w-4" />
+                  <span className="truncate">Upload Photos</span>
+                </Button>
+              )}
+            </div>
+
+            {/* Dropdown below buttons with full width */}
+            <Select defaultValue="newest" onValueChange={(value) => setSortOption(value)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="More actions..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="oldest">Oldest</SelectItem>
+                <SelectItem value="most-liked">Most Liked</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-
-        {/* Right Column: Action Buttons (Now inline on all screen sizes, like original) */}
-        <div className="flex items-center justify-center gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-          <Button onClick={handleOpenShareModal} variant="outline" className="flex-1 min-w-0">
-            <Share className="mr-2 h-4 w-4" />
-            <span className="truncate">Share</span>
-          </Button>
-          {progressBarValue < 100 && (
-            <Button variant="primary-cta" onClick={handleOpenUploadModal} className="flex-1 min-w-0">
-              <Upload className="mr-2 h-4 w-4" />
-              <span className="truncate">Upload Photos</span>
-            </Button>
-          )}
-        </div>
-      </div>
-    </header>
+      </header>
 
       <section className="mt-8">
-        {!isEmpty(photoSession) ? (
+        {!isEmpty(photoSessionSorted()) ? (
           <>
             {/* Note: This is *not* the PhotoViewTabs component, but the separate floating one */}
             {showFloatingToggle && ( // This ensures it only shows when tabs are not in their initial view
@@ -223,7 +252,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
 
 
             <PhotoGrid
-              photoSession={photoSession}
+              photoSession={photoSessionSorted()}
               oneView={oneView}
               selectedPhotoId={selectedPhotoId}
               setSelectedPhotoId={setSelectedPhotoId}
@@ -241,7 +270,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
               </div>
             )}
 
-            {!isLoadingMore && isEqual(photoSession.length, totalPhotos) && (
+            {!isLoadingMore && isEqual(photoSessionSorted().length, totalPhotos) && (
               <div className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
                 You've reached the end of the session photos.
               </div>
