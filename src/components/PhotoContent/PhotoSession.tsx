@@ -9,6 +9,7 @@ import {
   Loader2,
   Share,
   Upload,
+  CassetteTape
 } from 'lucide-react';
 import {
   Select,
@@ -39,10 +40,11 @@ interface PhotoSessionContentProps {
   isLoadingMore: boolean;
   totalPhotos: number;
   sessionSize: number;
+  allSessionsSize: number;
 }
 
 const PhotoSessionContent = (props: PhotoSessionContentProps) => {
-  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize } = props;
+  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize, allSessionsSize } = props;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
@@ -193,17 +195,37 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
                 <Clock className="h-4 w-4" />
                 <span>{formatExpiration(session?.expires_at)}</span>
               </div>
+
+              {/* First Line: Photos and Current Session Size */}
               <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
-                <Camera className="h-4 w-4" />
-                <span>
-                  {totalPhotos} Photos: {formatBytesToGB(sessionSize)} / {storageLimitGB} GB ({remainingGB} GB Remaining)
+                <Camera className="h-4 w-4 shrink-0" /> {/* Camera icon for photos */}
+                <span className="whitespace-nowrap">
+                  {totalPhotos} Photos
+                  <span className="ml-1">({formatBytesToGB(sessionSize)} GB)</span>
+                </span>
+              </div>
+
+              {/* Second Line: Total Device Usage and Remaining (with CassetteTape icon) */}
+              <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
+                <CassetteTape className="h-4 w-4 shrink-0" /> {/* CassetteTape icon for storage */}
+                <span className="whitespace-nowrap">
+                  <span className="font-semibold">{formatBytesToGB(allSessionsSize)} GB</span>
+                  <span> of {storageLimitGB} GB used</span>
+                  <span className="ml-1">({remainingGB} GB remaining)</span>
                 </span>
               </div>
             </div>
 
+            {/* --- START MODIFIED PROGRESS BAR SECTION --- */}
             <div className="mt-4 w-full sm:max-w-sm mx-auto sm:mx-0">
-              <Progress value={progressBarValue} />
+              <div className="flex items-center justify-between gap-2"> {/* Flex container for bar and text */}
+                <Progress value={progressBarValue} className="flex-grow" /> {/* Progress bar takes available space */}
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                  {progressBarValue.toFixed(0)}% {/* Display percentage, rounded to whole number */}
+                </span>
+              </div>
             </div>
+            {/* --- END MODIFIED PROGRESS BAR SECTION --- */}
           </div>
 
           {/* Right Column: Buttons + Select */}
@@ -236,7 +258,6 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
           </div>
         </div>
       </header>
-
       <section className="mt-8">
         {!isEmpty(photoSessionSorted()) ? (
           <>

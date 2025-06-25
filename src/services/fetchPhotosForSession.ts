@@ -8,6 +8,7 @@ interface PhotoRecord {
   likes: number;
   created: string;
   session_id: string;
+  size: number;
 }
 interface PagedPhotoResponse {
   page: number;
@@ -16,6 +17,7 @@ interface PagedPhotoResponse {
   totalItems: number;
   sessionSize: number;
   items: PhotoRecord[];
+  totalDeviceSessionsSize: number;
 }
 
 const fetchPhotosForSession = async (

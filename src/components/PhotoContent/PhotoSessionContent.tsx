@@ -25,7 +25,8 @@ const PhotoSessionContent = () => {
     page,
     totalPages,
     totalItems,
-    sessionSize
+    sessionSize,
+    totalDeviceSessionsSize,
   } = useStore($activePhotoSession);
 
   useEffect(() => {
@@ -86,7 +87,8 @@ const PhotoSessionContent = () => {
       photoSession={photos}
       isLoadingMore={isLoadingMore}
       totalPhotos={totalItems}
-      sessionSize={sessionSize} />
+      sessionSize={sessionSize}
+      allSessionsSize={totalDeviceSessionsSize}/>
   )
 };
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { isEmpty, isNull } from "lodash-es";
-import { Copy, PlusCircle, Trash2 } from "lucide-react";
+import { isEmpty, reduce } from "lodash-es";
+import { CassetteTape, Copy, Folder, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ import SessionsTable from "./SessionsTable";
 import { createSession, type SessionData } from "@/services/createSession";
 import { type SessionRecord } from "@/services/loadSessions";
 import { deleteSessionById } from "@/services/deleteSession";
+import { Progress } from "@/components/ui/progress"
 
 interface LoadSessionContentProps {
   deviceId: string;
@@ -89,16 +90,61 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     }
   }
 
+  const formatBytesToGB = (bytes: number) => {
+    if (bytes === 0) return '0.00 GB';
+    const gigabytes = bytes / (1024 ** 3);
+    return gigabytes.toFixed(2);
+  };
+
+  const storageLimitGB = 2;
+  const maxSessions = 3;
+  const allSessionsSize = reduce(sessions, (total, { total_photos_size }) => total + total_photos_size, 0)
+  const allSessionsSizeInGB = allSessionsSize / (1024 ** 3);
+  const remainingGB = (storageLimitGB - allSessionsSizeInGB).toFixed(2);
+  const sessionsRemaining = Math.max(0, maxSessions - sessions.length);
+  const progressBarValue = storageLimitGB > 0
+    ? Math.max(0, Math.min(100, (allSessionsSizeInGB / storageLimitGB) * 100))
+    : 0;
+
   return (
     <>
       <div className="flex justify-between items-center mb-8">
-        <div>
+        <div className="flex flex-col"> {/* Added flex-col to stack title/desc and new info */}
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             Your Sessions
           </h1>
           <p className="mt-1 text-slate-600 dark:text-slate-400">
             View and manage your active photo sharing sessions.
           </p>
+
+          {/* --- NEW SECTION FOR STORAGE & SESSION LIMITS --- */}
+          <div className="mt-4 text-sm text-slate-600 dark:text-slate-400">
+            {/* Sessions Count Line */}
+            <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
+              <Folder className="h-4 w-4 shrink-0" /> {/* Using Folder icon for sessions, can be changed */}
+              <span>{sessions.length} sessions of {maxSessions} total</span>
+              <span className="ml-1">({sessionsRemaining} remaining)</span>
+            </div>
+
+            {/* Storage Line */}
+            <div className="flex items-center gap-1.5 mb-1 justify-center sm:justify-normal">
+              <CassetteTape className="h-4 w-4 shrink-0" />
+              <span className="font-semibold">{formatBytesToGB(allSessionsSize)} GB</span>
+              <span> of {storageLimitGB} GB used</span>
+              <span className="ml-1">({remainingGB} GB remaining)</span>
+            </div>
+
+            {/* Progress Bar for Storage */}
+            <div className="mt-3 w-full max-w-sm mx-auto sm:mx-0"> {/* Max-width for aesthetics */}
+              <div className="flex items-center justify-between gap-2">
+                <Progress value={progressBarValue} className="flex-grow" />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                  {progressBarValue.toFixed(0)}%
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* --- END NEW SECTION --- */}
         </div>
         <Button
           variant="primary-cta"

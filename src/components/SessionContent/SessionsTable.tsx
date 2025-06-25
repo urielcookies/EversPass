@@ -95,13 +95,20 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
     navigate(`/sessions/photos?eversPassDeviceId=${deviceId}&sessionId=${sessionId}`);
   };
 
+  const formatBytesToGB = (bytes: number) => {
+    if (bytes === 0) return '0.00 GB'
+    const gigabytes = bytes / (1024 ** 3); // Convert bytes to gigabytes
+    return gigabytes.toFixed(2); // Format to 2 decimal places
+  };
+
   return (
     <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow className="bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900/50">
             <TableHead className="w-[40%]">Name</TableHead>
-            <TableHead>Expires In</TableHead>
+            <TableHead>Expires</TableHead>
+            <TableHead>Size</TableHead>
             <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -113,6 +120,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
               <TableCell>
                 <TimeRemaining expiresAt={session.expires_at} />
               </TableCell>
+              <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_size)} GB</TableCell>
               <TableCell className="text-slate-500 dark:text-slate-400">{new Date(session.created).toLocaleDateString()}</TableCell>
               <TableCell className="text-right">
                 <Button

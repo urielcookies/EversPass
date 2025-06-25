@@ -8,7 +8,7 @@ interface SessionRecord {
   device_id: string;
   name: string;
   expires_at: string;
-  status: 'active' | 'expired' | 'deleting' | 'deleted';
+  total_photos_size: number;
 }
 
 const loadSessionsByDeviceId = async (deviceId: string): Promise<SessionRecord[]> => {
