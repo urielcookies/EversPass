@@ -108,34 +108,34 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
 
   return (
     <>
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex flex-col"> {/* Added flex-col to stack title/desc and new info */}
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Your Sessions
-          </h1>
-          <p className="mt-1 text-slate-600 dark:text-slate-400">
-            View and manage your active photo sharing sessions.
-          </p>
+      <header className="flex flex-col gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
+        {/* Top Row: Session Info & Buttons (Desktop: side-by-side, Mobile: stacked) */}
+        <div className="flex flex-col items-center sm:flex-row sm:items-start sm:justify-between gap-6"> {/* Added items-center for mobile centering */}
+          {/* Left Column for text info */}
+          <div className="flex-grow text-center sm:text-left">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Your Sessions
+            </h1>
 
-          {/* --- NEW SECTION FOR STORAGE & SESSION LIMITS --- */}
-          <div className="mt-4 text-sm text-slate-600 dark:text-slate-400">
-            {/* Sessions Count Line */}
-            <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
-              <Folder className="h-4 w-4 shrink-0" /> {/* Using Folder icon for sessions, can be changed */}
-              <span>{sessions.length} sessions of {maxSessions} total</span>
-              <span className="ml-1">({sessionsRemaining} remaining)</span>
-            </div>
+            <div className="mt-2 flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
+              {/* Sessions Count Line */}
+              <div className="flex items-start gap-1.5 justify-center sm:justify-normal">
+                <Folder className="h-4 w-4 shrink-0" />
+                <span>{sessions.length} sessions of {maxSessions} total</span>
+                <span className="ml-1 whitespace-nowrap">({sessionsRemaining} remaining)</span>
+              </div>
 
-            {/* Storage Line */}
-            <div className="flex items-center gap-1.5 mb-1 justify-center sm:justify-normal">
-              <CassetteTape className="h-4 w-4 shrink-0" />
-              <span className="font-semibold">{formatBytesToGB(allSessionsSize)} GB</span>
-              <span> of {storageLimitGB} GB used</span>
-              <span className="ml-1">({remainingGB} GB remaining)</span>
+              {/* Storage Line */}
+              <div className="flex items-start gap-1.5 justify-center sm:justify-normal">
+                <CassetteTape className="h-4 w-4 shrink-0" />
+                <span className="font-semibold whitespace-nowrap">{formatBytesToGB(allSessionsSize)} GB</span>
+                <span className="whitespace-nowrap"> of {storageLimitGB} GB used</span>
+                <span className="ml-1 whitespace-nowrap">({remainingGB} GB remaining)</span>
+              </div>
             </div>
 
             {/* Progress Bar for Storage */}
-            <div className="mt-3 w-full max-w-sm mx-auto sm:mx-0"> {/* Max-width for aesthetics */}
+            <div className="mt-4 w-full sm:max-w-sm mx-auto sm:mx-0">
               <div className="flex items-center justify-between gap-2">
                 <Progress value={progressBarValue} className="flex-grow" />
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
@@ -144,16 +144,23 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
               </div>
             </div>
           </div>
-          {/* --- END NEW SECTION --- */}
+
+          {/* Right Column: Buttons (only one for now) */}
+          <div className="inline-flex flex-col items-stretch gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
+            {/* Button Row */}
+            <div className="flex items-center justify-center w-full">
+              <Button
+                variant="primary-cta"
+                size="lg"
+                onClick={handleOpenCreateSessionDialog}
+                className="w-full">
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Create Session
+              </Button>
+            </div>
+          </div>
         </div>
-        <Button
-          variant="primary-cta"
-          size="lg"
-          onClick={handleOpenCreateSessionDialog}>
-          <PlusCircle className="mr-2 h-5 w-5" />
-          Create Session
-        </Button>
-      </div>
+      </header>
 
       <SessionsTable sessions={sessions} onDeleteSession={handleOpenDeleteDialog} />
 
