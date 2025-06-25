@@ -161,7 +161,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   };
 
   const storageLimitGB = 2;
-  const sessionSizeInGB = sessionSize / (1024 ** 3);
+  const sessionSizeInGB = allSessionsSize / (1024 ** 3);
   const remainingGB = (storageLimitGB - sessionSizeInGB).toFixed(2);
   const progressBarValue = storageLimitGB > 0
     ? Math.max(0, Math.min(100, (sessionSizeInGB / storageLimitGB) * 100))

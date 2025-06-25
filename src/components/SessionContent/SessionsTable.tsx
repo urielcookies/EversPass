@@ -98,7 +98,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
   const formatBytesToGB = (bytes: number) => {
     if (bytes === 0) return '0.00 GB'
     const gigabytes = bytes / (1024 ** 3); // Convert bytes to gigabytes
-    return gigabytes.toFixed(2); // Format to 2 decimal places
+    return `${gigabytes.toFixed(2)} GB`; // Format to 2 decimal places
   };
 
   return (
@@ -109,7 +109,6 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
             <TableHead className="w-[40%]">Name</TableHead>
             <TableHead>Expires</TableHead>
             <TableHead>Size</TableHead>
-            <TableHead>Created</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -120,8 +119,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
               <TableCell>
                 <TimeRemaining expiresAt={session.expires_at} />
               </TableCell>
-              <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_size)} GB</TableCell>
-              <TableCell className="text-slate-500 dark:text-slate-400">{new Date(session.created).toLocaleDateString()}</TableCell>
+              <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_size)}</TableCell>
               <TableCell className="text-right">
                 <Button
                   variant="ghost"
