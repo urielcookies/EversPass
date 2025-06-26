@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { PhotoRecord } from '@/services/fetchPhotosForSession';
 import { deletePhotoById } from '@/services/deletePhotoById';
-import { toast } from 'sonner';
 
 interface PhotoViewModalProps {
   isOpen: boolean;
@@ -36,8 +35,9 @@ const PhotoViewModal = ({
   if (!isOpen || !activePhoto) return null;
   const { id: photoId, image_url, originalFilename } = activePhoto;
 
-  const handleDeletePhoto = (photoId: string) => {
-    deletePhotoById(photoId);
+  const handleDeletePhoto = async(photoId: string) => {
+    await deletePhotoById(photoId);
+    onClose();
   };
 
   return (
