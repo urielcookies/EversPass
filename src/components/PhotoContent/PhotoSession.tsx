@@ -52,11 +52,9 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   const [modalViewOn, setModalViewOn] = useState(false);
   const [activePhoto, setActivePhoto] = useState<PhotoRecord | null>(null);
   const [showShareModal, setShowShareModal] = useState(false);
-  // Ref for the PhotoViewTabs component - still needed for IntersectionObserver
-  const tabsRef = useRef<HTMLDivElement>(null);
-  // State for the floating mobile toggle - this will be conditionally rendered
-  const [showFloatingToggle, setShowFloatingToggle] = useState(false);
   const [sortOption, setSortOption] = useState('newest');
+  const [tabsElement, setTabsElement] = useState<HTMLDivElement | null>(null);
+  const [showFloatingToggle, setShowFloatingToggle] = useState(false);
 
   const { createdRecordsState } = useSessionSubscription(session.id);
 
@@ -84,6 +82,9 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
 
   // Effect to observe the PhotoViewTabs component for the floating toggle
   useEffect(() => {
+    // Check if the DOM element is available before setting up the observer
+    if (!tabsElement) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         // If the tabs element is NOT intersecting (i.e., user scrolled past it), show floating toggle.
@@ -91,29 +92,25 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
       },
       {
         root: null, // Observe relative to the viewport
-        // rootMargin: '0px 0px -100px 0px', // Adjust as needed
         rootMargin: '0px 0px -20px 0px',
         threshold: 0, // Trigger when 0% of the target is visible
       }
     );
 
-    if (tabsRef.current) {
-      observer.observe(tabsRef.current);
-    }
+    observer.observe(tabsElement);
 
     return () => {
-      if (tabsRef.current) {
-        observer.unobserve(tabsRef.current);
-      }
+      observer.unobserve(tabsElement);
+      observer.disconnect();
     };
-  }, []);
+  }, [tabsElement]); // Depend on tabsElement state to re-run when the DOM node is available
 
   useEffect(() => {
     if (activePhoto) {
       const newActivePhoto = find(photoSession, ({ id }) => isEqual(id, activePhoto.id));
       if (newActivePhoto) setActivePhoto(newActivePhoto)
     }
-  }, [photoSession]);
+  }, [photoSession, activePhoto]);
   
   const handleToggleLike = async (photoId: string) => {
     const likes: Record<string, string[]> = JSON.parse(localStorage.getItem('likes') || '{}');
@@ -268,7 +265,8 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
 
             {/* PhotoViewTabs - Now explicitly hidden on sm and larger screens */}
             <div className="sm:hidden"> {/* This div hides PhotoViewTabs on sm and up */}
-                <PhotoViewTabs oneView={oneView} setOneView={setOneView} ref={tabsRef} />
+              {/* ref prop changed to use setTabsElement */}
+              <PhotoViewTabs oneView={oneView} setOneView={setOneView} ref={setTabsElement} />
             </div>
 
 
