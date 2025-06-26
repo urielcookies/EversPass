@@ -78,7 +78,7 @@ const StatusBadge = ({ status }: { status: SessionRecord['status'] }) => {
 
 
 const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
-  const { deviceId } = useStore($sessions);
+  const { deviceId, isLoading } = useStore($sessions);
   if (sessions.length === 0) {
     return (
       <div className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
@@ -122,6 +122,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
               <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_size)}</TableCell>
               <TableCell className="text-right">
                 <Button
+                  disabled={isLoading}
                   variant="ghost"
                   size="icon"
                   onClick={(e) => {
