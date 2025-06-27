@@ -98,7 +98,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
 
   const storageLimitGB = 2;
   const maxSessions = 3;
-  const allSessionsSize = reduce(sessions, (total, { total_photos_size }) => total + total_photos_size, 0)
+  const allSessionsSize = reduce(sessions, (total, { total_photos_bytes }) => total + total_photos_bytes, 0)
   const allSessionsSizeInGB = allSessionsSize / (1024 ** 3);
   const remainingGB = (storageLimitGB - allSessionsSizeInGB).toFixed(2);
   const sessionsRemaining = Math.max(0, maxSessions - sessions.length);

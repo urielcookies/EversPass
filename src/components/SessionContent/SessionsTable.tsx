@@ -119,7 +119,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
               <TableCell>
                 <TimeRemaining expiresAt={session.expires_at} />
               </TableCell>
-              <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_size)}</TableCell>
+              <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_bytes)}</TableCell>
               <TableCell className="text-right">
                 <Button
                   disabled={isLoading}
