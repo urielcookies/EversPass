@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { isEqual } from 'lodash-es';
-import { toast } from 'sonner';
 import { type RecordSubscription } from 'pocketbase';
 import pb from "@/services/pocketbase";
 import { fetchPhotoSession } from '@/stores/photoSessionStore';
+// import { toast } from 'sonner';
 
 export interface NewlyCreated {
   collectionId: string;
@@ -32,12 +32,14 @@ const useSessionSubscription = (sessionId: string) => {
           console.log('Event:', e.action, e.record);
           if (isEqual(e.action, 'create') && e.record) {
             const record = e.record as NewlyCreated;
-            toast.success(`Uploaded ${record.originalFilename}`)
+            // toast.success(`Uploaded ${record.originalFilename}`)
+            window.showToast(`Uploaded ${record.originalFilename}`, 'success')
             setNewlyCreated(record);
           }
           if (isEqual(e.action, 'delete') && e.record) {
             const record = e.record as NewlyCreated;
-            toast.success(`Photo deleted ${record.originalFilename}`);
+            // toast.success(`Photo deleted ${record.originalFilename}`);
+            window.showToast(`Photo deleted ${record.originalFilename}`, 'success');
           }
           fetchPhotoSession(sessionId, 1);
         });
