@@ -39,12 +39,14 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
         window.history.replaceState({ path: currentUrl.href }, '', currentUrl.href);
 
         // Load initial data
-        await fetchSessions(deviceIdExists.device_id, true);
+        // await fetchSessions(deviceIdExists.device_id, true);
+        await fetchSessions(deviceIdExists.device_id, 1, 10, true);
 
         // Setup real-time subscription
         pb.collection('everspass_sessions').subscribe('*', (e) => {
           if (e.record.device_id !== deviceIdExists.device_id) return; // ignore unrelated changes
-          fetchSessions(deviceIdExists.device_id, true); // only fetch if relevant
+          // fetchSessions(deviceIdExists.device_id, true); // only fetch if relevant
+          fetchSessions(deviceIdExists.device_id, 1, 10, true);
         });
       } else { // if does not exist remove localstorage and url params
         clearData();

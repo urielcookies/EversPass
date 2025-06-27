@@ -6,6 +6,9 @@ interface SessionsStore {
   isLoading: boolean;
   error: string | null;
   deviceId: string | null;
+  page: number;
+  totalPages: number;
+  hasMore: boolean;
 }
 
 const $sessions = atom<SessionsStore>({
@@ -13,31 +16,43 @@ const $sessions = atom<SessionsStore>({
   isLoading: false,
   error: null,
   deviceId: null,
+  page: 1,
+  totalPages: 1,
+  hasMore: false,
 });
 
-const fetchSessions = async (deviceId: string, forceRefresh: boolean = false) => {
+const fetchSessions = async (
+  deviceId: string,
+  page = 1,
+  perPage = 10,
+  forceRefresh = false
+) => {
   const store = $sessions.get();
 
-  // The condition checks if the data we have is for the correct device.
   const isDataValid = store.deviceId === deviceId && store.sessions.length > 0;
 
-  if (store.isLoading) {
-    return; // Prevent concurrent fetches
-  }
-
-  if (!forceRefresh && isDataValid) {
-    return; // Data is valid and for the correct device, so we can use the cache.
-  }
+  if (store.isLoading) return;
+  if (!forceRefresh && isDataValid && page === store.page) return;
 
   $sessions.set({ ...store, isLoading: true, error: null });
 
   try {
-    const records = await loadSessionsByDeviceId(deviceId);
-    $sessions.set({ sessions: records, isLoading: false, error: null, deviceId: deviceId });
+    const { items, total_pages } = await loadSessionsByDeviceId(deviceId, page, perPage);
+    const mergedSessions = page === 1 ? items : [...store.sessions, ...items];
+
+    $sessions.set({
+      sessions: mergedSessions,
+      isLoading: false,
+      error: null,
+      deviceId,
+      page,
+      totalPages: total_pages,
+      hasMore: page < total_pages
+    });
   } catch (e: any) {
-    $sessions.set({ ...$sessions.get(), isLoading: false, error: e.message });
+    $sessions.set({ ...store, isLoading: false, error: e.message });
   }
-}
+};
 
 export { $sessions, fetchSessions };
 export type { SessionRecord, SessionsStore };

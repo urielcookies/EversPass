@@ -12,17 +12,29 @@ interface SessionRecord {
   total_photos: number;
 }
 
-const loadSessionsByDeviceId = async (deviceId: string): Promise<SessionRecord[]> => {
-  try {
-    const response = await axios.get(`${BACKEND_API}/load-session?deviceId=${deviceId}`)
-    const records: SessionRecord[] = response.data;
+interface PaginatedSessions {
+  items: SessionRecord[];
+  page: number;
+  per_page: number;
+  total_pages: number;
+  total_items: number;
+}
 
-    return records;
+const loadSessionsByDeviceId = async (
+  deviceId: string,
+  page = 1,
+  perPage = 10
+): Promise<PaginatedSessions> => {
+  try {
+    const response = await axios.get(`${BACKEND_API}/load-session`, {
+      params: { deviceId, page, per_page: perPage }
+    });
+    return response.data;
   } catch (error) {
     console.error('Failed to load sessions:', error);
-    return [];
+    throw error;
   }
 };
 
 export { loadSessionsByDeviceId };
-export type { SessionRecord };
+export type { SessionRecord, PaginatedSessions };

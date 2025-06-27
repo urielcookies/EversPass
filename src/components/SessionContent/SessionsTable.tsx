@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { map } from "lodash-es";
+import { map, throttle } from "lodash-es";
 import { navigate } from 'astro:transitions/client';
 import { useStore } from '@nanostores/react';
-import { $sessions } from "@/stores/sessionsStore";
+import { $sessions, fetchSessions } from "@/stores/sessionsStore";
 import type { SessionRecord } from "@/services/loadSessions";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -89,7 +89,37 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
     return () => window.removeEventListener('resize', checkIsDesktop);
   }, []);
 
-  const { deviceId, isLoading } = useStore($sessions);
+  const { deviceId, isLoading, page, hasMore  } = useStore($sessions);
+
+  const handleScroll = useCallback(throttle(() => {
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
+    if (nearBottom && hasMore && !isLoading && deviceId) {
+      fetchSessions(deviceId, page + 1, 10);
+    }
+  }, 300), [hasMore, isLoading, deviceId, page]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      handleScroll.cancel();  // cancel any pending throttled calls
+    };
+  }, [handleScroll]);
+
+  const [hasScrolled, setHasScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.scrollY > 50) { // or any small threshold
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   if (sessions.length === 0) {
     return (
       <div className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
@@ -149,8 +179,21 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
               </TableCell>
             </TableRow>
           ))}
+
+          {isLoading && hasMore && (
+            <TableRow>
+              <TableCell colSpan={isDesktop ? 5 : 4} className="text-center py-4">
+                <span className="text-slate-500 dark:text-slate-400">Loading more sessions...</span>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
+      {!hasMore && sessions.length > 0 && hasScrolled && (
+        <div className="py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+          You've reached the end of the sessions.
+        </div>
+      )}
     </div>
   );
 }

@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react';
-import { find, isEqual, isUndefined } from 'lodash-es';
+import { find, isEqual, isNull, isUndefined } from 'lodash-es';
 import { navigate } from 'astro:transitions/client';
 import { useStore } from '@nanostores/react';
 import PhotoSession from '@/components/PhotoContent/PhotoSession';
 import checkDeviceIdExists from '@/services/checkDeviceIdExists';
 import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
 import { $activePhotoSession, clearPhotos, fetchPhotoSession, fetchNextPageForActiveSession } from '@/stores/photoSessionStore';
-import { $sessions, fetchSessions } from '@/stores/sessionsStore'; 
+import { $sessions, fetchSessions, type SessionRecord } from '@/stores/sessionsStore'; 
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
+import findSession from '@/services/findSession';
 
 
 const PhotoSessionContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const url = new URL(window.location.href);
+  const [session, setSession] = useState<SessionRecord | null>(null);
   const deviceIdParams = url.searchParams.get("eversPassDeviceId");
   const sessionIdParams = url.searchParams.get("sessionId");
 
-  const { sessions, isLoading: sessionLoading } = useStore($sessions);
+  // const { sessions, isLoading: sessionLoading } = useStore($sessions);
   const {
     photos,
     isLoading: photosLoading,
@@ -33,11 +35,14 @@ const PhotoSessionContent = () => {
     if (!deviceIdParams || !sessionIdParams) return
     (async () => {
       setIsLoading(true);
-      const deviceIdExists = await checkDeviceIdExists(deviceIdParams);
+      // const deviceIdExists = await checkDeviceIdExists(deviceIdParams);
+      const _session = await findSession(sessionIdParams);
       const photoSessionExists = await checkPhotoSessionExists(sessionIdParams);
 
-      if (deviceIdExists?.exists) {
-        await fetchSessions(deviceIdExists.device_id);
+      // console.log('deviceIdExists--->>', deviceIdExists)
+      if (_session?.exists) {
+        // await fetchSessions(deviceIdExists.device_id);
+        setSession(_session.record)
       }
       if (photoSessionExists?.exists) {
         await fetchPhotoSession(photoSessionExists.session_id, 1);
@@ -72,14 +77,13 @@ const PhotoSessionContent = () => {
     );
   }
 
-  const session = find(sessions, ({ id }) => isEqual(id, sessionIdParams));
-  if (isUndefined(session)) {
+  // const session = find(sessions, ({ id }) => isEqual(id, sessionIdParams));
+  if (isNull(session)) {
     // url.search = '';
     // window.history.replaceState({}, '', url);
     // navigate('/sessions')
     return;
   }
-
 
   return (
     <PhotoSession
