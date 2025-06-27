@@ -44,7 +44,6 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
         // Setup real-time subscription
         pb.collection('everspass_sessions').subscribe('*', (e) => {
           if (e.record.device_id !== deviceIdExists.device_id) return; // ignore unrelated changes
-          console.log('sub-record-->>', e.record)
           fetchSessions(deviceIdExists.device_id, true); // only fetch if relevant
         });
       } else { // if does not exist remove localstorage and url params

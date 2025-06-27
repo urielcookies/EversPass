@@ -29,7 +29,7 @@ const useSessionSubscription = (sessionId: string) => {
         .collection('everspass_photos')
         .subscribe('*', (e: RecordSubscription) => {
           if (e.record.session_id !== sessionId) return;
-          console.log('Event:', e.action, e.record);
+
           if (isEqual(e.action, 'create') && e.record) {
             const record = e.record as NewlyCreated;
             // toast.success(`Uploaded ${record.originalFilename}`)

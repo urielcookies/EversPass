@@ -7,7 +7,7 @@ import useRealtimeSessions from '@/hooks/useRealtimeSessions';
 const SessionContent = () => {
   const { sessions, deviceId: deviceIdSession } = useStore($sessions);
   const { deviceId, setDeviceId, isLoading } = useRealtimeSessions(deviceIdSession);
-  console.log('sessions', sessions)
+
   if (isLoading) {
     return (
       <div className="text-center py-20">
