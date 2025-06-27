@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import { Download, Heart, MoreVertical, Trash2 } from 'lucide-react';
+import { Download, ExternalLink, Heart, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
 import { deletePhotoById } from '@/services/deletePhotoById';
@@ -46,6 +46,20 @@ const PhotoGrid = (props: PhotoGridProps) => {
 
   const handleDeletePhoto = (photoId: string) => {
     deletePhotoById(photoId);
+  };
+
+  const downloadImage = async (url: string, filename = 'image.jpg') => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
   };
 
   return (
@@ -113,8 +127,8 @@ const PhotoGrid = (props: PhotoGridProps) => {
 
               {/* Actions */}
               <div className="flex items-center justify-between p-3 sm:p-4 bg-gray-100 dark:bg-slate-900">
+                {/* Left side: Like button */}
                 <div className="flex items-center">
-                  {/* Like Button */}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -138,18 +152,32 @@ const PhotoGrid = (props: PhotoGridProps) => {
                   </Button>
                 </div>
 
-                {/* Download Button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={e => {
-                    e.stopPropagation();
-                    window.open(photo.image_url, '_blank');
-                  }}
-                  className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
-                  <Download className="!h-6 !w-6" />
-                  <span className="sr-only">Download</span>
-                </Button>
+                {/* Right side: Preview + Download */}
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={e => {
+                      e.stopPropagation();
+                      window.open(photo.image_url, '_blank');
+                    }}
+                    className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
+                    <ExternalLink className="!h-6 !w-6" />
+                    <span className="sr-only">Preview</span>
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={e => {
+                      e.stopPropagation();
+                      downloadImage(photo.image_url, photo.originalFilename);
+                    }}
+                    className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
+                    <Download className="!h-6 !w-6" />
+                    <span className="sr-only">Download</span>
+                  </Button>
+                </div>
               </div>
             </div>
           ) : (

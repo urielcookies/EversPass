@@ -40,6 +40,20 @@ const PhotoViewModal = ({
     onClose();
   };
 
+  const downloadImage = async (url: string, filename = 'image.jpg') => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+
+    const blobUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
+  };
+
   return (
     <Dialog open={isOpen}>
       <DialogContent
@@ -106,7 +120,7 @@ const PhotoViewModal = ({
             </Button>
             <Button
               variant="primary-cta"
-              onClick={() => window.open(image_url, '_blank')}
+              onClick={() => downloadImage(image_url, originalFilename)}
               className="!px-4 !py-2">
               <Download className="!mr-2 !h-4 !w-4" /> Download
             </Button>
