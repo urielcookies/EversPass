@@ -39,7 +39,7 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
         window.history.replaceState({ path: currentUrl.href }, '', currentUrl.href);
 
         // Load initial data
-        await fetchSessions(deviceIdExists.device_id);
+        await fetchSessions(deviceIdExists.device_id, true);
 
         // Setup real-time subscription
         pb.collection('everspass_sessions').subscribe('*', (e) => {
