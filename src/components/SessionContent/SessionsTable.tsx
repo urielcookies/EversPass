@@ -78,6 +78,17 @@ const StatusBadge = ({ status }: { status: SessionRecord['status'] }) => {
 
 
 const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
+    const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkIsDesktop = () => {
+      setIsDesktop(window.innerWidth >= 768);
+    };
+    checkIsDesktop();
+    window.addEventListener('resize', checkIsDesktop);
+    return () => window.removeEventListener('resize', checkIsDesktop);
+  }, []);
+
   const { deviceId, isLoading } = useStore($sessions);
   if (sessions.length === 0) {
     return (
@@ -109,6 +120,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
             <TableHead className="w-[40%]">Name</TableHead>
             <TableHead>Expires</TableHead>
             <TableHead>Size</TableHead>
+            {isDesktop && <TableHead>Total Photos</TableHead>}
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -120,6 +132,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
                 <TimeRemaining expiresAt={session.expires_at} />
               </TableCell>
               <TableCell className="text-slate-500 dark:text-slate-400">{formatBytesToGB(session.total_photos_bytes)}</TableCell>
+              {isDesktop && <TableCell className="text-slate-500 dark:text-slate-400">{session.total_photos}</TableCell>}
               <TableCell className="text-right">
                 <Button
                   disabled={isLoading}
