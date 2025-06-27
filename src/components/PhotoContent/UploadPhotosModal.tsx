@@ -53,7 +53,17 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const files = Array.from(event.target.files);
-      const filesWithPreviews: FileWithPreview[] = files.map(file =>
+
+      const MAX_FILE_SIZE_MB = 20;
+      const validFiles = files.filter(file => {
+        const isValid = file.size <= MAX_FILE_SIZE_MB * 1024 * 1024;
+        if (!isValid) {
+          window.showToast(`"${file.name}" exceeds 20MB`, 'error');
+        }
+        return isValid;
+      });
+
+      const filesWithPreviews: FileWithPreview[] = validFiles.map(file =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
         })
