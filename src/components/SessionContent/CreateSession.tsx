@@ -91,7 +91,13 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent
+          hideClose={isCreationLoading}
+          className="sm:max-w-[600px]"
+          onInteractOutside={e => {
+            if (isCreationLoading) e.preventDefault();
+            else setIsDialogOpen(false);
+          }}>
           <form autoComplete="off" onSubmit={formSubmitHandler}>
             <DialogHeader>
               <DialogTitle>Start New Session</DialogTitle>
@@ -100,7 +106,7 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
+              {/* <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="device-1" className="text-right">Device Id</Label>
                 <div className="col-span-3 flex items-center gap-2">
                   <Input
@@ -116,7 +122,7 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
                     <Copy className={`w-4 h-4 transition-colors ${copied ? 'text-green-500' : ''}`} />
                   </button>
                 </div>
-              </div>
+              </div> */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="name-1" className="text-right">Session Name</Label>
                 <Input

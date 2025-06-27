@@ -163,7 +163,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
   return (
     <Dialog open={isOpen}>
       <DialogContent
-        hideClose
+        hideClose={isUploading}
         className="sm:max-w-[800px] flex flex-col max-h-[90vh]"
         onInteractOutside={e => {
           if (isUploading) e.preventDefault();

@@ -35,6 +35,7 @@ interface LoadSessionContentProps {
 }
 
 const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => {
+  const [isCreationLoading, setIsCreationLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null); 
   const [copied, setCopied] = useState(false);
@@ -65,10 +66,11 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
       device_id: form.deviceId,
       name: form.name,
     };
-
+    setIsCreationLoading(true);
     await createSession(data);
     formStateHandler('name', '')
     setIsDialogOpen(false);
+    setIsCreationLoading(false);
   };
 
   const handleOpenDeleteDialog = (session: SessionRecord) => {
@@ -166,16 +168,22 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
 
       {/* --- CREATE SESSSION DIALOG --- */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent
+          className="sm:max-w-[600px]"
+          hideClose={isCreationLoading}
+          onInteractOutside={e => {
+              if (isCreationLoading) e.preventDefault();
+              else setIsDialogOpen(false);
+            }}>
           <form autoComplete="off" onSubmit={formSubmitHandler}>
             <DialogHeader>
-              <DialogTitle>Create a New Session</DialogTitle>
+              <DialogTitle>Start New Session</DialogTitle>
               <DialogDescription>
-                Give your new session a name to get started. It will expire automatically in 48 hours.
+                Enter the details for your new session here. Click save when you're done.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
+              {/* <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="device-id" className="text-right">Device ID</Label>
                 <div className="col-span-3 flex items-center gap-2">
                   <Input
@@ -188,7 +196,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
                     <Copy className={`h-4 w-4 transition-transform ${copied ? 'scale-125 text-green-500' : ''}`} />
                   </Button>
                 </div>
-              </div>
+              </div> */}
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="session-name" className="text-right">
                   Name
@@ -196,7 +204,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
                 <Input
                   id="session-name"
                   name="sessionName"
-                  placeholder="eg. John & Jane's Wedding"
+                  placeholder="Hiking Trip"
                   value={form.name} 
                   autoComplete="off"
                   className="col-span-3"
@@ -209,7 +217,12 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit" variant="primary-cta" disabled={isEmpty(form.name)}>Create Session</Button>
+              <Button
+                type="submit"
+                variant="primary-cta"
+                disabled={isEmpty(form.name) || isCreationLoading}>
+                  Create Session
+              </Button>
             </DialogFooter>
           </form>
         </DialogContent>
