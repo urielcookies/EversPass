@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface SharePageModalProps {
   isOpen: boolean;
@@ -22,57 +22,65 @@ interface SharePageModalProps {
 const SharePageModal = ({ isOpen, onClose }: SharePageModalProps) => {
   const [shareUrl, setShareUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null); // State for QR code image data
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+  const [accessLevel, setAccessLevel] = useState('viewer'); // default to Viewer
 
-  // Effect to get the current URL when the modal opens
+  // Update shareUrl when modal opens, using everspass.com host
   useEffect(() => {
-    if (isOpen && typeof window !== 'undefined') {
-      setShareUrl(window.location.href);
+    if (isOpen) {
+      const url = new URL(window.location.href);
+      url.hostname = 'everspass.com';
+      url.protocol = 'https:';
+      url.port = '';
+      setShareUrl(url.toString());
     }
   }, [isOpen]);
 
-  // Effect to generate QR code whenever shareUrl changes
+  // Generate QR code when shareUrl changes
   useEffect(() => {
     const generateQr = async () => {
       if (shareUrl) {
         try {
-          // Generate QR code as a Data URL (base64 image string)
           const url = await qrcode.toDataURL(shareUrl, {
-            errorCorrectionLevel: 'H', // High error correction
-            width: 200, // Desired width of the QR code image
-            margin: 1, // Margin around the QR code
+            errorCorrectionLevel: 'H',
+            width: 200,
+            margin: 1,
           });
           setQrCodeDataUrl(url);
         } catch (err) {
           console.error('Failed to generate QR code:', err);
-          setQrCodeDataUrl(null); // Clear QR if error
+          setQrCodeDataUrl(null);
         }
       } else {
-        setQrCodeDataUrl(null); // Clear QR if no shareUrl
+        setQrCodeDataUrl(null);
       }
     };
-
     generateQr();
-  }, [shareUrl]); // Re-run when shareUrl changes
+  }, [shareUrl]);
 
-  // Function to copy the URL to the clipboard
+  // Copy shareUrl to clipboard
   const handleCopy = async () => {
     if (shareUrl) {
       try {
         await navigator.clipboard.writeText(shareUrl);
         setIsCopied(true);
-        // Reset the "Copied!" state after 2 seconds
         setTimeout(() => setIsCopied(false), 2000);
       } catch (err) {
-        console.error('Failed to copy text: ', err);
+        console.error('Failed to copy text:', err);
         alert('Failed to copy URL. Please try manually.');
       }
     }
   };
 
+  const accessMessages: Record<string, string> = {
+    viewer: 'Viewer: basic access, can view the content.',
+    editor: 'Editor: can upload and delete images.',
+    owner: 'Owner: full control, including managing sessions and settings.',
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md"> {/* Adjust max-width as needed */}
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Share This Page</DialogTitle>
           <DialogDescription>
@@ -80,15 +88,41 @@ const SharePageModal = ({ isOpen, onClose }: SharePageModalProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        {/* QR Code Display */}
+        {/* Access Level Toggle + Description (MOVED TO TOP) */}
+        <div className="flex flex-col items-center gap-2 py-4">
+          <p className="text-sm font-medium text-muted-foreground">Grant access as:</p>
+          <ToggleGroup
+            type="single"
+            value={accessLevel}
+            onValueChange={(value) => value && setAccessLevel(value)}
+            aria-label="Select access level"
+            className="flex-wrap justify-center" // Allow wrapping on small screens
+          >
+            <ToggleGroupItem value="viewer" aria-label="Viewer access">
+              Viewer
+            </ToggleGroupItem>
+            <ToggleGroupItem value="editor" aria-label="Editor access">
+              Editor
+            </ToggleGroupItem>
+            <ToggleGroupItem value="owner" aria-label="Owner access">
+              Owner
+            </ToggleGroupItem>
+          </ToggleGroup>
+
+          <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
+            {accessMessages[accessLevel]}
+          </p>
+        </div>
+
+        {/* QR Code Display (Now BELOW access level) */}
         <div className="flex justify-center p-4">
           {qrCodeDataUrl ? (
             <img
               src={qrCodeDataUrl}
               alt="QR Code for current page"
-              width={200} // Explicit width/height for the img tag
+              width={200}
               height={200}
-              className="rounded-md" // Optional: add some styling
+              className="rounded-md"
             />
           ) : (
             <div className="w-[200px] h-[200px] bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm text-slate-500 rounded-md">
@@ -107,7 +141,11 @@ const SharePageModal = ({ isOpen, onClose }: SharePageModalProps) => {
             className="text-xs"
           />
           <Button type="button" variant="outline" size="icon" onClick={handleCopy}>
-            <Copy className={`h-4 w-4 transition-transform ${isCopied ? 'scale-125 text-green-500' : ''}`} />
+            <Copy
+              className={`h-4 w-4 transition-transform ${
+                isCopied ? 'scale-125 text-green-500' : ''
+              }`}
+            />
             <span className="sr-only">Copy link</span>
           </Button>
         </div>
