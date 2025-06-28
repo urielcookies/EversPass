@@ -241,7 +241,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
             </div>
           )}
 
-          <DialogFooter className="flex-shrink-0 pt-4">
+          <DialogFooter className="flex-shrink-0 pt-4 flex gap-2 justify-end">
             <DialogClose asChild>
               <Button
                 type="button"
