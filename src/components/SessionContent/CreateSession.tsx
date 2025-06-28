@@ -135,7 +135,7 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
                   onChange={(event) => formStateHandler(event.target.name, event.target.value)} />
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex-shrink-0 pt-4 flex gap-2 justify-end">
               <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
               </DialogClose>
