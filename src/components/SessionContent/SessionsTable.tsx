@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { setEncryptedUrlParam } from "@/lib/encryptRole";
 
 interface SessionsTableProps {
   sessions: SessionRecord[];
@@ -133,7 +134,15 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
   }
 
   const handleRowClick = async (sessionId: string) => {
-    navigate(`/sessions/photos?eversPassDeviceId=${deviceId}&sessionId=${sessionId}`);
+    if (deviceId) {
+      const jsonString = JSON.stringify({
+        deviceId,
+        sessionId,
+        roleId: 'OWNER',
+      });
+      const data = setEncryptedUrlParam('data', jsonString); 
+      navigate(`/sessions/photos?data=${data}`);
+    }
   };
 
   const formatBytesToGB = (bytes: number) => {

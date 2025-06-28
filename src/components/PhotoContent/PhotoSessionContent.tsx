@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { find, isEqual, isNull, isUndefined } from 'lodash-es';
 import { navigate } from 'astro:transitions/client';
 import { useStore } from '@nanostores/react';
@@ -9,16 +9,23 @@ import { $activePhotoSession, clearPhotos, fetchPhotoSession, fetchNextPageForAc
 import { $sessions, fetchSessions, type SessionRecord } from '@/stores/sessionsStore'; 
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import findSession from '@/services/findSession';
+import { getDecryptedUrlParam } from '@/lib/encryptRole';
 
+interface RetrievedURLData {
+  deviceId: string;
+  sessionId: string;
+  roleId: string;
+}
 
 const PhotoSessionContent = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const url = new URL(window.location.href);
   const [session, setSession] = useState<SessionRecord | null>(null);
-  const deviceIdParams = url.searchParams.get("eversPassDeviceId");
-  const sessionIdParams = url.searchParams.get("sessionId");
-  const roleParams = url.searchParams.get("role");
 
+  const decryptedJsonString = getDecryptedUrlParam('data');
+  const urlParams = useRef<RetrievedURLData | null>(
+    decryptedJsonString ? JSON.parse(decryptedJsonString) : null
+  );
+  
   // const { sessions, isLoading: sessionLoading } = useStore($sessions);
   const {
     photos,
@@ -33,8 +40,10 @@ const PhotoSessionContent = () => {
   } = useStore($activePhotoSession);
 
   useEffect(() => {
-    if (!deviceIdParams || !sessionIdParams) return
     (async () => {
+      const deviceIdParams = urlParams.current?.deviceId;
+      const sessionIdParams = urlParams.current?.sessionId;
+      if (!deviceIdParams || !sessionIdParams) return
       setIsLoading(true);
       // const deviceIdExists = await checkDeviceIdExists(deviceIdParams);
       const _session = await findSession(sessionIdParams);
@@ -44,6 +53,8 @@ const PhotoSessionContent = () => {
       if (_session?.exists) {
         // await fetchSessions(deviceIdExists.device_id);
         setSession(_session.record)
+      } else {
+        navigate('/sessions')
       }
       if (photoSessionExists?.exists) {
         await fetchPhotoSession(photoSessionExists.session_id, 1);
@@ -79,7 +90,7 @@ const PhotoSessionContent = () => {
   }
 
   // const session = find(sessions, ({ id }) => isEqual(id, sessionIdParams));
-  if (isNull(session)) {
+  if (isNull(session) || !urlParams.current?.roleId) {
     // url.search = '';
     // window.history.replaceState({}, '', url);
     // navigate('/sessions')
@@ -94,7 +105,7 @@ const PhotoSessionContent = () => {
       totalPhotos={totalItems}
       sessionSize={sessionSize}
       allSessionsSize={totalDeviceSessionsSize}
-      roleParams={roleParams} />
+      roleId={urlParams.current?.roleId} />
   )
 };
 
