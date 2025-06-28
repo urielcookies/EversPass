@@ -17,6 +17,7 @@ const PhotoSessionContent = () => {
   const [session, setSession] = useState<SessionRecord | null>(null);
   const deviceIdParams = url.searchParams.get("eversPassDeviceId");
   const sessionIdParams = url.searchParams.get("sessionId");
+  const roleParams = url.searchParams.get("role");
 
   // const { sessions, isLoading: sessionLoading } = useStore($sessions);
   const {
@@ -92,7 +93,8 @@ const PhotoSessionContent = () => {
       isLoadingMore={isLoadingMore}
       totalPhotos={totalItems}
       sessionSize={sessionSize}
-      allSessionsSize={totalDeviceSessionsSize}/>
+      allSessionsSize={totalDeviceSessionsSize}
+      roleParams={roleParams} />
   )
 };
 
