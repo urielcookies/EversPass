@@ -81,9 +81,9 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
   };
 
   const accessMessages: Record<string, string> = {
-    viewer: 'Viewer: basic access, can view the content.',
-    editor: 'Editor: can upload and delete images.',
-    owner: 'Owner: full control, including managing sessions and settings.',
+    VIEWER: 'Viewer: basic access, can view the content.',
+    EDITOR: 'Editor: can upload and delete images.',
+    OWNER: 'Owner: full control, including managing sessions and settings. Share with caution',
   };
 
   const setAccessRoleHandler = (value: 'VIEWER' | 'EDITOR' | 'OWNER') => setAccessLevel(value)
