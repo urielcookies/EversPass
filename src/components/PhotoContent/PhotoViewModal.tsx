@@ -58,11 +58,8 @@ const PhotoViewModal = ({
   };
 
   return (
-    <Dialog open={isOpen}>
-      <DialogContent
-        className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] h-[90vh] flex flex-col"
-        onInteractOutside={onClose}
-        hideClose>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent hideClose className="sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw] h-[90vh] flex flex-col">
         <DialogHeader className="flex-shrink-0 bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-md px-4 py-3">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-lg font-semibold">

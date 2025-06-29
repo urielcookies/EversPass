@@ -161,7 +161,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
   }, [uploadedFiles]); // [uploadedFiles, selectedFiles.length]
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={isOpen}  onOpenChange={onClose}>
       <DialogContent
         hideClose={isUploading}
         className="sm:max-w-[800px] flex flex-col max-h-[90vh]"
