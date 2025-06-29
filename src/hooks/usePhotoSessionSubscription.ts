@@ -17,12 +17,19 @@ export interface NewlyCreated {
   updated: string;
 }
 
+declare global {
+  interface Window {
+    iziToast: any;
+  }
+}
+
 const useSessionSubscription = (sessionId: string) => {
   const [newlyCreated, setNewlyCreated] = useState<NewlyCreated | null>(null);
   useEffect(() => {
     if (!sessionId) return;
 
     let unsubscribe: (() => void) | null = null;
+    const position = window.innerWidth <= 768 ? 'topCenter' : 'topRight';
 
     const setupSubscription = async () => {
       unsubscribe = await pb
@@ -33,13 +40,23 @@ const useSessionSubscription = (sessionId: string) => {
           if (isEqual(e.action, 'create') && e.record) {
             const record = e.record as NewlyCreated;
             // toast.success(`Uploaded ${record.originalFilename}`)
-            window.showToast(`Uploaded ${record.originalFilename}`, 'success')
+            // window.showToast(`Uploaded ${record.originalFilename}`, 'success')
+            window.iziToast.success({
+              title: 'Uploaded',
+              message: `Uploaded ${record.originalFilename}`,
+              position,
+            });
             setNewlyCreated(record);
           }
           if (isEqual(e.action, 'delete') && e.record) {
             const record = e.record as NewlyCreated;
             // toast.success(`Photo deleted ${record.originalFilename}`);
-            window.showToast(`Photo deleted ${record.originalFilename}`, 'success');
+            // window.showToast(`Photo deleted ${record.originalFilename}`, 'success');
+            window.iziToast.success({
+              title: 'Deleted',
+              message: `Photo deleted ${record.originalFilename}`,
+              position,
+            });
           }
           fetchPhotoSession(sessionId, 1);
         });
