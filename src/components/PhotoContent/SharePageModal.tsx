@@ -66,6 +66,14 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
     generateQr();
   }, [shareUrl]);
 
+  useEffect(() => {
+    if (!isOpen) {
+      setShareUrl('');
+      setAccessLevel('VIEWER');
+      setQrCodeDataUrl(null);
+    }
+  }, [isOpen]);
+
   // Copy shareUrl to clipboard
   const handleCopy = async () => {
     if (shareUrl) {
@@ -81,9 +89,9 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
   };
 
   const accessMessages: Record<string, string> = {
-    VIEWER: 'Viewer: basic access, can view the content.',
-    EDITOR: 'Editor: can upload and delete images.',
-    OWNER: 'Owner: full control, including managing sessions and settings. Share with caution',
+    VIEWER: "can view photos but not upload or delete.",
+    EDITOR: 'can view, upload and delete photos.',
+    OWNER: 'full control, including managing both related sessions and photos.',
   };
 
   const setAccessRoleHandler = (value: 'VIEWER' | 'EDITOR' | 'OWNER') => setAccessLevel(value)
@@ -119,9 +127,16 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
               </ToggleGroupItem>
             </ToggleGroup>
 
-            <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
-              {accessMessages[accessLevel]}
-            </p>
+            {isEqual(accessLevel, 'OWNER') ? (
+              <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
+                {accessMessages[accessLevel]}{' '}
+                <span className="text-red-500">Share with caution.</span>
+              </p>
+            ) : (
+              <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
+                {accessMessages[accessLevel]}
+              </p>
+            )}
           </div>
         )}
         {/* QR Code Display (Now BELOW access level) */}
