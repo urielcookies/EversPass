@@ -1,5 +1,6 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { Download, ExternalLink, Heart, MoreVertical, Trash2 } from 'lucide-react';
+import { isEqual } from 'lodash-es';
 import { Button } from '@/components/ui/button';
 import { type PhotoRecord } from '@/services/fetchPhotosForSession';
 import { deletePhotoById } from '@/services/deletePhotoById';
@@ -18,6 +19,7 @@ interface PhotoGridProps {
   handleOpenPhotoViewModal: (photo: PhotoRecord) => void;
   handleToggleLike: (photoId: string) => void;
   getIsLiked: (photoId: string) => boolean;
+  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
 }
 
 const PhotoGrid = (props: PhotoGridProps) => {
@@ -29,7 +31,8 @@ const PhotoGrid = (props: PhotoGridProps) => {
     setOneView,
     handleOpenPhotoViewModal,
     handleToggleLike,
-    getIsLiked
+    getIsLiked,
+    roleId
   } = props;
   const photoRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const gridContainerRef = useRef<HTMLDivElement>(null);
@@ -88,24 +91,26 @@ const PhotoGrid = (props: PhotoGridProps) => {
                   {photo.originalFilename || 'Unnamed Photo'}
                 </p>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
-                      aria-label="Options">
-                      <MoreVertical className="w-5 h-5" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={() => handleDeletePhoto(photo.id)}
-                      className="text-red-600 focus:bg-red-50 dark:text-red-500 dark:focus:bg-red-900/30">
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                    {/* You can add more items here like "Download", "Rename", etc. */}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {(isEqual(roleId, 'EDITOR') || isEqual(roleId, 'OWNER')) && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
+                        aria-label="Options">
+                        <MoreVertical className="w-5 h-5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => handleDeletePhoto(photo.id)}
+                        className="text-red-600 focus:bg-red-50 dark:text-red-500 dark:focus:bg-red-900/30">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                      {/* You can add more items here like "Download", "Rename", etc. */}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
 
               {/* Image */}

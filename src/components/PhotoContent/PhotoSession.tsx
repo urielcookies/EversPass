@@ -7,9 +7,10 @@ import {
   Camera,
   Clock,
   Loader2,
-  Share,
+  Share2,
   Upload,
-  CassetteTape
+  CassetteTape,
+  Table2
 } from 'lucide-react';
 import {
   Select,
@@ -33,6 +34,8 @@ import PhotoViewTabs from './PhotoViewTabs';
 import PhotoViewTabsFloating from './PhotoViewTabsFloating';
 import SharePageModal from './SharePageModal';
 import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
+import { navigate } from 'astro:transitions/client';
+import { encrypString } from '@/lib/encryptRole';
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -41,10 +44,11 @@ interface PhotoSessionContentProps {
   totalPhotos: number;
   sessionSize: number;
   allSessionsSize: number;
+  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
 }
 
 const PhotoSessionContent = (props: PhotoSessionContentProps) => {
-  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize, allSessionsSize } = props;
+  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize, allSessionsSize, roleId } = props;
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
@@ -157,6 +161,15 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
     return gigabytes.toFixed(2); // Format to 2 decimal places
   };
 
+  const navigateToSessionsHandler = () => {
+    const jsonString = JSON.stringify({
+      deviceId: session.device_id,
+    });
+
+    const encrypted = encodeURIComponent(encrypString(jsonString));
+    navigate(`/sessions?data=${encrypted}`);
+  };
+
   const storageLimitGB = 2;
   const sessionSizeInGB = allSessionsSize / (1024 ** 3);
   const remainingGB = (storageLimitGB - sessionSizeInGB).toFixed(2);
@@ -176,6 +189,23 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
     return newPhotosession;
   }
 
+  {/* Calculate how many buttons will show */}
+  const buttonsCount = (
+    1 + // Share is always there
+    ((roleId === 'EDITOR' || roleId === 'OWNER') && progressBarValue < 100 ? 1 : 0) +
+    ((roleId === 'OWNER' && progressBarValue < 100) ? 1 : 0)
+  );
+
+  // Determine width class based on button count
+  const getButtonWidthClass = (count: number) => {
+    if (count === 1) return 'sm:w-[260px]';
+    if (count === 2) return 'sm:w-[180px]';
+    if (count >= 3) return 'sm:w-[140px]';
+    return 'sm:w-[200px]'; // fallback
+  };
+
+  const buttonWidthClass = getButtonWidthClass(buttonsCount);
+
   return (
     <main className="max-w-7xl mx-auto">
       <header className="flex flex-col gap-6 pb-6 border-b border-slate-200 dark:border-slate-800">
@@ -190,7 +220,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
             <div className="mt-2 flex flex-col gap-1 text-sm text-slate-600 dark:text-slate-400">
               <div className="flex items-center gap-1.5 justify-center sm:justify-normal">
                 <Clock className="h-4 w-4" />
-                <span>{formatExpiration(session?.expires_at)}</span>
+                <span>{formatExpiration(session.expires_at)}</span>
               </div>
 
               {/* First Line: Photos and Current Session Size */}
@@ -227,21 +257,37 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
 
           {/* Right Column: Buttons + Select */}
           <div className="inline-flex flex-col items-stretch gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-            {/* Button Row */}
-            <div className="flex items-center justify-center gap-2 w-full">
-              <Button onClick={handleOpenShareModal} variant="outline" className="flex-1 min-w-0">
-                <Share className="mr-2 h-4 w-4" />
+            <div className="flex items-center justify-center sm:justify-start gap-2 w-full">
+              <Button
+                onClick={handleOpenShareModal}
+                variant="primary-cta"
+                className={`w-full ${buttonWidthClass}`}>
+                <Share2 className="mr-2 h-4 w-4" />
                 <span className="truncate">Share</span>
               </Button>
-              {progressBarValue < 100 && (
-                <Button variant="primary-cta" onClick={handleOpenUploadModal} className="flex-1 min-w-0">
+
+              {(isEqual(roleId, 'EDITOR') || isEqual(roleId, 'OWNER')) && progressBarValue < 100 && (
+                <Button
+                  variant="primary-cta"
+                  onClick={handleOpenUploadModal}
+                  className={`w-full ${buttonWidthClass}`}>
                   <Upload className="mr-2 h-4 w-4" />
-                  <span className="truncate">Upload Photos</span>
+                  <span className="truncate">Upload</span>
+                </Button>
+              )}
+
+              {(isEqual(roleId, 'OWNER')) && (
+                <Button
+                  variant="primary-cta"
+                  onClick={navigateToSessionsHandler}
+                  className={`w-full ${buttonWidthClass}`}>
+                  <Table2 className="mr-2 h-4 w-4" />
+                  <span className="truncate">Sessions</span>
                 </Button>
               )}
             </div>
 
-            {/* Dropdown below buttons with full width */}
+            {/* Dropdown below buttons */}
             <Select defaultValue="newest" onValueChange={(value) => setSortOption(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="More actions..." />
@@ -278,7 +324,8 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
               setOneView={setOneView}
               handleOpenPhotoViewModal={handleOpenPhotoViewModal}
               handleToggleLike={handleToggleLike}
-              getIsLiked={getIsLiked} />
+              getIsLiked={getIsLiked}
+              roleId={roleId} />
 
             {isLoadingMore && (
               <div className="flex justify-center items-center py-8">
@@ -309,11 +356,14 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
         activePhoto={activePhoto as PhotoRecord}
         onClose={handleClosePhotoViewModal}
         handleToggleLike={handleToggleLike}
-        getIsLiked={getIsLiked} />
+        getIsLiked={getIsLiked}
+        roleId={roleId} />
 
       <SharePageModal
         isOpen={showShareModal}
-        onClose={handleCloseShareModal} />
+        onClose={handleCloseShareModal}
+        sessionId={session.id}
+        roleId={roleId} />
     </main>
   );
 };

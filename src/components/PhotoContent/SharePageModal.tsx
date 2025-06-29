@@ -13,28 +13,36 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { isEqual } from 'lodash-es';
+import { encrypString } from '@/lib/encryptRole';
 
 interface SharePageModalProps {
   isOpen: boolean;
   onClose: () => void;
+  sessionId: string;
+  roleId: 'VIEWER' | 'EDITOR' | 'OWNER'
 }
 
-const SharePageModal = ({ isOpen, onClose }: SharePageModalProps) => {
+const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalProps) => {
   const [shareUrl, setShareUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
-  const [accessLevel, setAccessLevel] = useState('viewer'); // default to Viewer
+  const [accessLevel, setAccessLevel] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('VIEWER'); // default to Viewer
 
   // Update shareUrl when modal opens, using everspass.com host
   useEffect(() => {
     if (isOpen) {
-      const url = new URL(window.location.href);
-      url.hostname = 'everspass.com';
-      url.protocol = 'https:';
-      url.port = '';
-      setShareUrl(url.toString());
+      const jsonString = JSON.stringify({
+        sessionId,
+        roleId: accessLevel,
+      });
+
+      const encrypted = encodeURIComponent(encrypString(jsonString));
+      // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`;
+      const shareUrl = `${window.location.origin}/sessions/photos?data=${encrypted}`;
+      setShareUrl(shareUrl);
     }
-  }, [isOpen]);
+  }, [isOpen, sessionId, accessLevel]);
 
   // Generate QR code when shareUrl changes
   useEffect(() => {
@@ -78,6 +86,8 @@ const SharePageModal = ({ isOpen, onClose }: SharePageModalProps) => {
     owner: 'Owner: full control, including managing sessions and settings.',
   };
 
+  const setAccessRoleHandler = (value: 'VIEWER' | 'EDITOR' | 'OWNER') => setAccessLevel(value)
+  
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -89,31 +99,31 @@ const SharePageModal = ({ isOpen, onClose }: SharePageModalProps) => {
         </DialogHeader>
 
         {/* Access Level Toggle + Description (MOVED TO TOP) */}
-        <div className="flex flex-col items-center gap-2 py-4">
-          <p className="text-sm font-medium text-muted-foreground">Grant access as:</p>
-          <ToggleGroup
-            type="single"
-            value={accessLevel}
-            onValueChange={(value) => value && setAccessLevel(value)}
-            aria-label="Select access level"
-            className="flex-wrap justify-center" // Allow wrapping on small screens
-          >
-            <ToggleGroupItem value="viewer" aria-label="Viewer access">
-              Viewer
-            </ToggleGroupItem>
-            <ToggleGroupItem value="editor" aria-label="Editor access">
-              Editor
-            </ToggleGroupItem>
-            <ToggleGroupItem value="owner" aria-label="Owner access">
-              Owner
-            </ToggleGroupItem>
-          </ToggleGroup>
+        {isEqual(roleId, 'OWNER') && (
+          <div className="flex flex-col items-center gap-2 py-4">
+            <p className="text-sm font-medium text-muted-foreground">Grant access as:</p>
+            <ToggleGroup
+              type="single"
+              value={accessLevel}
+              onValueChange={setAccessRoleHandler}
+              aria-label="Select access level"
+              className="flex-wrap justify-center">
+              <ToggleGroupItem value="VIEWER" aria-label="Viewer access">
+                Viewer
+              </ToggleGroupItem>
+              <ToggleGroupItem value="EDITOR" aria-label="Editor access">
+                Editor
+              </ToggleGroupItem>
+              <ToggleGroupItem value="OWNER" aria-label="Owner access">
+                Owner
+              </ToggleGroupItem>
+            </ToggleGroup>
 
-          <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
-            {accessMessages[accessLevel]}
-          </p>
-        </div>
-
+            <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
+              {accessMessages[accessLevel]}
+            </p>
+          </div>
+        )}
         {/* QR Code Display (Now BELOW access level) */}
         <div className="flex justify-center p-4">
           {qrCodeDataUrl ? (

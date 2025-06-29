@@ -3,6 +3,7 @@ import { Trash2 } from "lucide-react";
 import { map, throttle } from "lodash-es";
 import { navigate } from 'astro:transitions/client';
 import { useStore } from '@nanostores/react';
+import { encrypString } from "@/lib/encryptRole";
 import { $sessions, fetchSessions } from "@/stores/sessionsStore";
 import type { SessionRecord } from "@/services/loadSessions";
 import { cn } from "@/lib/utils";
@@ -16,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { setEncryptedUrlParam } from "@/lib/encryptRole";
 
 interface SessionsTableProps {
   sessions: SessionRecord[];
@@ -136,12 +136,12 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
   const handleRowClick = async (sessionId: string) => {
     if (deviceId) {
       const jsonString = JSON.stringify({
-        deviceId,
         sessionId,
         roleId: 'OWNER',
       });
-      const data = setEncryptedUrlParam('data', jsonString); 
-      navigate(`/sessions/photos?data=${data}`);
+
+      const encrypted = encodeURIComponent(encrypString(jsonString));
+      navigate(`/sessions/photos?data=${encrypted}`);
     }
   };
 

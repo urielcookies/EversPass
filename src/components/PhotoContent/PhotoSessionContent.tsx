@@ -14,7 +14,7 @@ import { getDecryptedUrlParam } from '@/lib/encryptRole';
 interface RetrievedURLData {
   deviceId: string;
   sessionId: string;
-  roleId: string;
+  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
 }
 
 const PhotoSessionContent = () => {
@@ -41,9 +41,9 @@ const PhotoSessionContent = () => {
 
   useEffect(() => {
     (async () => {
-      const deviceIdParams = urlParams.current?.deviceId;
+      // const deviceIdParams = urlParams.current?.deviceId;
       const sessionIdParams = urlParams.current?.sessionId;
-      if (!deviceIdParams || !sessionIdParams) return
+      if (!sessionIdParams) return
       setIsLoading(true);
       // const deviceIdExists = await checkDeviceIdExists(deviceIdParams);
       const _session = await findSession(sessionIdParams);

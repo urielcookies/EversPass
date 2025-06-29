@@ -1,5 +1,6 @@
 import { Download, XCircle, Heart, MoreVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { isEqual } from 'lodash-es';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ interface PhotoViewModalProps {
   onClose: () => void;
   handleToggleLike: (photoId: string) => void;
   getIsLiked: (photoId: string) => boolean;
+  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
 }
 
 const PhotoViewModal = ({
@@ -31,6 +33,7 @@ const PhotoViewModal = ({
   onClose,
   handleToggleLike,
   getIsLiked,
+  roleId,
 }: PhotoViewModalProps) => {
   if (!isOpen || !activePhoto) return null;
   const { id: photoId, image_url, originalFilename } = activePhoto;
@@ -66,23 +69,25 @@ const PhotoViewModal = ({
               {originalFilename || 'Photo View'}
             </DialogTitle>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
-                  aria-label="Options">
-                  <MoreVertical className="w-5 h-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => handleDeletePhoto(photoId)}
-                  className="text-red-600 focus:bg-red-50 dark:text-red-500 dark:focus:bg-red-900/30">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {(isEqual(roleId, 'EDITOR') || isEqual(roleId, 'OWNER')) && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="ml-2 p-1 rounded hover:bg-gray-200 dark:hover:bg-slate-800"
+                    aria-label="Options">
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => handleDeletePhoto(photoId)}
+                    className="text-red-600 focus:bg-red-50 dark:text-red-500 dark:focus:bg-red-900/30">
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           <DialogDescription className="sr-only">
