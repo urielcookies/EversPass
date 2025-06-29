@@ -255,39 +255,71 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
             {/* --- END MODIFIED PROGRESS BAR SECTION --- */}
           </div>
 
-          {/* Right Column: Buttons + Select */}
-          <div className="inline-flex flex-col items-stretch gap-2 mt-4 sm:mt-0 w-full sm:w-auto">
-            <div className="flex items-center justify-center sm:justify-start gap-2 w-full">
+          {/* Right Column: Buttons */}
+          <div className="inline-flex flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-[360px]">
+            {isEqual(roleId, 'OWNER') ? (
+              <>
+                {/* Share (full width) */}
+                <Button
+                  onClick={handleOpenShareModal}
+                  variant="primary-cta"
+                  className="w-full">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  <span className="truncate">Share</span>
+                </Button>
+
+                {/* Sessions + Upload side-by-side */}
+                <div className="flex gap-2">
+                  <Button
+                    variant="primary-cta"
+                    onClick={navigateToSessionsHandler}
+                    className="w-full">
+                    <Table2 className="mr-2 h-4 w-4" />
+                    <span className="truncate">Sessions</span>
+                  </Button>
+                  {progressBarValue < 100 && (
+                    <Button
+                      variant="primary-cta"
+                      onClick={handleOpenUploadModal}
+                      className="w-full">
+                      <Upload className="mr-2 h-4 w-4" />
+                      <span className="truncate">Upload</span>
+                    </Button>
+                  )}
+                </div>
+              </>
+            ) : isEqual(roleId, 'EDITOR') ? (
+              // Editor: Share + Upload side-by-side
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleOpenShareModal}
+                  variant="primary-cta"
+                  className="w-full">
+                  <Share2 className="mr-2 h-4 w-4" />
+                  <span className="truncate">Share</span>
+                </Button>
+                {progressBarValue < 100 && (
+                  <Button
+                    variant="primary-cta"
+                    onClick={handleOpenUploadModal}
+                    className="w-full">
+                    <Upload className="mr-2 h-4 w-4" />
+                    <span className="truncate">Upload</span>
+                  </Button>
+                )}
+              </div>
+            ) : (
+              // Viewer: Share only
               <Button
                 onClick={handleOpenShareModal}
                 variant="primary-cta"
-                className={`w-full ${buttonWidthClass}`}>
+                className="w-full">
                 <Share2 className="mr-2 h-4 w-4" />
                 <span className="truncate">Share</span>
               </Button>
+            )}
 
-              {(isEqual(roleId, 'EDITOR') || isEqual(roleId, 'OWNER')) && progressBarValue < 100 && (
-                <Button
-                  variant="primary-cta"
-                  onClick={handleOpenUploadModal}
-                  className={`w-full ${buttonWidthClass}`}>
-                  <Upload className="mr-2 h-4 w-4" />
-                  <span className="truncate">Upload</span>
-                </Button>
-              )}
-
-              {(isEqual(roleId, 'OWNER')) && (
-                <Button
-                  variant="primary-cta"
-                  onClick={navigateToSessionsHandler}
-                  className={`w-full ${buttonWidthClass}`}>
-                  <Table2 className="mr-2 h-4 w-4" />
-                  <span className="truncate">Sessions</span>
-                </Button>
-              )}
-            </div>
-
-            {/* Dropdown below buttons */}
+            {/* Sort Dropdown */}
             <Select defaultValue="newest" onValueChange={(value) => setSortOption(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="More actions..." />
@@ -342,7 +374,9 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
               </div>
             )}
           </>
-        ) : <UploadPhotosMessage handleOpenUploadModal={handleOpenUploadModal} /> }
+        ) : (isEqual(roleId, 'EDITOR') || isEqual(roleId, 'OWNER'))
+            ? <UploadPhotosMessage handleOpenUploadModal={handleOpenUploadModal} />
+            : null}
       </section>
 
       <UploadPhotosModal

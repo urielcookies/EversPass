@@ -38,7 +38,7 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
       });
 
       const encrypted = encodeURIComponent(encrypString(jsonString));
-      // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`;
+      // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`; // to test on real device on dev
       const shareUrl = `${window.location.origin}/sessions/photos?data=${encrypted}`;
       setShareUrl(shareUrl);
     }
