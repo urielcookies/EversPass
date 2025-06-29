@@ -211,7 +211,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
                   onChange={(e) => formStateHandler('name', e.target.value)} />
               </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex-shrink-0 pt-4 flex gap-2 justify-end">
               <DialogClose asChild>
                 <Button type="button" variant="secondary">
                   Cancel
