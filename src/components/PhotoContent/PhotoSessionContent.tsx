@@ -1,15 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
-import { find, isEqual, isNull, isUndefined } from 'lodash-es';
 import { navigate } from 'astro:transitions/client';
 import { useStore } from '@nanostores/react';
 import PhotoSession from '@/components/PhotoContent/PhotoSession';
-import checkDeviceIdExists from '@/services/checkDeviceIdExists';
 import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
 import { $activePhotoSession, clearPhotos, fetchPhotoSession, fetchNextPageForActiveSession } from '@/stores/photoSessionStore';
 import { $sessions, fetchSessions, type SessionRecord } from '@/stores/sessionsStore'; 
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import findSession from '@/services/findSession';
-import { getDecryptedUrlParam } from '@/lib/encryptRole';
+import { getDecryptedParam } from '@/lib/encryptRole';
 
 interface RetrievedURLData {
   deviceId: string;
@@ -21,7 +19,7 @@ const PhotoSessionContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<SessionRecord | null>(null);
 
-  const decryptedJsonString = getDecryptedUrlParam('data');
+  const decryptedJsonString = getDecryptedParam({ key: 'data', options: { useUrl: true } });
   const urlParams = useRef<RetrievedURLData | null>(
     decryptedJsonString ? JSON.parse(decryptedJsonString) : null
   );
@@ -41,30 +39,24 @@ const PhotoSessionContent = () => {
 
   useEffect(() => {
     (async () => {
-      // const deviceIdParams = urlParams.current?.deviceId;
       const sessionIdParams = urlParams.current?.sessionId;
-      if (!sessionIdParams) return
+      if (!sessionIdParams) return;
+
       setIsLoading(true);
-      // const deviceIdExists = await checkDeviceIdExists(deviceIdParams);
+
       const _session = await findSession(sessionIdParams);
       const photoSessionExists = await checkPhotoSessionExists(sessionIdParams);
 
-      // console.log('deviceIdExists--->>', deviceIdExists)
-      if (_session?.exists) {
-        // await fetchSessions(deviceIdExists.device_id);
-        setSession(_session.record)
-      } else {
-        navigate('/sessions')
-      }
+      if (_session?.exists) setSession(_session.record);
+      else navigate('/sessions');
+
       if (photoSessionExists?.exists) {
         await fetchPhotoSession(photoSessionExists.session_id, 1);
       }
       setIsLoading(false);
     })();
 
-    return () => {
-      clearPhotos();
-    }
+    return () => clearPhotos();
   }, []);
 
   useInfiniteScroll(() => {
@@ -89,12 +81,8 @@ const PhotoSessionContent = () => {
     );
   }
 
-  // const session = find(sessions, ({ id }) => isEqual(id, sessionIdParams));
-  if (isNull(session) || !urlParams.current?.roleId) {
-    // url.search = '';
-    // window.history.replaceState({}, '', url);
-    // navigate('/sessions')
-    return;
+  if (!session || !urlParams.current?.roleId) {
+    return null;
   }
 
   return (
@@ -105,8 +93,8 @@ const PhotoSessionContent = () => {
       totalPhotos={totalItems}
       sessionSize={sessionSize}
       allSessionsSize={totalDeviceSessionsSize}
-      roleId={urlParams.current?.roleId} />
-  )
+      roleId={urlParams.current.roleId} />
+  );
 };
 
 export default PhotoSessionContent;

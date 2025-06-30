@@ -13,21 +13,21 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { isEqual } from 'lodash-es';
-import { encrypString } from '@/lib/encryptRole';
+import { isEmpty, isEqual } from 'lodash-es';
+import { setEncryptedParam } from '@/lib/encryptRole';
 
 interface SharePageModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
-  roleId: 'VIEWER' | 'EDITOR' | 'OWNER'
+  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
 }
 
 const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalProps) => {
   const [shareUrl, setShareUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
-  const [accessLevel, setAccessLevel] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('VIEWER'); // default to Viewer
+  const [accessLevel, setAccessLevel] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('VIEWER');
 
   // Update shareUrl when modal opens, using everspass.com host
   useEffect(() => {
@@ -37,9 +37,15 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
         roleId: accessLevel,
       });
 
-      const encrypted = encodeURIComponent(encrypString(jsonString));
+      // Use setEncryptedParam to update URL param 'data'
+      const encryptedValue = setEncryptedParam({
+        key: 'data',
+        value: jsonString,
+      });
+
+      // Build shareUrl from current location with updated param
       // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`; // to test on real device on dev
-      const shareUrl = `${window.location.origin}/sessions/photos?data=${encrypted}`;
+      const shareUrl = `${window.location.origin}/sessions/photos?data=${encryptedValue}`;
       setShareUrl(shareUrl);
     }
   }, [isOpen, sessionId, accessLevel]);
@@ -81,21 +87,24 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
         await navigator.clipboard.writeText(shareUrl);
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy text:', err);
+      } catch {
         alert('Failed to copy URL. Please try manually.');
       }
     }
   };
 
   const accessMessages: Record<string, string> = {
-    VIEWER: "can view photos but not upload or delete.",
+    VIEWER: 'can view photos but not upload or delete.',
     EDITOR: 'can view, upload and delete photos.',
     OWNER: 'full control, including managing both related sessions and photos.',
   };
 
-  const setAccessRoleHandler = (value: 'VIEWER' | 'EDITOR' | 'OWNER') => setAccessLevel(value)
-  
+  const setAccessRoleHandler = (value: 'VIEWER' | 'EDITOR' | 'OWNER') => {
+    if (!isEmpty(value)) {
+      setAccessLevel(value)
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -127,16 +136,12 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
               </ToggleGroupItem>
             </ToggleGroup>
 
-            {isEqual(accessLevel, 'OWNER') ? (
-              <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
-                {accessMessages[accessLevel]}{' '}
-                <span className="text-red-500">Share with caution.</span>
-              </p>
-            ) : (
-              <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
-                {accessMessages[accessLevel]}
-              </p>
-            )}
+            <p className="mt-2 text-xs text-center text-slate-500 dark:text-slate-400 max-w-xs leading-snug">
+              {accessMessages[accessLevel]}
+              {isEqual(accessLevel, 'OWNER') && (
+                <span className="text-red-500"> Share with caution.</span>
+              )}
+            </p>
           </div>
         )}
         {/* QR Code Display (Now BELOW access level) */}

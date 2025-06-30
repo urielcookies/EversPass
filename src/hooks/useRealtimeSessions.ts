@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import pb from "@/services/pocketbase";
 import { fetchSessions } from '@/stores/sessionsStore'; 
 import checkDeviceIdExists from "@/services/checkDeviceIdExists";
-import { getDecryptedUrlParam, setEncryptedUrlParam } from "@/lib/encryptRole";
+import { getDecryptedParam, setEncryptedParam } from "@/lib/encryptRole";
 
 const useRealtimeSessions = (deviceIdSession: string | null) => {
   const [deviceId, setDeviceId] = useState<string | null>(null);
@@ -15,8 +15,9 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
     setDeviceId(null);
   };
 
-  const dataParam = getDecryptedUrlParam('data');
+  const dataParam = getDecryptedParam({ key: 'data', options: { useUrl: true } });
   const parsedData = dataParam ? JSON.parse(dataParam) : null;
+
   const deviceIdLocal: string | null = deviceId
     || deviceIdSession
     || (parsedData ? parsedData.deviceId : null);
@@ -24,18 +25,19 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
   useEffect(() => {
     (async () => {
       if (!deviceIdLocal) {
-        clearData()
+        clearData();
         return;
       }
       setIsLoading(true);
       const deviceIdExists = await checkDeviceIdExists(deviceIdLocal);
 
       if (deviceIdExists?.exists) {       
-        if (!deviceId) setDeviceId(deviceIdExists.device_id)
+        if (!deviceId) setDeviceId(deviceIdExists.device_id);
         const jsonString = JSON.stringify({
           deviceId: deviceIdExists.device_id,
         });
-        setEncryptedUrlParam('data', jsonString);
+
+        setEncryptedParam({ key: 'data', value: jsonString, options: { useUrl: true } });
 
         // Load initial data
         await fetchSessions(deviceIdExists.device_id, 1, 10, true);
