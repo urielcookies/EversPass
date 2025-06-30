@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { createSession, type SessionData } from '@/services/createSession';
+import { getDecryptedParam, setEncryptedParam } from '@/lib/encryptRole';
 interface SessionContentProps {
   setDeviceId: Dispatch<SetStateAction<string | null>>;
 }
@@ -42,7 +43,12 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
     }));
 
   const openDialogHandler = () => {
-    formStateHandler('deviceId', crypto.randomUUID());
+    const dataLocalParam = getDecryptedParam({ key: 'data', options: { useLocalStorage: true } });
+    const parsedLocalData = dataLocalParam ? JSON.parse(dataLocalParam) : null;
+    formStateHandler(
+      'deviceId',
+      parsedLocalData && parsedLocalData.deviceId ? parsedLocalData.deviceId :  crypto.randomUUID()
+    );
     setIsDialogOpen(true);
   };
 
@@ -71,6 +77,17 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
     setIsCreationLoading(false)
     setIsDialogOpen(false);
     setDeviceId(form.deviceId);
+
+    const jsonString = JSON.stringify({
+      deviceId: form.deviceId
+    });
+
+    setEncryptedParam({
+      key: 'data',
+      value: jsonString,
+      options: { useLocalStorage: true }
+    });
+
     resetForm();
   };
 

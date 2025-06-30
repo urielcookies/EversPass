@@ -15,12 +15,16 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
     setDeviceId(null);
   };
 
-  const dataParam = getDecryptedParam({ key: 'data', options: { useUrl: true } });
-  const parsedData = dataParam ? JSON.parse(dataParam) : null;
+  const dataURLParam = getDecryptedParam({ key: 'data', options: { useUrl: true } });
+  const parsedURLData = dataURLParam ? JSON.parse(dataURLParam) : null;
+
+  const dataLocalParam = getDecryptedParam({ key: 'data', options: { useLocalStorage: true } });
+  const parsedLocalData = dataLocalParam ? JSON.parse(dataLocalParam) : null;
 
   const deviceIdLocal: string | null = deviceId
     || deviceIdSession
-    || (parsedData ? parsedData.deviceId : null);
+    || (parsedURLData ? parsedURLData.deviceId : null) // will be used for sharing and getting invited
+    || (parsedLocalData ? parsedLocalData.deviceId : null);
 
   useEffect(() => {
     (async () => {
