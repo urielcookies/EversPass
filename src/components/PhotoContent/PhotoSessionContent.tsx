@@ -6,23 +6,18 @@ import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
 import { $activePhotoSession, clearPhotos, fetchPhotoSession, fetchNextPageForActiveSession } from '@/stores/photoSessionStore';
 import { $sessions, fetchSessions, type SessionRecord } from '@/stores/sessionsStore'; 
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
+import usePurgeExpiredInvitedSessions from '@/hooks/usePurgeExpiredInvitedSessions';
 import findSession from '@/services/findSession';
-import { getDecryptedParam } from '@/lib/encryptRole';
-
-interface RetrievedURLData {
-  deviceId: string;
-  sessionId: string;
-  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
-}
+import { getDataParam, setDataParam } from '@/lib/encryptRole';
+import { isEqual } from 'lodash-es';
 
 const PhotoSessionContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<SessionRecord | null>(null);
 
-  const decryptedJsonString = getDecryptedParam({ key: 'data', options: { useUrl: true } });
-  const urlParams = useRef<RetrievedURLData | null>(
-    decryptedJsonString ? JSON.parse(decryptedJsonString) : null
-  );
+  usePurgeExpiredInvitedSessions();
+
+  const urlData = getDataParam('useURL');
   
   // const { sessions, isLoading: sessionLoading } = useStore($sessions);
   const {
@@ -39,15 +34,46 @@ const PhotoSessionContent = () => {
 
   useEffect(() => {
     (async () => {
-      const sessionIdParams = urlParams.current?.sessionId;
-      if (!sessionIdParams) return;
+      const sessionIdParams = urlData?.sessionId;
+      const deviceIdParams = urlData?.deviceId;
+      const roleIdParams = urlData?.roleId;
+      if (!sessionIdParams || !deviceIdParams || !roleIdParams) return;
 
       setIsLoading(true);
 
       const _session = await findSession(sessionIdParams);
       const photoSessionExists = await checkPhotoSessionExists(sessionIdParams);
 
-      if (_session?.exists) setSession(_session.record);
+      if (_session?.exists) {
+        setSession(_session.record);
+
+        const localStorageData = getDataParam('useLocalStorage');
+        const localDeviceId = localStorageData?.deviceId;
+        const isGuestAccess = !isEqual(localDeviceId, deviceIdParams);
+
+        if (isGuestAccess) {
+          const existingInvitedSessions = localStorageData?.invitedSessions || {};
+          const updatedInvitedSessions = {
+            ...existingInvitedSessions,
+            [_session.record.id]: {
+              deviceId: _session.record.device_id,
+              sessionName: _session.record.name,
+              roleId: roleIdParams,
+              expire_at: _session?.record.expires_at,
+            },
+          };
+
+          // ❌ BAD: This would overwrite localStorage with only invitedSessions
+          // setDataParam({
+          //   invitedSessions: updatedInvitedSessions,
+          // }, 'useLocalStorage');
+
+          setDataParam({
+            ...localStorageData,
+            invitedSessions: updatedInvitedSessions,
+          }, 'useLocalStorage');
+        }
+      }
       else navigate('/sessions');
 
       if (photoSessionExists?.exists) {
@@ -81,7 +107,7 @@ const PhotoSessionContent = () => {
     );
   }
 
-  if (!session || !urlParams.current?.roleId) {
+  if (!session || !urlData?.roleId) {
     return null;
   }
 
@@ -93,7 +119,7 @@ const PhotoSessionContent = () => {
       totalPhotos={totalItems}
       sessionSize={sessionSize}
       allSessionsSize={totalDeviceSessionsSize}
-      roleId={urlParams.current.roleId} />
+      roleId={urlData.roleId} />
   );
 };
 

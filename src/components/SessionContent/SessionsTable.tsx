@@ -3,7 +3,7 @@ import { Trash2 } from "lucide-react";
 import { map, throttle } from "lodash-es";
 import { navigate } from 'astro:transitions/client';
 import { useStore } from '@nanostores/react';
-import { setEncryptedParam } from "@/lib/encryptRole";
+import { setDataParam } from "@/lib/encryptRole";
 import { $sessions, fetchSessions } from "@/stores/sessionsStore";
 import type { SessionRecord } from "@/services/loadSessions";
 import { cn } from "@/lib/utils";
@@ -135,17 +135,19 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
 
   const handleRowClick = async (sessionId: string) => {
     if (deviceId) {
-      const jsonString = JSON.stringify({
+     // Use your typed helper to encrypt and set URL param
+      const encryptedValue = setDataParam({
+        deviceId,
         sessionId,
         roleId: 'OWNER',
-      });
+      }, 'useURL');
 
-      const encryptedValue = setEncryptedParam({
-        key: 'data',
-        value: jsonString,
-      });
-
-      navigate(`/sessions/photos?data=${encryptedValue}`);
+      if (encryptedValue) {
+        navigate(`/sessions/photos?data=${encryptedValue}`);
+      } else {
+        // Handle error case if needed
+        console.error('Failed to encrypt data param');
+      }
     }
   };
 

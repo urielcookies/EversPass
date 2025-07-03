@@ -397,7 +397,8 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
         isOpen={showShareModal}
         onClose={handleCloseShareModal}
         sessionId={session.id}
-        roleId={roleId} />
+        roleId={roleId}
+        deviceId={session.device_id}/>
     </main>
   );
 };

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import pb from "@/services/pocketbase";
 import { fetchSessions } from '@/stores/sessionsStore'; 
 import checkDeviceIdExists from "@/services/checkDeviceIdExists";
-import { getDecryptedParam, setEncryptedParam } from "@/lib/encryptRole";
+import { getDataParam, setDataParam } from "@/lib/encryptRole";
 
 const useRealtimeSessions = (deviceIdSession: string | null) => {
   const [deviceId, setDeviceId] = useState<string | null>(null);
@@ -15,16 +15,16 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
     setDeviceId(null);
   };
 
-  const dataURLParam = getDecryptedParam({ key: 'data', options: { useUrl: true } });
-  const parsedURLData = dataURLParam ? JSON.parse(dataURLParam) : null;
+  // Get decrypted & parsed data from URL and localStorage
+  const urlData = getDataParam('useURL');
+  const localData = getDataParam('useLocalStorage');
 
-  const dataLocalParam = getDecryptedParam({ key: 'data', options: { useLocalStorage: true } });
-  const parsedLocalData = dataLocalParam ? JSON.parse(dataLocalParam) : null;
-
+  // Resolve deviceId by priority
   const deviceIdLocal: string | null = deviceId
     || deviceIdSession
-    || (parsedURLData ? parsedURLData.deviceId : null) // will be used for sharing and getting invited
-    || (parsedLocalData ? parsedLocalData.deviceId : null);
+    || urlData?.deviceId
+    || localData?.deviceId
+    || null;
 
   useEffect(() => {
     (async () => {
@@ -33,35 +33,35 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
         return;
       }
       setIsLoading(true);
+
       const deviceIdExists = await checkDeviceIdExists(deviceIdLocal);
 
-      if (deviceIdExists?.exists) {       
+      if (deviceIdExists?.exists) {
         if (!deviceId) setDeviceId(deviceIdExists.device_id);
-        const jsonString = JSON.stringify({
-          deviceId: deviceIdExists.device_id,
-        });
 
-        setEncryptedParam({ key: 'data', value: jsonString, options: { useUrl: true } });
+        // Save deviceId to URL encrypted param
+        setDataParam({ deviceId: deviceIdExists.device_id }, 'useURL');
 
-        // Load initial data
+        // Load initial sessions
         await fetchSessions(deviceIdExists.device_id, 1, 10, true);
 
         // Setup real-time subscription
         pb.collection('everspass_sessions').subscribe('*', (e) => {
-          if (e.record.device_id !== deviceIdExists.device_id) return; // ignore unrelated changes
+          if (e.record.device_id !== deviceIdExists.device_id) return;
           fetchSessions(deviceIdExists.device_id, 1, 10, true);
         });
       } else {
+        console.log('CLEAR')
         clearData();
       }
-      setIsLoading(false);
-    })()
 
-    // Clean up on unmount
+      setIsLoading(false);
+    })();
+
     return () => {
       pb.collection('everspass_sessions').unsubscribe('*');
     };
-  }, [deviceId]);
+  }, [deviceIdLocal, deviceId]);
 
   return { deviceId, setDeviceId, isLoading };
 };

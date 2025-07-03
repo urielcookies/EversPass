@@ -14,16 +14,17 @@ import {
 } from '@/components/ui/dialog';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { isEmpty, isEqual } from 'lodash-es';
-import { setEncryptedParam } from '@/lib/encryptRole';
+import { setDataParam, setEncryptedParam } from '@/lib/encryptRole';
 
 interface SharePageModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
   roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
+  deviceId: string;
 }
 
-const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalProps) => {
+const SharePageModal = ({ isOpen, onClose, sessionId, roleId, deviceId }: SharePageModalProps) => {
   const [shareUrl, setShareUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
@@ -32,19 +33,13 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId }: SharePageModalPr
   // Update shareUrl when modal opens, using everspass.com host
   useEffect(() => {
     if (isOpen) {
-      const jsonString = JSON.stringify({
+      const encryptedValue = setDataParam({
         sessionId,
         roleId: accessLevel,
+        deviceId,
       });
 
-      // Use setEncryptedParam to update URL param 'data'
-      const encryptedValue = setEncryptedParam({
-        key: 'data',
-        value: jsonString,
-      });
-
-      // Build shareUrl from current location with updated param
-      // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`; // to test on real device on dev
+      // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`;
       const shareUrl = `${window.location.origin}/sessions/photos?data=${encryptedValue}`;
       setShareUrl(shareUrl);
     }
