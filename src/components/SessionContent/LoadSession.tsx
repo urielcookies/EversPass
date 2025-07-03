@@ -160,6 +160,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     }
   };
 
+  const [key, setKey] = useState(false);
   const handleInvitedSession = (sessionId: string) => {
     const localStorageData = getDataParam('useLocalStorage');
     if (!localStorageData || !localStorageData.invitedSessions) return;
@@ -167,13 +168,16 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     const updatedInvitedSessions = { ...localStorageData.invitedSessions };
     delete updatedInvitedSessions[sessionId];
 
-    // Save the updated data back to localStorage
-    setDataParam({
-      ...localStorageData,
-      invitedSessions: updatedInvitedSessions,
-    }, 'useLocalStorage');
+    const newData = { ...localStorageData };
 
-    setIsCreationLoading(false); // temp just to render
+    if (Object.keys(updatedInvitedSessions).length === 0) {
+      delete newData.invitedSessions; // remove the key completely
+    } else {
+      newData.invitedSessions = updatedInvitedSessions;
+    }
+
+    setDataParam(newData, 'useLocalStorage');
+    setKey(!key); // trigger rerender
   };
 
   const activeTab =
