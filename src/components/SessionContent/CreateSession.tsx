@@ -45,10 +45,11 @@ const SessionContent = ({ setDeviceId }: SessionContentProps) => {
   const openDialogHandler = () => {
     // const dataLocalParam = getDecryptedParam({ key: 'data', options: { useLocalStorage: true } });
     const localStorageData = getDataParam('useLocalStorage');
+    console.log((localStorageData && localStorageData.deviceId) ? localStorageData.deviceId : crypto.randomUUID())
     // const parsedLocalData = dataLocalParam ? JSON.parse(dataLocalParam) : null;
     formStateHandler(
       'deviceId',
-      localStorageData ? localStorageData.deviceId as string : crypto.randomUUID()
+      (localStorageData && localStorageData.deviceId) ? localStorageData.deviceId : crypto.randomUUID()
     );
     setIsDialogOpen(true);
   };
