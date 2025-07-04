@@ -33,7 +33,7 @@ import { getDataParam, setDataParam } from "@/lib/encryptRole";
 import { navigate } from "astro:transitions/client";
 
 interface LoadSessionContentProps {
-  deviceId?: string;
+  deviceId: string;
   sessions: SessionRecord[];
 }
 
@@ -70,7 +70,13 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
       [key]: value,
     }));
 
-  const handleOpenCreateSessionDialog = () => setIsDialogOpen(true);
+  const handleOpenCreateSessionDialog = () => {
+    if (sessions.length >= 3) {
+      alert('GET SUBSCRIPTION YOU BUM');
+    } else {
+      setIsDialogOpen(true);
+    }
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(form.deviceId || "");

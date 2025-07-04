@@ -1,43 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { isEqual, isUndefined } from "lodash-es";
 import pb from "@/services/pocketbase";
 import { fetchSessions } from '@/stores/sessionsStore'; 
 import checkDeviceIdExists from "@/services/checkDeviceIdExists";
-import { getDataParam, setDataParam } from "@/lib/encryptRole";
+import { getDataParam, setDataParam, updateLocalSessionData } from "@/lib/encryptRole";
 
-const useRealtimeSessions = (deviceIdSession: string | null) => {
-  const [deviceId, setDeviceId] = useState<string | null>(null);
+const useRealtimeSessions = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasCreatedSessionBefore, setHasCreatedSessionBefore] = useState(() => {
+    const localData = getDataParam('useLocalStorage');
+    const urlData = getDataParam('useURL');
+
+    const invited = !isUndefined(localData?.invitedSessions);
+    const sharedLink = Boolean(urlData?.deviceId);
+    const created = Boolean(localData?.hasCreatedSessionBefore);
+
+    const hasCreated = created || invited || sharedLink;
+
+    updateLocalSessionData({ hasCreatedSessionBefore: hasCreated });
+
+    return hasCreated;
+  });
+
+  const deviceId = useMemo(() => {
+    const urlData = getDataParam('useURL');
+    const localData = getDataParam('useLocalStorage');
+
+    const finalId = urlData?.deviceId || localData?.deviceId || crypto.randomUUID();
+
+    if (!isEqual(localData?.deviceId, finalId)) {
+      updateLocalSessionData({ deviceId: finalId });
+    }
+
+    return finalId;
+  }, []);
+
+  const setHasCreatedSessionTrueHandler = () => {
+    setHasCreatedSessionBefore(true);
+    updateLocalSessionData({ hasCreatedSessionBefore: true });
+  };
 
   const clearData = () => {
     const currentUrl = new URL(window.location.href);
     currentUrl.search = '';
     window.history.replaceState({}, '', currentUrl.toString());
-    setDeviceId(null);
   };
-
-  // Get decrypted & parsed data from URL and localStorage
-  const urlData = getDataParam('useURL');
-  const localData = getDataParam('useLocalStorage');
-
-  // Resolve deviceId by priority
-  const deviceIdLocal: string | null = deviceId
-    || deviceIdSession
-    || urlData?.deviceId
-    || localData?.deviceId
-    || null;
 
   useEffect(() => {
     (async () => {
-      if (!deviceIdLocal) {
-        clearData();
-        return;
-      }
+      if (!hasCreatedSessionBefore) return;
       setIsLoading(true);
 
-      const deviceIdExists = await checkDeviceIdExists(deviceIdLocal);
+      const deviceIdExists = await checkDeviceIdExists(deviceId);
 
       if (deviceIdExists?.exists) {
-        if (!deviceId) setDeviceId(deviceIdExists.device_id);
 
         // Save deviceId to URL encrypted param
         setDataParam({ deviceId: deviceIdExists.device_id }, 'useURL');
@@ -47,11 +63,10 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
 
         // Setup real-time subscription
         pb.collection('everspass_sessions').subscribe('*', (e) => {
-          if (e.record.device_id !== deviceIdExists.device_id) return;
+          if (!isEqual(e.record.device_id, deviceIdExists.device_id)) return;
           fetchSessions(deviceIdExists.device_id, 1, 10, true);
         });
       } else {
-        console.log('CLEAR')
         clearData();
       }
 
@@ -61,9 +76,9 @@ const useRealtimeSessions = (deviceIdSession: string | null) => {
     return () => {
       pb.collection('everspass_sessions').unsubscribe('*');
     };
-  }, [deviceIdLocal, deviceId]);
+  }, []);
 
-  return { deviceId, setDeviceId, isLoading };
+  return { deviceId, isLoading, hasCreatedSessionBefore, setHasCreatedSessionTrueHandler };
 };
 
 export default useRealtimeSessions;

@@ -8,7 +8,7 @@ import { $sessions, fetchSessions, type SessionRecord } from '@/stores/sessionsS
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
 import usePurgeExpiredInvitedSessions from '@/hooks/usePurgeExpiredInvitedSessions';
 import findSession from '@/services/findSession';
-import { getDataParam, setDataParam } from '@/lib/encryptRole';
+import { getDataParam, setDataParam, updateLocalSessionData } from '@/lib/encryptRole';
 import { isEqual } from 'lodash-es';
 
 const PhotoSessionContent = () => {
@@ -68,10 +68,13 @@ const PhotoSessionContent = () => {
           //   invitedSessions: updatedInvitedSessions,
           // }, 'useLocalStorage');
 
-          setDataParam({
-            ...localStorageData,
-            invitedSessions: updatedInvitedSessions,
-          }, 'useLocalStorage');
+          // // WORKS BUT OLD WAY
+          // setDataParam({
+          //   ...localStorageData,
+          //   invitedSessions: updatedInvitedSessions,
+          // }, 'useLocalStorage');
+
+          updateLocalSessionData({ invitedSessions: updatedInvitedSessions });
         }
       }
       else navigate('/sessions');
