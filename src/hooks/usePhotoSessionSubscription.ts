@@ -17,9 +17,15 @@ export interface NewlyCreated {
   updated: string;
 }
 
+// declare global {
+//   interface Window {
+//     iziToast: any;
+//   }
+// }
+
 declare global {
   interface Window {
-    iziToast: any;
+    showLimitedToast?: (options: any) => void;
   }
 }
 
@@ -41,10 +47,16 @@ const useSessionSubscription = (sessionId: string) => {
             const record = e.record as NewlyCreated;
             // toast.success(`Uploaded ${record.originalFilename}`)
             // window.showToast(`Uploaded ${record.originalFilename}`, 'success')
-            window.iziToast.success({
+            // window.iziToast.success({
+            //   title: 'Uploaded',
+            //   message: `Uploaded ${record.originalFilename}`,
+            //   position,
+            // });
+            window.showLimitedToast?.({
               title: 'Uploaded',
               message: `Uploaded ${record.originalFilename}`,
               position,
+              color: 'green',
             });
             setNewlyCreated(record);
           }
@@ -52,10 +64,16 @@ const useSessionSubscription = (sessionId: string) => {
             const record = e.record as NewlyCreated;
             // toast.success(`Photo deleted ${record.originalFilename}`);
             // window.showToast(`Photo deleted ${record.originalFilename}`, 'success');
-            window.iziToast.success({
+            // window.iziToast.success({
+            //   title: 'Deleted',
+            //   message: `Photo deleted ${record.originalFilename}`,
+            //   position,
+            // });
+            window.showLimitedToast?.({
               title: 'Deleted',
               message: `Photo deleted ${record.originalFilename}`,
               position,
+              color: 'red',
             });
           }
           fetchPhotoSession(sessionId, 1);
