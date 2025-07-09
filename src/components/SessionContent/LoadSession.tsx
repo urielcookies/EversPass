@@ -22,6 +22,7 @@ import { getDataParam, setDataParam } from "@/lib/encryptRole";
 import { maxSessions, storageLimitGB } from "@/lib/constants";
 import InvitedSessionsGrid from "./InvitedSessions";
 import NewSessionDialog from "./NewSessionDialog";
+import { navigate } from "astro:transitions/client";
 
 interface LoadSessionContentProps {
   deviceId: string;
@@ -29,6 +30,7 @@ interface LoadSessionContentProps {
 }
 
 const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => {
+  const [showLimitAlert, setShowLimitAlert] = useState(false);
   const [isCreationLoading, setIsCreationLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null);
@@ -37,7 +39,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
 
   const handleOpenCreateSessionDialog = () => {
     if (sessions.length >= 3) {
-      alert('GET SUBSCRIPTION YOU BUM');
+      setShowLimitAlert(true);
     } else {
       setIsDialogOpen(true);
     }
@@ -199,6 +201,25 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
                 onClick={handleConfirmDelete}
                 className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800">
                 Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={showLimitAlert} onOpenChange={setShowLimitAlert}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Session Limit Reached</AlertDialogTitle>
+              <AlertDialogDescription>
+                To have more than 3 sessions, you need to upgrade to a subscription plan.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <Button variant="primary-cta" onClick={() => navigate('/pricing')}>
+                  Upgrade
+                </Button>
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
