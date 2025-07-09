@@ -33,6 +33,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
   const [showLimitAlert, setShowLimitAlert] = useState(false);
   const [isCreationLoading, setIsCreationLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isSessionDeleting, setIsSessionDeleting] = useState(false);
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sessionName, setSessionName] = useState('');
@@ -68,6 +69,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
   const handleConfirmDelete = async () => {
     if (!sessionToDelete) return;
     try {
+      setIsSessionDeleting(true);
       await deleteSessionById(sessionToDelete.id);
       if (sessions.length === 1) {
         const localStorageData = getDataParam('useLocalStorage');
@@ -81,6 +83,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     } finally {
       setIsDeleteDialogOpen(false);
       setSessionToDelete(null);
+      setIsSessionDeleting(false);
     }
   };
 
@@ -173,7 +176,10 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
           </div>
         </header>
 
-        <SessionsTable sessions={sessions} onDeleteSession={handleOpenDeleteDialog} />
+        <SessionsTable
+          sessions={sessions}
+          isSessionDeleting={isSessionDeleting}
+          onDeleteSession={handleOpenDeleteDialog} />
 
         <NewSessionDialog
           isOpen={isDialogOpen}

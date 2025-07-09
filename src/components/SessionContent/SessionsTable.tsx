@@ -21,6 +21,7 @@ import {
 interface SessionsTableProps {
   sessions: SessionRecord[];
   onDeleteSession: (session: SessionRecord) => void;
+  isSessionDeleting: boolean;
 }
 
 // Helper: format ms to "Xd Xh Xm Xs"
@@ -78,7 +79,7 @@ const StatusBadge = ({ status }: { status: SessionRecord['status'] }) => {
 };
 
 
-const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
+const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting }: SessionsTableProps) => {
     const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -180,7 +181,7 @@ const SessionsTable = ({ sessions, onDeleteSession }: SessionsTableProps) => {
               {isDesktop && <TableCell className="text-slate-500 dark:text-slate-400">{session.total_photos}</TableCell>}
               <TableCell className="text-right">
                 <Button
-                  disabled={isLoading}
+                  disabled={isSessionDeleting || isLoading}
                   variant="ghost"
                   size="icon"
                   onClick={(e) => {
