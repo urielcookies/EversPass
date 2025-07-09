@@ -36,6 +36,7 @@ import SharePageModal from './SharePageModal';
 import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 import { navigate } from 'astro:transitions/client';
 import { encrypString } from '@/lib/encryptRole';
+import { storageLimitGB } from '@/lib/constants';
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -170,7 +171,6 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
     navigate(`/sessions?data=${encrypted}`);
   };
 
-  const storageLimitGB = 2;
   const sessionSizeInGB = allSessionsSize / (1024 ** 3);
   const remainingGB = (storageLimitGB - sessionSizeInGB).toFixed(2);
   const progressBarValue = storageLimitGB > 0
