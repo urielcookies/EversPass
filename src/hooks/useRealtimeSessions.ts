@@ -76,7 +76,7 @@ const useRealtimeSessions = () => {
     return () => {
       pb.collection('everspass_sessions').unsubscribe('*');
     };
-  }, []);
+  }, [hasCreatedSessionBefore]);
 
   return { deviceId, isLoading, hasCreatedSessionBefore, setHasCreatedSessionTrueHandler };
 };
