@@ -181,6 +181,11 @@ const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting }: Session
               {isDesktop && <TableCell className="text-slate-500 dark:text-slate-400">{session.total_photos}</TableCell>}
               <TableCell className="text-right">
                 <Button
+                  className={`${
+                    isSessionDeleting || isLoading
+                      ? 'cursor-not-allowed'
+                      : 'cursor-pointer'
+                  }`}
                   disabled={isSessionDeleting || isLoading}
                   variant="ghost"
                   size="icon"
