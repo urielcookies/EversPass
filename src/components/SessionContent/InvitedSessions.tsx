@@ -1,101 +1,160 @@
-import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
-import { getDataParam, setDataParam } from "@/lib/encryptRole";
+import { getDataParam, setDataParam, updateLocalSessionData } from "@/lib/encryptRole";
 import { navigate } from "astro:transitions/client";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Button } from "@/components/ui/button";
 
 type SessionData = {
   sessionName: string;
   deviceId: string;
-  roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
+  roleId: "VIEWER" | "EDITOR" | "OWNER";
   expire_at: string;
 };
 
 type InvitedSessionsGridProps = {
   invitedSessions: Record<string, SessionData> | null;
+  setKey: () => void;
 };
 
 const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
-  const { invitedSessions } = props;
-  const [key, setKey] = useState(false);
-  const handleInvitedSession = (sessionId: string) => {
-    const localStorageData = getDataParam('useLocalStorage');
-    if (!localStorageData || !localStorageData.invitedSessions) return;
+  const { invitedSessions, setKey } = props;
 
-    const updatedInvitedSessions = { ...localStorageData.invitedSessions };
+  const handleInvitedSession = (sessionId: string) => {
+    const data = getDataParam("useLocalStorage");
+    if (!data || !data.invitedSessions) return;
+
+    const updatedInvitedSessions = { ...data.invitedSessions };
     delete updatedInvitedSessions[sessionId];
 
-    const newData = { ...localStorageData };
+    updateLocalSessionData({
+      invitedSessions:
+        Object.keys(updatedInvitedSessions).length > 0
+          ? updatedInvitedSessions
+          : undefined, // delete key if empty
+    });
 
-    if (Object.keys(updatedInvitedSessions).length === 0) {
-      delete newData.invitedSessions; // remove the key completely
-    } else {
-      newData.invitedSessions = updatedInvitedSessions;
-    }
-
-    setDataParam(newData, 'useLocalStorage');
-    setKey(!key);
+    setKey(); // Force re-render
   };
 
-  const navigatePhotoHandler = (deviceId: string, sessionId: string, roleId: 'VIEWER' | 'EDITOR' | 'OWNER') => {
-    const encryptedValue = setDataParam({
-      deviceId,
-      sessionId,
-      roleId,
-    }, 'useURL');
+  const navigatePhotoHandler = (
+    deviceId: string,
+    sessionId: string,
+    roleId: "VIEWER" | "EDITOR" | "OWNER"
+  ) => {
+    const encryptedValue = setDataParam(
+      {
+        deviceId,
+        sessionId,
+        roleId,
+      },
+      "useURL"
+    );
 
     if (encryptedValue) {
       navigate(`/sessions/photos?data=${encryptedValue}`);
     } else {
-      // Handle error case if needed
-      console.error('Failed to encrypt data param');
+      console.error("Failed to encrypt data param");
     }
   };
 
-  if (!invitedSessions || Object.keys(invitedSessions).length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-48 border border-dashed rounded-lg p-6 text-center text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/20">
-        <p className="text-lg font-medium mb-2">No Invited Sessions Yet</p>
-        <p className="text-sm">
-          This section will show sessions you've been invited to by other users.
-        </p>
-      </div>
-    );
-  }
+  const hasInvitedSessions = invitedSessions && Object.keys(invitedSessions).length > 0;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 cursor-pointer">
-      {Object.entries(invitedSessions).map(([sessionId, sessionData]) => (
-        <div
-          key={sessionId}
-          onClick={() =>
-            navigatePhotoHandler(sessionData.deviceId, sessionId, sessionData.roleId)
-          }
-          className="relative rounded-xl border p-4 bg-white dark:bg-slate-800 shadow-sm">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleInvitedSession(sessionId);
-            }}
-            className="absolute top-2 right-2 text-slate-400 hover:text-red-500">
-            <Trash2 className="w-4 h-4" />
-          </button>
+    <div className="space-y-8">
+      <header className="pb-6 border-b border-slate-200 dark:border-slate-800">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Invited Sessions
+        </h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Sessions you've been invited to view or edit by other users.
+        </p>
+      </header>
 
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">Session Name:</p>
-          <p className="font-semibold text-slate-700 dark:text-white break-all">
-            {sessionData.sessionName}
-          </p>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Role:</p>
-          <p className="text-sm font-medium text-indigo-600 dark:text-indigo-400">
-            {sessionData.roleId}
-          </p>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Expires At:</p>
-          <p className="text-sm text-slate-600 dark:text-slate-300">
-            {new Date(sessionData.expire_at).toLocaleString()}
+      {hasInvitedSessions ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {Object.entries(invitedSessions).map(([sessionId, sessionData]) => (
+            <Card
+              key={sessionId}
+              className="relative flex flex-col justify-between hover:shadow-lg transition-shadow duration-200">
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-start">
+                  <CardTitle className="text-lg font-bold text-slate-800 dark:text-white break-all pr-8">
+                    {sessionData.sessionName}
+                  </CardTitle>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleInvitedSession(sessionId);
+                    }}
+                    className="text-slate-400 hover:text-red-500 transition-colors duration-200"
+                    aria-label="Remove session">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+                <CardDescription className="text-sm text-slate-500 dark:text-slate-400">
+                  Invited Session
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-2">
+                <div>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    Role:
+                  </p>
+                  <p
+                    className={`text-base font-semibold ${
+                      sessionData.roleId === "OWNER"
+                        ? "text-red-600 dark:text-red-400"
+                        : sessionData.roleId === "EDITOR"
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-green-600 dark:text-green-400"
+                    }`}>
+                    {sessionData.roleId}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                    Expires:
+                  </p>
+                  <p className="text-sm text-slate-600 dark:text-slate-300">
+                    {new Date(sessionData.expire_at).toLocaleString()}
+                  </p>
+                </div>
+              </CardContent>
+              <CardFooter className="pt-4">
+                <Button
+                  onClick={() =>
+                    navigatePhotoHandler(
+                      sessionData.deviceId,
+                      sessionId,
+                      sessionData.roleId
+                    )
+                  }
+                  variant="primary-cta"
+                  className="w-full"
+                >
+                  View Session
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-48 border border-dashed rounded-lg p-6 text-center text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/20">
+          <p className="text-lg font-medium mb-2">No Invited Sessions Yet</p>
+          <p className="text-sm">
+            This section will show sessions you've been invited to by other users.
           </p>
         </div>
-      ))}
+      )}
     </div>
   );
 };

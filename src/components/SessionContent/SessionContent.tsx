@@ -3,7 +3,7 @@ import LoadSession from '@/components/SessionContent/LoadSession';
 import { useStore } from '@nanostores/react';
 import { $sessions } from '@/stores/sessionsStore';
 import useRealtimeSessions from '@/hooks/useRealtimeSessions';
-import usePurgeExpiredInvitedSessions from '@/hooks/usePurgeExpiredInvitedSessions';
+import usePurgeExpiredLocalSessionData from '@/hooks/usePurgeExpiredLocalSessionData';
 
 
 const SessionContent = () => {
@@ -15,7 +15,7 @@ const SessionContent = () => {
     setHasCreatedSessionTrueHandler
   } = useRealtimeSessions();
 
-  usePurgeExpiredInvitedSessions();
+  usePurgeExpiredLocalSessionData();
 
   if (isLoading) {
     return (

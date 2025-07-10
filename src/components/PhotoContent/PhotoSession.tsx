@@ -35,7 +35,7 @@ import PhotoViewTabsFloating from './PhotoViewTabsFloating';
 import SharePageModal from './SharePageModal';
 import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 import { navigate } from 'astro:transitions/client';
-import { encrypString } from '@/lib/encryptRole';
+import { encrypString, getDataParam, updateLocalSessionData } from '@/lib/encryptRole';
 import { storageLimitGB } from '@/lib/constants';
 
 interface PhotoSessionContentProps {
@@ -118,43 +118,68 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   }, [photoSession, activePhoto]);
   
   const handleToggleLike = async (photoId: string) => {
-    const likes: Record<string, string[]> = JSON.parse(localStorage.getItem('likes') || '{}');
+    const data = getDataParam('useLocalStorage') || {};
     const sessionId = session.id;
+    const expirationDate = session.expires_at;
 
-    if (!likes[sessionId]) likes[sessionId] = [];
+    if (!data.likedPhotos) data.likedPhotos = {};
+    if (!data.likedPhotos[sessionId]) {
+      data.likedPhotos[sessionId] = {
+        expire_at: expirationDate,
+        likes: [],
+      };
+    }
 
-    const likedPhotos = likes[sessionId];
-    const alreadyLikedIndex = likedPhotos.indexOf(photoId);
-
-    // Clone original state for potential rollback
+    const likedPhotos = data.likedPhotos[sessionId].likes;
     const originalLikes = [...likedPhotos];
 
     let action: 'like' | 'unlike';
 
-    if (isEqual(alreadyLikedIndex, -1)) {
+    const index = likedPhotos.indexOf(photoId);
+    if (index === -1) {
       likedPhotos.push(photoId);
       action = 'like';
     } else {
-      likedPhotos.splice(alreadyLikedIndex, 1);
+      likedPhotos.splice(index, 1);
       action = 'unlike';
     }
 
-    localStorage.setItem('likes', JSON.stringify(likes));
+    // Cleanup if empty after update
+    if (likedPhotos.length === 0) {
+      delete data.likedPhotos[sessionId];
+    }
+
+    if (Object.keys(data.likedPhotos).length === 0) {
+      delete data.likedPhotos;
+    }
+
+    // ✅ Optimistic update
+    updateLocalSessionData({
+      likedPhotos: data.likedPhotos ? { ...data.likedPhotos } : undefined,
+    });
 
     try {
       await toggleLike(photoId, action);
     } catch (error) {
       // Rollback on failure
-      likes[sessionId] = originalLikes;
-      localStorage.setItem('likes', JSON.stringify(likes));
+      if (!data.likedPhotos) data.likedPhotos = {};
+      data.likedPhotos[sessionId] = {
+        expire_at: expirationDate,
+        likes: originalLikes,
+      };
+
+      updateLocalSessionData({
+        likedPhotos: { ...data.likedPhotos },
+      });
+
       console.error(`Failed to ${action} photo:`, error);
     }
   };
 
   const getIsLiked = (photoId: string) => {
-    const likes: Record<string, string[]> = JSON.parse(localStorage.getItem('likes') || '{}');
-    return includes(likes[session.id], photoId);
-  }
+    const data = getDataParam('useLocalStorage');
+    return data?.likedPhotos?.[session.id]?.likes.includes(photoId) ?? false;
+  };
 
   const formatBytesToGB = (bytes: number) => {
     if (bytes === 0) return '0.00 GB'
@@ -188,23 +213,6 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
     }
     return newPhotosession;
   }
-
-  {/* Calculate how many buttons will show */}
-  const buttonsCount = (
-    1 + // Share is always there
-    ((roleId === 'EDITOR' || roleId === 'OWNER') && progressBarValue < 100 ? 1 : 0) +
-    ((roleId === 'OWNER' && progressBarValue < 100) ? 1 : 0)
-  );
-
-  // Determine width class based on button count
-  const getButtonWidthClass = (count: number) => {
-    if (count === 1) return 'sm:w-[260px]';
-    if (count === 2) return 'sm:w-[180px]';
-    if (count >= 3) return 'sm:w-[140px]';
-    return 'sm:w-[200px]'; // fallback
-  };
-
-  const buttonWidthClass = getButtonWidthClass(buttonsCount);
 
   return (
     <main className="max-w-7xl mx-auto">

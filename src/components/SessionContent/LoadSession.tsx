@@ -37,6 +37,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
   const [sessionToDelete, setSessionToDelete] = useState<SessionRecord | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [sessionName, setSessionName] = useState('');
+  const [key, setKey] = useState(false);
 
   const handleOpenCreateSessionDialog = () => {
     if (sessions.length >= 3) {
@@ -234,7 +235,9 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
 
       {/* --- Invited Tab --- */}
       <TabsContent value="invited">
-        <InvitedSessionsGrid invitedSessions={invitedSessions} />
+        <InvitedSessionsGrid
+          invitedSessions={invitedSessions}
+          setKey={() => setKey(!key)} />
       </TabsContent>
     </Tabs>
   );

@@ -6,7 +6,7 @@ import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
 import { $activePhotoSession, clearPhotos, fetchPhotoSession, fetchNextPageForActiveSession } from '@/stores/photoSessionStore';
 import { $sessions, fetchSessions, type SessionRecord } from '@/stores/sessionsStore'; 
 import useInfiniteScroll from '@/hooks/useInfiniteScroll';
-import usePurgeExpiredInvitedSessions from '@/hooks/usePurgeExpiredInvitedSessions';
+import usePurgeExpiredLocalSessionData from '@/hooks/usePurgeExpiredLocalSessionData';
 import findSession from '@/services/findSession';
 import { getDataParam, setDataParam, updateLocalSessionData } from '@/lib/encryptRole';
 import { isEqual } from 'lodash-es';
@@ -15,7 +15,7 @@ const PhotoSessionContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<SessionRecord | null>(null);
 
-  usePurgeExpiredInvitedSessions();
+  usePurgeExpiredLocalSessionData();
 
   const urlData = getDataParam('useURL');
   
