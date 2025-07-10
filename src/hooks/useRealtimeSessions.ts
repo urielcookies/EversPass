@@ -61,17 +61,24 @@ const useRealtimeSessions = () => {
         // Load initial sessions
         await fetchSessions(deviceIdExists.device_id, 1, 10, true);
 
-        // Setup real-time subscription
-        pb.collection('everspass_sessions').subscribe('*', (e) => {
-          if (!isEqual(e.record.device_id, deviceIdExists.device_id)) return;
-          fetchSessions(deviceIdExists.device_id, 1, 10, true);
-        });
+        // Will need to delete in future if no problems
+        // // Setup real-time subscription
+        // pb.collection('everspass_sessions').subscribe('*', (e) => {
+        //   if (!isEqual(e.record.device_id, deviceIdExists.device_id)) return;
+        //   fetchSessions(deviceIdExists.device_id, 1, 10, true);
+        // });
       } else {
         clearData();
       }
 
       setIsLoading(false);
     })();
+
+    // Setup real-time subscription
+    pb.collection('everspass_sessions').subscribe('*', (e) => {
+      if (!isEqual(e.record.device_id, deviceId)) return;
+      fetchSessions(deviceId, 1, 10, true);
+    });
 
     return () => {
       pb.collection('everspass_sessions').unsubscribe('*');
