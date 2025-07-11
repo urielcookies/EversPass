@@ -30,16 +30,13 @@ const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
 
   const handleInvitedSession = (sessionId: string) => {
     const data = getDataParam("useLocalStorage");
-    if (!data || !data.invitedSessions) return;
+    if (!data?.invitedSessions) return;
 
     const updatedInvitedSessions = { ...data.invitedSessions };
     delete updatedInvitedSessions[sessionId];
 
     updateLocalSessionData({
-      invitedSessions:
-        Object.keys(updatedInvitedSessions).length > 0
-          ? updatedInvitedSessions
-          : undefined, // delete key if empty
+      invitedSessions: updatedInvitedSessions,
     });
 
     setKey(); // Force re-render

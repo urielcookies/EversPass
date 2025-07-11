@@ -77,7 +77,32 @@ const PhotoSessionContent = () => {
           updateLocalSessionData({ invitedSessions: updatedInvitedSessions });
         }
       }
-      else navigate('/sessions');
+      else {
+        window.showLimitedToast?.({
+          title: 'Deleted',
+          message: 'Session does not exist',
+          position: window.innerWidth <= 768 ? 'topCenter' : 'topRight',
+          color: 'red',
+        });
+
+        const sessionIdParams = urlData?.sessionId;
+        if (!sessionIdParams) return;
+
+        const localStorageData = getDataParam('useLocalStorage');
+        const existingInvitedSessions = { ...localStorageData?.invitedSessions };
+
+        // Delete the session
+        delete existingInvitedSessions?.[sessionIdParams];
+
+        // Let the cleaner handle empty objects
+        updateLocalSessionData({
+          invitedSessions: existingInvitedSessions,
+        });
+
+        setTimeout(() => {
+          navigate('/sessions');
+        }, 1000);
+      }
 
       if (photoSessionExists?.exists) {
         await fetchPhotoSession(photoSessionExists.session_id, 1);

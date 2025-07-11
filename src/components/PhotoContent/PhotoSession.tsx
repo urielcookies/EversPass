@@ -144,18 +144,9 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
       action = 'unlike';
     }
 
-    // Cleanup if empty after update
-    if (likedPhotos.length === 0) {
-      delete data.likedPhotos[sessionId];
-    }
-
-    if (Object.keys(data.likedPhotos).length === 0) {
-      delete data.likedPhotos;
-    }
-
-    // ✅ Optimistic update
+    // Just assign the updated likedPhotos — no manual deletion needed
     updateLocalSessionData({
-      likedPhotos: data.likedPhotos ? { ...data.likedPhotos } : undefined,
+      likedPhotos: { ...data.likedPhotos },
     });
 
     try {
