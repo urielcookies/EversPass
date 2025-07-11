@@ -72,13 +72,14 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     try {
       setIsSessionDeleting(true);
       await deleteSessionById(sessionToDelete.id);
-      if (sessions.length === 1) {
-        const localStorageData = getDataParam('useLocalStorage');
-        if (!localStorageData) return;
-        const { deviceId, ...rest } = localStorageData;
-        setDataParam(rest, 'useLocalStorage');
-      }
-      console.log(sessions);
+      // TEMP // LATER REMOVE
+      // if (sessions.length === 1) {
+      //   const localStorageData = getDataParam('useLocalStorage');
+      //   if (!localStorageData) return;
+      //   const { deviceId, ...rest } = localStorageData;
+      //   setDataParam(rest, 'useLocalStorage');
+      // }
+      // console.log(sessions);
     } catch (error) {
       console.error("Delete failed:", error);
     } finally {
