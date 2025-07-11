@@ -4,8 +4,11 @@ import pb from "@/services/pocketbase";
 import { fetchSessions } from '@/stores/sessionsStore'; 
 import checkDeviceIdExists from "@/services/checkDeviceIdExists";
 import { getDataParam, setDataParam, updateLocalSessionData } from "@/lib/encryptRole";
+import { useStore } from '@nanostores/react';
+import { $sessions } from '@/stores/sessionsStore';
 
 const useRealtimeSessions = () => {
+  const { sessions, deviceId: stateDeviceId } = useStore($sessions);
   const [isLoading, setIsLoading] = useState(false);
   const [hasCreatedSessionBefore, setHasCreatedSessionBefore] = useState(() => {
     const localData = getDataParam('useLocalStorage');
@@ -48,7 +51,8 @@ const useRealtimeSessions = () => {
 
   useEffect(() => {
     (async () => {
-      if (!hasCreatedSessionBefore) return;
+      if (stateDeviceId) setDataParam({ deviceId: stateDeviceId }, 'useURL');
+      if (!hasCreatedSessionBefore || sessions.length > 0) return;
       setIsLoading(true);
 
       const deviceIdExists = await checkDeviceIdExists(deviceId);
@@ -83,7 +87,7 @@ const useRealtimeSessions = () => {
     return () => {
       pb.collection('everspass_sessions').unsubscribe('*');
     };
-  }, [hasCreatedSessionBefore]);
+  }, [hasCreatedSessionBefore, sessions.length]);
 
   return { deviceId, isLoading, hasCreatedSessionBefore, setHasCreatedSessionTrueHandler };
 };
