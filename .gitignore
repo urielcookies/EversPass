@@ -23,4 +23,4 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-src/lib/encryptRole.ts
+# src/lib/encryptRole.ts
