@@ -1,0 +1,9 @@
+---
+import { SITE_URL } from '@/lib/constants';
+const response = await fetch(`${SITE_URL}/api/helloWorld`);
+const data = await response.json();
+---
+<div>
+  <h1>{data.message}</h1>
+  <p>Data fetched at: {data.timestamp}</p>
+</div>

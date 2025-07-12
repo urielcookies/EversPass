@@ -4,11 +4,13 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "start": "node ./dist/server/entry.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^9.3.0",
     "@astrojs/react": "^4.3.0",
     "@nanostores/react": "^1.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.14",
