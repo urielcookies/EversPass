@@ -1,4 +1,7 @@
 ---
+import type { ButtonProps } from '@/components/ui/button'; // Adjust path if necessary
+import { Button } from '@/components/ui/button'; // Adjust path if necessary
+
 interface Props {
   isOpen: boolean; // Still accept isOpen
 }
@@ -36,17 +39,34 @@ const { isOpen } = Astro.props;
       <div class="flex items-center">
         <input type="checkbox" id="terms-checkbox" class="rounded border-slate-300 dark:border-slate-600 text-sky-600 focus:ring-sky-500" required>
         <label for="terms-checkbox" class="ml-2 text-sm text-slate-600 dark:text-slate-400">
-          I agree to the <a href="#" class="text-sky-600 dark:text-sky-400 hover:underline">Terms of Service</a> and <a href="#" class="text-sky-600 dark:text-sky-400 hover:underline">Privacy Policy</a>
+          I agree to the <a class="text-sky-600 dark:text-sky-400 hover:underline">Terms of Service</a> and <a class="text-sky-600 dark:text-sky-400 hover:underline">Privacy Policy</a>
         </label>
       </div>
-      <button type="submit" class="w-full bg-sky-600 text-white py-2 px-4 rounded-md hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 transition-colors duration-300">
-        Create Account
-      </button>
+      <div class="py-2">
+        <Button
+          disabled
+          type="submit"
+          variant="primary-cta"
+          size="default"
+          rounded="md"
+          className="w-full"
+          client:load>
+          Create Account
+        </Button>
+      </div>
     </form>
     <div class="px-6 pb-6 text-center">
       <p class="text-sm text-slate-600 dark:text-slate-400">
-        Already have an account? 
-        <button data-switch-to-login class="text-sky-600 dark:text-sky-400 hover:underline">Sign in</button>
+        Already have an account?
+        <Button
+          type="button"
+          variant="link"
+          size="default"
+          data-switch-to-login
+          className="inline-block px-0 py-0 h-auto"
+          client:load>
+          Sign in
+        </Button>
       </p>
     </div>
   </div>
