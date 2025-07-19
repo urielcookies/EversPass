@@ -1,0 +1,8 @@
+---
+export const prerender = true;
+import Layout from '@/layouts/Layout.astro';
+import NotFoundPage from '@/components/NotFound';
+---
+<Layout>
+  <NotFoundPage client:load />
+</Layout>

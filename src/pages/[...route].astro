@@ -1,0 +1,16 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import App from '@/components/SPA';
+
+const isApp = Astro.locals.isApp;
+
+if (!isApp) {
+  return new Response(null, {
+    status: 404,
+    statusText: "Not Found"
+  });
+}
+---
+<Layout isApp={isApp}>
+  <App client:only="react" />
+</Layout>

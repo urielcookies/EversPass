@@ -1,39 +1,67 @@
 ---
-// src/components/Navbar.astro
+import LoginModal from '@/components/LoginModal.astro';
+import SignupModal from '@/components/SignupModal.astro';
+
 const { currentPage } = Astro.props;
 
-// --- Styling variables for links ---
 const linkClasses = "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300";
 const activeLinkClasses = "bg-slate-200 dark:bg-slate-700 text-sky-600 dark:text-sky-400";
 const inactiveLinkClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100";
+
+const authButtonClasses = "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300";
+const loginButtonClasses = "text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800";
+const signupButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600";
 ---
 
 <nav id="main-nav" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-3 items-center h-16">
+    <div class="flex items-center justify-between h-16 relative">
 
-      <div class="justify-self-start">
-        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500">
+      {/* LEFT GROUP: Navigation Links (Desktop) + Theme Toggle (Mobile) */}
+      <div class="flex items-center flex-shrink-0">
+        {/* Theme Toggle for Mobile/Tablet - visible when hamburger menu is shown */}
+        <button id="theme-toggle-mobile" class="lg:hidden p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500">
           <span class="sr-only">Toggle theme</span>
-          {/* Icons are hidden by default, script will unhide correct one */}
-          <svg id="theme-toggle-light-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-          <svg id="theme-toggle-dark-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+          <svg id="theme-toggle-light-icon-mobile" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <svg id="theme-toggle-dark-icon-mobile" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
         </button>
-      </div>
-
-      <div class="justify-self-center">
-        <span class="text-2xl font-bold text-slate-800 dark:text-white">EversPass</span>
-      </div>
-
-      <div class="justify-self-end flex items-center">
-        <div class="hidden md:flex items-center space-x-4">
+        
+        {/* Desktop Navigation Links - Only visible on large screens */}
+        <div class="hidden lg:flex items-center space-x-4">
           <a href="/" class:list={[linkClasses, currentPage === "/" ? activeLinkClasses : inactiveLinkClasses]}>Home</a>
           <a href="/sessions" class:list={[linkClasses, currentPage === "/sessions" ? activeLinkClasses : inactiveLinkClasses]}>Sessions</a>
           <a href="/pricing" class:list={[linkClasses, currentPage === "/pricing" ? activeLinkClasses : inactiveLinkClasses]}>Pricing</a>
-          <!-- <a href="/about" class:list={[linkClasses, currentPage === "/about" ? activeLinkClasses : inactiveLinkClasses]}>About</a> -->
-          <!-- <a href="/contact" class:list={[linkClasses, currentPage === "/contact" ? activeLinkClasses : inactiveLinkClasses]}>Contact</a> -->
         </div>
-        <div class="flex md:hidden ml-4">
+      </div>
+
+      {/* CENTER GROUP: EversPass Logo/Title */}
+      {/* Desktop Centered: Absolute positioning for precision, hidden on smaller screens */}
+      <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+        <span class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto">EversPass</span>
+      </div>
+      {/* Mobile/Medium Centered: Simple flex-grow text-center, visible on smaller screens */}
+      <div class="flex lg:hidden flex-grow justify-center">
+        <span class="text-2xl font-bold text-slate-800 dark:text-white">EversPass</span>
+      </div>
+
+
+      {/* RIGHT GROUP: Auth Buttons, Theme Toggle, Mobile Menu Toggle */}
+      <div class="flex items-center flex-shrink-0">
+        {/* Auth buttons for desktop - visible only on large screens */}
+        <div class="hidden lg:flex items-center space-x-3">
+            <button id="login-button" class:list={[authButtonClasses, loginButtonClasses]}>Login</button>
+            <button id="signup-button" class:list={[authButtonClasses, signupButtonClasses]}>Sign Up</button>
+        </div>
+
+        {/* Theme Toggle for Desktop - Universal (visible only on large screens) */}
+        <button id="theme-toggle" class="hidden lg:block p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500 ml-4">
+          <span class="sr-only">Toggle theme</span>
+          <svg id="theme-toggle-light-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <svg id="theme-toggle-dark-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        </button>
+        
+        {/* Mobile Menu Toggle - Visible from md screens and below */}
+        <div class="flex lg:hidden ml-4">
           <button id="menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
             <span class="sr-only">Open main menu</span>
             <svg id="menu-open-icon" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
@@ -45,16 +73,25 @@ const inactiveLinkClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-2
     </div>
   </div>
 
-  <div id="mobile-menu" class="absolute top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 p-4 md:hidden transition-all duration-300 ease-in-out transform origin-top opacity-0 scale-95 pointer-events-none">
+  {/* MOBILE MENU DROPDOWN - Visible from md screens and below */}
+  <div id="mobile-menu" class="absolute top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 p-4 lg:hidden transition-all duration-300 ease-in-out transform origin-top opacity-0 scale-95 pointer-events-none">
     <div class="space-y-1">
       <a href="/" class:list={["block", linkClasses, currentPage === "/" ? activeLinkClasses : inactiveLinkClasses]}>Home</a>
       <a href="/sessions" class:list={["block", linkClasses, currentPage === "/sessions" ? activeLinkClasses : inactiveLinkClasses]}>Sessions</a>
       <a href="/pricing" class:list={["block", linkClasses, currentPage === "/pricing" ? activeLinkClasses : inactiveLinkClasses]}>Pricing</a>
-      <!-- <a href="/about" class:list={["block", linkClasses, currentPage === "/about" ? activeLinkClasses : inactiveLinkClasses]}>About</a> -->
-      <!-- <a href="/contact" class:list={["block", linkClasses, currentPage === "/contact" ? activeLinkClasses : inactiveLinkClasses]}>Contact</a> -->
+      <hr class="border-t border-slate-200 dark:border-slate-700 my-2" />
+      
+      {/* Auth buttons for mobile dropdown */}
+      <div class="pt-4 space-y-2">
+        <button id="mobile-login-button" class:list={["block w-full text-left", authButtonClasses, loginButtonClasses]}>Login</button>
+        <button id="mobile-signup-button" class:list={["block w-full text-left", authButtonClasses, signupButtonClasses]}>Sign Up</button>
+      </div>
     </div>
   </div>
 </nav>
+
+<LoginModal isOpen={false} />
+<SignupModal isOpen={false} />
 
 <script>
   function initializeNavbar() {
@@ -63,35 +100,131 @@ const inactiveLinkClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-2
     const mobileMenu = document.getElementById('mobile-menu');
     const openIcon = document.getElementById('menu-open-icon');
     const closeIcon = document.getElementById('menu-close-icon');
-    const themeToggleButton = document.getElementById('theme-toggle');
-    const lightIcon = document.getElementById('theme-toggle-light-icon');
-    const darkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleButton = nav.querySelector('#theme-toggle');
+    const themeToggleMobileButton = nav.querySelector('#theme-toggle-mobile');
+    const lightIcon = nav.querySelector('#theme-toggle-light-icon');
+    const darkIcon = nav.querySelector('#theme-toggle-dark-icon');
+    const lightIconMobile = nav.querySelector('#theme-toggle-light-icon-mobile');
+    const darkIconMobile = nav.querySelector('#theme-toggle-dark-icon-mobile');
 
-    if (!nav || !menuButton || !mobileMenu || !openIcon || !closeIcon || !themeToggleButton || !lightIcon || !darkIcon) {
+    // Get references to modal components' root elements
+    const loginModalElement = document.getElementById('login-modal');
+    const signupModalElement = document.getElementById('signup-modal');
+    
+    const loginButton = document.getElementById('login-button');
+    const signupButton = document.getElementById('signup-button');
+    const mobileLoginButton = document.getElementById('mobile-login-button');
+    const mobileSignupButton = document.getElementById('mobile-signup-button');
+    
+    if (!nav || !menuButton || !mobileMenu || !openIcon || !closeIcon || !themeToggleButton || !themeToggleMobileButton || !lightIcon || !darkIcon || !lightIconMobile || !darkIconMobile || !loginModalElement || !signupModalElement) {
+      console.warn("Navbar or modal elements not found, initialization skipped.");
       return;
     }
 
-    // --- Theme Toggle Logic ---
+    // Function to set modal visibility by manipulating classes
+    const setModalVisibility = (modalElement, show) => {
+        if (show) {
+            modalElement.classList.remove('opacity-0', 'pointer-events-none');
+            modalElement.classList.add('opacity-100', 'pointer-events-auto');
+            modalElement.querySelector('div:first-of-type')?.classList.remove('scale-95');
+            modalElement.querySelector('div:first-of-type')?.classList.add('scale-100');
+        } else {
+            modalElement.classList.add('opacity-0', 'pointer-events-none');
+            modalElement.classList.remove('opacity-100', 'pointer-events-auto');
+            modalElement.querySelector('div:first-of-type')?.classList.add('scale-95');
+            modalElement.querySelector('div:first-of-type')?.classList.remove('scale-100');
+        }
+    };
+
+    // Centralized modal control
+    const showLoginModal = () => {
+        setModalVisibility(loginModalElement, true);
+        setModalVisibility(signupModalElement, false);
+        document.body.style.overflow = 'hidden';
+    };
+
+    const showSignupModal = () => {
+        setModalVisibility(signupModalElement, true);
+        setModalVisibility(loginModalElement, false);
+        document.body.style.overflow = 'hidden';
+    };
+
+    const hideAllModals = () => {
+        setModalVisibility(loginModalElement, false);
+        setModalVisibility(signupModalElement, false);
+        document.body.style.overflow = 'auto';
+    };
+
+    // Event listeners for opening modals
+    loginButton.addEventListener('click', () => {
+      showLoginModal();
+      closeMobileMenu();
+    });
+
+    mobileLoginButton.addEventListener('click', () => {
+      showLoginModal();
+      closeMobileMenu();
+    });
+
+    signupButton.addEventListener('click', () => {
+      showSignupModal();
+      closeMobileMenu();
+    });
+
+    mobileSignupButton.addEventListener('click', () => {
+      showSignupModal();
+      closeMobileMenu();
+    });
+
+    // Listen for custom events from LoginModal
+    loginModalElement.addEventListener('modal:close', hideAllModals);
+    loginModalElement.addEventListener('modal:switchToSignup', () => {
+        hideAllModals(); // Close current
+        setTimeout(showSignupModal, 150); // Open new after brief delay
+    });
+
+    // Listen for custom events from SignupModal
+    signupModalElement.addEventListener('modal:close', hideAllModals);
+    signupModalElement.addEventListener('modal:switchToLogin', () => {
+        hideAllModals(); // Close current
+        setTimeout(showLoginModal, 150); // Open new after brief delay
+    });
+
+
+    // Universal Escape key listener
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        hideAllModals();
+      }
+    });
+
+    // --- Existing Navbar & Theme Toggle Logic (unchanged) ---
     const syncThemeIcon = () => {
       const isDark = document.documentElement.classList.contains('dark');
       if (isDark) {
         lightIcon.classList.remove('hidden');
         darkIcon.classList.add('hidden');
+        lightIconMobile.classList.remove('hidden');
+        darkIconMobile.classList.add('hidden');
       } else {
         lightIcon.classList.add('hidden');
         darkIcon.classList.remove('hidden');
+        lightIconMobile.classList.add('hidden');
+        darkIconMobile.classList.remove('hidden');
       }
     };
 
-    themeToggleButton.addEventListener('click', () => {
+    const toggleTheme = () => {
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       syncThemeIcon();
-    });
+    };
 
-    // --- Mobile Menu Logic ---
+    themeToggleButton.addEventListener('click', toggleTheme);
+    themeToggleMobileButton.addEventListener('click', toggleTheme);
+
     function closeMobileMenu() {
-      if (mobileMenu && openIcon && closeIcon && mobileMenu.classList.contains('opacity-100')) {
+      if (mobileMenu.classList.contains('opacity-100')) {
         mobileMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
         mobileMenu.classList.remove('opacity-100', 'scale-100', 'pointer-events-auto');
         openIcon.classList.remove('hidden');
@@ -120,13 +253,8 @@ const inactiveLinkClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-2
       }
     });
 
-    // Sync the icon when the script runs
     syncThemeIcon();
   }
 
-  // Run the initialization on initial page load
-  // initializeNavbar(); //TEMP: will need to remove
-
-  // Re-run the initialization after every page transition to re-attach event listeners
   document.addEventListener('astro:page-load', initializeNavbar);
 </script>

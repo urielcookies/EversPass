@@ -1,11 +1,12 @@
 ---
 // src/layouts/Layout.astro
 import '@/styles/global.css'
-import Navbar from '../components/Navbar.astro';
+import AuthNavbar from '@/components/AuthNavbar.astro';
+import Navbar from '@/components/Navbar.astro';
 import { ClientRouter } from "astro:transitions";
-import ToastProvider from '@/components/ToastProvider';
+import App from '@/components/SPA';
 
-const { title, currentPage } = Astro.props;
+const { title, currentPage, isApp } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -34,13 +35,18 @@ const { title, currentPage } = Astro.props;
     </script>
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
-    
-    <Navbar currentPage={currentPage} />
+
+    {isApp
+      ? <AuthNavbar currentPage={currentPage} />
+      : <Navbar currentPage={currentPage} />
+    }
 
     <main class="pt-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ToastProvider client:only="react" />
-        <slot />
+        {isApp
+          ? <App client:only="react" />
+          : <slot />
+        }
       </div>
     </main>
 

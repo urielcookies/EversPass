@@ -1,9 +1,13 @@
 ---
-export const prerender = true;
-// import Welcome from '../components/Welcome.astro';
-import HomeContent from '../components/HomeContent.astro';
-import Layout from '../layouts/Layout.astro';
+// src/pages/index.astro
+export const prerender = false; // server mode only
+
+import Layout from '@/layouts/Layout.astro';
+import HomeContent from '@/components/HomeContent.astro';
+
+const isApp = Astro.locals.isApp;
 ---
-<Layout>
-	<HomeContent />
+
+<Layout isApp={isApp}>
+  <HomeContent />
 </Layout>

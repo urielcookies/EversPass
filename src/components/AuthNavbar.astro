@@ -1,0 +1,83 @@
+---
+const { currentPage } = Astro.props;
+
+const authButtonClasses = "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300";
+const signOutButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600";
+---
+
+<nav id="main-nav" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 relative">
+
+      {/* LEFT GROUP: Single Universal Theme Toggle Button */}
+      <div class="flex items-center flex-shrink-0">
+        <button id="theme-toggle" class="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500">
+          <span class="sr-only">Toggle theme</span>
+          <svg id="theme-toggle-light-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          <svg id="theme-toggle-dark-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+        </button>
+      </div>
+
+      {/* CENTER GROUP: EversPass Logo/Title */}
+      <div class="absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+        <span class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto">EversPass</span>
+      </div>
+
+      {/* RIGHT GROUP: Sign Out Button */}
+      <div class="flex items-center flex-shrink-0">
+        <button id="sign-out-button" class:list={[authButtonClasses, signOutButtonClasses]}>Sign Out</button>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<script>
+  function initializeNavbar() {
+    const nav = document.getElementById('main-nav');
+    // Removed themeToggleMobileButton
+    const themeToggleButton = nav.querySelector('#theme-toggle'); // This is now the ONLY theme toggle
+    const lightIcon = nav.querySelector('#theme-toggle-light-icon');
+    const darkIcon = nav.querySelector('#theme-toggle-dark-icon');
+    // Removed lightIconMobile, darkIconMobile
+
+    const signOutButton = document.getElementById('sign-out-button');
+    
+    // Updated check for required elements
+    if (!nav || !themeToggleButton || !lightIcon || !darkIcon || !signOutButton) {
+      console.warn("Navbar or necessary elements not found, initialization skipped.");
+      return;
+    }
+
+    // --- Theme Toggle Logic (simplified as only one button) ---
+    const syncThemeIcon = () => {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        lightIcon.classList.remove('hidden');
+        darkIcon.classList.add('hidden');
+        // Removed mobile specific icon toggles
+      } else {
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+        // Removed mobile specific icon toggles
+      }
+    };
+
+    const toggleTheme = () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      syncThemeIcon();
+    };
+
+    themeToggleButton.addEventListener('click', toggleTheme); // Only one listener now
+
+    // --- Sign Out Logic ---
+    signOutButton.addEventListener('click', () => {
+      alert('Sign Out button clicked! (Implement your actual sign-out logic here.)');
+    });
+
+    syncThemeIcon(); // Initialize theme icon on page load
+  }
+
+  document.addEventListener('astro:page-load', initializeNavbar);
+</script>
