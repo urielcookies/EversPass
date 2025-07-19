@@ -31,7 +31,7 @@ const buttonVariants = cva(
         sm: "h-8 px-3 text-xs",
         lg: "h-10 px-8",
         xl: "py-3 px-6",
-        icon: "h-9 w-9",
+        icon: "h-9 w-9", // Keep this for icon-only buttons
       },
       // --- UPDATED: PROP TO CONTROL BORDER RADIUS ---
       rounded: {
@@ -58,7 +58,11 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, rounded, asChild = false, loading, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button"
+    const Comp = asChild ? Slot : "button";
+
+    // Adjust spinner size for 'icon' variant if needed
+    const spinnerClass = size === "icon" ? "animate-spin h-5 w-5 text-current" : "animate-spin h-4 w-4 mr-2 text-current";
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, rounded, className }), loading && "cursor-wait")}
@@ -66,9 +70,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading || props.disabled}
         {...props}
       >
-        {loading && (
+        {loading ? ( // Conditional rendering based on the loading prop
           <svg
-            className="animate-spin h-4 w-4 mr-2 text-current"
+            className={spinnerClass}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -87,8 +91,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             />
           </svg>
+        ) : (
+          children // Render children only when not loading
         )}
-        {children}
       </Comp>
     )
   }

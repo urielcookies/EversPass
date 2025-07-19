@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Download, ExternalLink, Heart, MoreVertical, Trash2 } from 'lucide-react';
 import { isEqual } from 'lodash-es';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
     getIsLiked,
     roleId
   } = props;
+  const [isDownloading, setIsDownloading] = useState(false);
   const photoRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const gridContainerRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +53,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
   };
 
   const downloadImage = async (url: string, filename = 'image.jpg') => {
+    setIsDownloading(true);
     const response = await fetch(url);
     const blob = await response.blob();
 
@@ -63,6 +65,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(blobUrl);
+    setIsDownloading(false);
   };
 
   return (
@@ -172,6 +175,8 @@ const PhotoGrid = (props: PhotoGridProps) => {
                   </Button>
 
                   <Button
+                    loading={isDownloading}
+                    disabled={isDownloading}
                     variant="ghost"
                     size="icon"
                     onClick={e => {
@@ -180,7 +185,6 @@ const PhotoGrid = (props: PhotoGridProps) => {
                     }}
                     className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
                     <Download className="!h-6 !w-6" />
-                    <span className="sr-only">Download</span>
                   </Button>
                 </div>
               </div>

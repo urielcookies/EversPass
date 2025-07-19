@@ -1,4 +1,4 @@
-import { Download, XCircle, Heart, MoreVertical, Trash2 } from 'lucide-react';
+import { Download, XCircle, Heart, MoreVertical, Trash2, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isEqual } from 'lodash-es';
 import {
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { PhotoRecord } from '@/services/fetchPhotosForSession';
 import { deletePhotoById } from '@/services/deletePhotoById';
+import { useState } from 'react';
 
 interface PhotoViewModalProps {
   isOpen: boolean;
@@ -38,12 +39,15 @@ const PhotoViewModal = ({
   if (!isOpen || !activePhoto) return null;
   const { id: photoId, image_url, originalFilename } = activePhoto;
 
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleDeletePhoto = async(photoId: string) => {
     await deletePhotoById(photoId);
     onClose();
   };
 
   const downloadImage = async (url: string, filename = 'image.jpg') => {
+    setIsDownloading(true);
     const response = await fetch(url);
     const blob = await response.blob();
 
@@ -55,6 +59,7 @@ const PhotoViewModal = ({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(blobUrl);
+    setIsDownloading(false);
   };
 
   return (
@@ -121,10 +126,14 @@ const PhotoViewModal = ({
               <XCircle className="!mr-2 !h-4 !w-4" /> Close
             </Button>
             <Button
+              disabled={isDownloading}
               variant="primary-cta"
               onClick={() => downloadImage(image_url, originalFilename)}
               className="!px-4 !py-2">
-              <Download className="!mr-2 !h-4 !w-4" /> Download
+              {isDownloading
+                ? <Circle className="!mr-2 !h-4 !w-4" />
+                : <Download className="!mr-2 !h-4 !w-4" />
+              } Download
             </Button>
           </div>
         </DialogFooter>
