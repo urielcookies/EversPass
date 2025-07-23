@@ -12,6 +12,7 @@
   "dependencies": {
     "@astrojs/node": "^9.3.0",
     "@astrojs/react": "^4.3.0",
+    "@clerk/astro": "^2.10.9",
     "@nanostores/react": "^1.0.0",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-dialog": "^1.1.14",
