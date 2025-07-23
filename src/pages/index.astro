@@ -5,7 +5,8 @@ export const prerender = false; // server mode only
 import Layout from '@/layouts/Layout.astro';
 import HomeContent from '@/components/HomeContent.astro';
 
-const isApp = Astro.locals.isApp;
+const url = Astro.url;
+const isApp = url.hostname.startsWith('app.');
 ---
 
 <Layout isApp={isApp}>

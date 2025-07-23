@@ -1,12 +1,26 @@
+import { ClerkProvider, useUser } from '@clerk/clerk-react'
 import { createRoute, createRootRoute, createRouter, RouterProvider, Outlet } from '@tanstack/react-router';
 import NotFoundPage from '@/components/NotFound';
+import { SignIn, SignedIn, SignedOut, SignInButton, UserButton, SignOutButton } from '@clerk/clerk-react'
+import { useEffect } from 'react';
+import { SITE_URL } from '@/lib/constants';
 
-const Root = () => (
-  <>
-    <h1>App SPA</h1>
-    <Outlet />
-  </>
-);
+const Root = () => {
+  const { isSignedIn, user, isLoaded } = useUser();
+  console.log(user)
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      window.location.href = SITE_URL;
+    }
+  }, [isLoaded]);
+
+  return (
+    <>
+      <h1>App SPA</h1>
+      <Outlet />
+    </>
+  )
+};
 
 const rootRoute = createRootRoute({ component: Root, notFoundComponent: NotFoundPage });
 
@@ -35,9 +49,24 @@ const routeTree = rootRoute.addChildren([
 ]);
 
 const router = createRouter({ routeTree });
+const PUBLISHABLE_KEY = import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Clerk publishable key");
+}
 
 const App = () => {
-  return <RouterProvider router={router} />;
+
+
+  return (
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+      <SignInButton mode="modal"/>
+      <br />
+      <SignOutButton />
+      <br />
+      <RouterProvider router={router} />
+    </ClerkProvider>
+  );
 }
 
 export default App;

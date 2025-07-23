@@ -2,7 +2,9 @@
 import Layout from '@/layouts/Layout.astro';
 import App from '@/components/SPA';
 
-const isApp = Astro.locals.isApp;
+const url = Astro.url; // available in Astro 3+
+const isApp = url.hostname.startsWith('app.');
+// or: const isApp = url.hostname === 'app.localhost';
 
 if (!isApp) {
   return new Response(null, {
@@ -10,6 +12,8 @@ if (!isApp) {
     statusText: "Not Found"
   });
 }
+
+console.log('isApp', isApp)
 ---
 <Layout isApp={isApp}>
   <App client:only="react" />
