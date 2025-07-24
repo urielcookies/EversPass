@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import react from '@astrojs/react';
 import node from '@astrojs/node';
+import clerk from '@clerk/astro'
 
 // Railway is explicitly configured for port 4321, so use that.
 // The HOST should still be 0.0.0.0 for container accessibility.
@@ -23,5 +24,5 @@ export default defineConfig({
     port: SERVER_PORT,
   },
   site: process.env.PUBLIC_PROD_SITE_URL || `http://localhost:${SERVER_PORT}`,
-  integrations: [tailwind(), react()]
+  integrations: [tailwind(), react(), clerk()]
 });

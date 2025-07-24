@@ -1,6 +1,8 @@
 ---
 import LoginModal from '@/components/LoginModal.astro';
 import SignupModal from '@/components/SignupModal.astro';
+import { SITE_URL } from '@/lib/constants';
+import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/components'
 
 const { currentPage } = Astro.props;
 
@@ -48,9 +50,24 @@ const signupButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky-
       {/* RIGHT GROUP: Auth Buttons, Theme Toggle, Mobile Menu Toggle */}
       <div class="flex items-center flex-shrink-0">
         {/* Auth buttons for desktop - visible only on large screens */}
+        <UserButton />
         <div class="hidden lg:flex items-center space-x-3">
-            <button id="login-button" class:list={[authButtonClasses, loginButtonClasses]}>Login</button>
-            <button id="signup-button" class:list={[authButtonClasses, signupButtonClasses]}>Sign Up</button>
+            <!-- <SignInButton asChild mode="modal" forceRedirectUrl={import.meta.env.DEV ? 'http://app.localhost:4321' : 'https://app.everspass.com'}>
+              <button id="login-button" class:list={[authButtonClasses, loginButtonClasses]}>Login</button>
+            </SignInButton> -->
+            <button 
+              id="login-button" 
+              class:list={[authButtonClasses, loginButtonClasses]}
+              onclick={`window.location.href = '${import.meta.env.DEV ? 'http://app.localhost:4321/signin' : 'https://app.everspass.com/signin'}'`}>
+              Login
+            </button>
+            <!-- <button id="signup-button" class:list={[authButtonClasses, signupButtonClasses]}>Sign Up</button> -->
+            <button 
+              id="signup-button" 
+              class:list={[authButtonClasses, signupButtonClasses]}
+              onclick={`window.location.href = '${import.meta.env.DEV ? 'http://app.localhost:4321/signup' : 'https://app.everspass.com/signup'}'`}>
+              Sign Up
+            </button>
         </div>
 
         {/* Theme Toggle for Desktop - Universal (visible only on large screens) */}
@@ -156,10 +173,10 @@ const signupButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky-
     };
 
     // Event listeners for opening modals
-    loginButton.addEventListener('click', () => {
-      showLoginModal();
-      closeMobileMenu();
-    });
+    // loginButton.addEventListener('click', () => {
+    //   showLoginModal();
+    //   closeMobileMenu();
+    // });
 
     mobileLoginButton.addEventListener('click', () => {
       showLoginModal();

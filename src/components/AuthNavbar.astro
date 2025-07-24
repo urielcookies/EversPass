@@ -3,6 +3,9 @@ const { currentPage } = Astro.props;
 
 const authButtonClasses = "px-4 py-2 rounded-md text-sm font-medium transition-colors duration-300";
 const signOutButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600";
+import { SITE_URL } from '@/lib/constants';
+import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/components'
+
 ---
 
 <nav id="main-nav" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50">
@@ -20,12 +23,17 @@ const signOutButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky
 
       {/* CENTER GROUP: EversPass Logo/Title */}
       <div class="absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
-        <span class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto">EversPass</span>
+        <a 
+          href={import.meta.env.DEV ? 'http://localhost:4321' : 'https://everspass.com'}
+          class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto hover:text-sky-600 dark:hover:text-sky-400 transition-colors duration-200">
+          EversPass
+        </a>
       </div>
 
       {/* RIGHT GROUP: Sign Out Button */}
       <div class="flex items-center flex-shrink-0">
-        <button id="sign-out-button" class:list={[authButtonClasses, signOutButtonClasses]}>Sign Out</button>
+        <UserButton afterSignOutUrl={SITE_URL}/>
+        <!-- <button id="sign-out-button" class:list={[authButtonClasses, signOutButtonClasses]}>Sign Out</button> -->
       </div>
 
     </div>
@@ -35,31 +43,25 @@ const signOutButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky
 <script>
   function initializeNavbar() {
     const nav = document.getElementById('main-nav');
-    // Removed themeToggleMobileButton
-    const themeToggleButton = nav.querySelector('#theme-toggle'); // This is now the ONLY theme toggle
-    const lightIcon = nav.querySelector('#theme-toggle-light-icon');
-    const darkIcon = nav.querySelector('#theme-toggle-dark-icon');
-    // Removed lightIconMobile, darkIconMobile
-
-    const signOutButton = document.getElementById('sign-out-button');
+    const themeToggleButton = nav?.querySelector('#theme-toggle');
+    const lightIcon = nav?.querySelector('#theme-toggle-light-icon');
+    const darkIcon = nav?.querySelector('#theme-toggle-dark-icon');
     
-    // Updated check for required elements
-    if (!nav || !themeToggleButton || !lightIcon || !darkIcon || !signOutButton) {
+    // Remove signOutButton from the required elements check
+    if (!nav || !themeToggleButton || !lightIcon || !darkIcon) {
       console.warn("Navbar or necessary elements not found, initialization skipped.");
       return;
     }
 
-    // --- Theme Toggle Logic (simplified as only one button) ---
+    // --- Theme Toggle Logic ---
     const syncThemeIcon = () => {
       const isDark = document.documentElement.classList.contains('dark');
       if (isDark) {
         lightIcon.classList.remove('hidden');
         darkIcon.classList.add('hidden');
-        // Removed mobile specific icon toggles
       } else {
         lightIcon.classList.add('hidden');
         darkIcon.classList.remove('hidden');
-        // Removed mobile specific icon toggles
       }
     };
 
@@ -69,12 +71,15 @@ const signOutButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky
       syncThemeIcon();
     };
 
-    themeToggleButton.addEventListener('click', toggleTheme); // Only one listener now
+    themeToggleButton.addEventListener('click', toggleTheme);
 
-    // --- Sign Out Logic ---
-    signOutButton.addEventListener('click', () => {
-      alert('Sign Out button clicked! (Implement your actual sign-out logic here.)');
-    });
+    // --- Sign Out Logic (only if button exists) ---
+    const signOutButton = document.getElementById('sign-out-button');
+    if (signOutButton) {
+      signOutButton.addEventListener('click', () => {
+        alert('Sign Out button clicked! (Implement your actual sign-out logic here.)');
+      });
+    }
 
     syncThemeIcon(); // Initialize theme icon on page load
   }

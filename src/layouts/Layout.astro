@@ -2,9 +2,12 @@
 // src/layouts/Layout.astro
 import '@/styles/global.css'
 import AuthNavbar from '@/components/AuthNavbar.astro';
-import Navbar from '@/components/Navbar.astro';
+// import Navbar from '@/components/Navbar.astro';
+import Navbar from '@/components/Navbar';
 import { ClientRouter } from "astro:transitions";
 import App from '@/components/SPA';
+import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/components'
+import { ClerkProvider } from '@clerk/clerk-react';
 
 const { title, currentPage, isApp } = Astro.props;
 ---
@@ -36,10 +39,10 @@ const { title, currentPage, isApp } = Astro.props;
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
-    {isApp
-      ? <AuthNavbar currentPage={currentPage} />
-      : <Navbar currentPage={currentPage} />
-    }
+      {isApp
+        ? <AuthNavbar currentPage={currentPage} />
+        : <Navbar client:only="react" currentPage={currentPage} />
+      }
 
     <main class="pt-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
