@@ -5,8 +5,6 @@ import { $authStore } from '@clerk/astro/client'
 const Navbar = ({ currentPage = "/" }) => {
   const { userId } = useStore($authStore)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Initialize theme from localStorage
@@ -18,32 +16,6 @@ const Navbar = ({ currentPage = "/" }) => {
     setIsDarkMode(shouldUseDark);
     document.documentElement.classList.toggle('dark', shouldUseDark);
   }, []);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        setIsLoginModalOpen(false);
-        setIsSignupModalOpen(false);
-      }
-    };
-
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, []);
-
-  // Handle body overflow for modals
-  useEffect(() => {
-    if (isLoginModalOpen || isSignupModalOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [isLoginModalOpen, isSignupModalOpen]);
 
   const toggleTheme = () => {
     const newIsDark = !isDarkMode;
@@ -59,20 +31,8 @@ const Navbar = ({ currentPage = "/" }) => {
     setIsMobileMenuOpen(false);
   };
 
-  const showLoginModal = () => {
-    setIsLoginModalOpen(true);
-    setIsSignupModalOpen(false);
-    closeMobileMenu();
-  };
-
-  const showSignupModal = () => {
-    setIsSignupModalOpen(true);
-    setIsLoginModalOpen(false);
-    closeMobileMenu();
-  };
-
   const handleAuthRedirect = (type) => {
-    const isDev = process.env.NODE_ENV === 'development';
+    const isDev = import.meta.env.DEV;
     const baseUrl = isDev ? 'http://app.localhost:4321' : 'https://app.everspass.com';
     window.location.href = `${baseUrl}/${type}`;
   };
