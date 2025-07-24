@@ -69,6 +69,9 @@ import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/comp
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       syncThemeIcon();
+
+      // Dispatch custom event to notify React components
+      window.dispatchEvent(new Event('themeChange'));
     };
 
     themeToggleButton.addEventListener('click', toggleTheme);

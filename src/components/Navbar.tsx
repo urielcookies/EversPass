@@ -50,6 +50,9 @@ const Navbar = ({ currentPage = "/" }) => {
     setIsDarkMode(newIsDark);
     document.documentElement.classList.toggle('dark', newIsDark);
     localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
+
+      // Dispatch custom event to notify React components
+      window.dispatchEvent(new Event('themeChange'));
   };
 
   const closeMobileMenu = () => {
