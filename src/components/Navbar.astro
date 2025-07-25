@@ -1,0 +1,71 @@
+---
+// src/components/Navbar.astro
+import NavbarInteractive from './NavbarInteractive';
+const { currentPage = "/" } = Astro.props;
+
+// CSS classes (now defined server-side)
+const linkClasses = "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300";
+const activeLinkClasses = "bg-slate-200 dark:bg-slate-700 text-sky-600 dark:text-sky-400";
+const inactiveLinkClasses = "text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100";
+
+const getLinkClassName = (page: string) => {
+  return `${linkClasses} ${currentPage === page ? activeLinkClasses : inactiveLinkClasses}`;
+};
+---
+
+<nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 relative">
+
+      <!-- LEFT GROUP: Navigation Links (Desktop) + Theme Toggle (Mobile) -->
+      <div class="flex items-center flex-shrink-0">
+        <!-- Theme Toggle for Mobile/Tablet (React component) -->
+        <NavbarInteractive client:only="react" type="theme-toggle" isMobile={true} />
+        
+        <!-- Desktop Navigation Links (Static Astro) -->
+        <div class="hidden lg:flex items-center">
+          <a href="/" class={`${getLinkClassName("/")} mr-4`}>Home</a>
+          <!-- Sessions link - conditionally rendered by React component -->
+          <NavbarInteractive client:only="react" type="sessions-link" currentPage={currentPage} linkClasses={linkClasses} activeLinkClasses={activeLinkClasses} inactiveLinkClasses={inactiveLinkClasses} />
+          <a href="/pricing" class={`${getLinkClassName("/pricing")} ml-4`}>Pricing</a>
+        </div>
+      </div>
+
+      <!-- CENTER GROUP: EversPass Logo/Title (Static) -->
+      <!-- Desktop Centered -->
+      <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+        <span class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto">EversPass</span>
+      </div>
+      <!-- Mobile/Medium Centered -->
+      <div class="flex lg:hidden flex-grow justify-center">
+        <span class="text-2xl font-bold text-slate-800 dark:text-white">EversPass</span>
+      </div>
+
+      <!-- RIGHT GROUP: Auth Buttons, Theme Toggle, Mobile Menu Toggle -->
+      <div class="flex items-center flex-shrink-0">
+        <!-- Auth buttons for desktop (React component) -->
+        <div class="hidden lg:flex items-center space-x-3">
+          <NavbarInteractive client:only="react" type="auth-buttons" />
+        </div>
+
+        <!-- Theme Toggle for Desktop (React component) -->
+        <NavbarInteractive client:only="react" type="theme-toggle" isMobile={false} />
+        
+        <!-- Mobile Menu Toggle (React component) -->
+        <div class="flex lg:hidden ml-4">
+          <NavbarInteractive client:only="react" type="mobile-menu-toggle" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE MENU DROPDOWN (React component) -->
+  <NavbarInteractive 
+    client:only="react" 
+    type="mobile-menu" 
+    currentPage={currentPage}
+    linkClasses={linkClasses}
+    activeLinkClasses={activeLinkClasses}
+    inactiveLinkClasses={inactiveLinkClasses}
+  />
+</nav>
