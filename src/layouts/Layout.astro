@@ -9,6 +9,7 @@ import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/comp
 import { ClerkProvider } from '@clerk/clerk-react';
 
 const { title, currentPage, isApp } = Astro.props;
+const isHomePage = Astro.url.pathname === '/';
 ---
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -38,19 +39,24 @@ const { title, currentPage, isApp } = Astro.props;
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
-      {isApp
-        ? <AuthNavbar currentPage={currentPage} />
-        : <Navbar currentPage={currentPage} />
-      }
+    {isApp
+      ? <AuthNavbar currentPage={currentPage} />
+      : <Navbar currentPage={currentPage} />
+    }
 
-    <main class="pt-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {isApp
-          ? <App client:only="react" />
-          : <slot />
-        }
-      </div>
-    </main>
+    {/* Conditional container - full width for home page, contained for others */}
+    {isHomePage
+    ? <slot />
+    : (
+        <main class="pt-16">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {isApp
+              ? <App client:only="react" />
+              : <slot />
+            }
+          </div>
+        </main>
+    )}
 
   </body>
   <!-- <script type="module" src="/lib/toast.ts"></script> -->
