@@ -79,6 +79,11 @@ const NavbarInteractive = ({
     return `${linkClasses} ${currentPage === page ? activeLinkClasses : inactiveLinkClasses}`;
   };
 
+  // Helper function to close mobile menu when link is clicked
+  const handleLinkClick = () => {
+    setSharedMobileMenuState(false);
+  };
+
   // Theme Toggle Component
   if (type === 'theme-toggle') {
     return (
@@ -174,9 +179,9 @@ const NavbarInteractive = ({
           : 'opacity-0 scale-95 pointer-events-none'
       }`}>
         <div className="space-y-1">
-          <a href="/" className={`block ${getLinkClassName("/")}`}>Home</a>
-          {!userId && <a href="/sessions" className={`block ${getLinkClassName("/sessions")}`}>Sessions</a>}
-          <a href="/pricing" className={`block ${getLinkClassName("/pricing")}`}>Pricing</a>
+          <a href="/" className={`block ${getLinkClassName("/")}`} onClick={handleLinkClick}>Home</a>
+          {!userId && <a href="/sessions" className={`block ${getLinkClassName("/sessions")}`} onClick={handleLinkClick}>Sessions</a>}
+          <a href="/pricing" className={`block ${getLinkClassName("/pricing")}`} onClick={handleLinkClick}>Pricing</a>
           <hr className="border-t border-slate-200 dark:border-slate-700 my-2" />
           
           {/* Auth buttons for mobile dropdown */}
@@ -184,19 +189,28 @@ const NavbarInteractive = ({
             {userId ? (
               <button 
                 className={`block w-full text-left ${authButtonClasses} ${loginButtonClasses}`}
-                onClick={() => handleAuthRedirect('/')}>
+                onClick={() => {
+                  handleLinkClick();
+                  handleAuthRedirect('/');
+                }}>
                 Go to App
               </button>
             ) : (
               <>
                 <button 
                   className={`block w-full text-left ${authButtonClasses} ${loginButtonClasses}`}
-                  onClick={() => handleAuthRedirect('/signin')}>
+                  onClick={() => {
+                    handleLinkClick();
+                    handleAuthRedirect('/signin');
+                  }}>
                   Login
                 </button>
                 <button 
                   className={`block w-full text-left ${authButtonClasses} ${signupButtonClasses}`}
-                  onClick={() => handleAuthRedirect('/signup')}>
+                  onClick={() => {
+                    handleLinkClick();
+                    handleAuthRedirect('/signup');
+                  }}>
                   Sign Up
                 </button>
               </>
