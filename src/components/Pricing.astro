@@ -1,126 +1,397 @@
-    <main class="max-w-7xl mx-auto py-12 sm:py-16 lg:py-20">
-        <!-- Header Section -->
-        <section class="text-center mb-16">
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                Simple, Transparent Pricing
-            </h1>
-            <p class="mt-6 max-w-2xl mx-auto text-lg text-slate-600 dark:text-slate-400">
-                Sharing your event memories shouldn't be complicated, and neither should our pricing. EversPass offers straightforward options designed to fit your needs, whether you're hosting a small get-together or a large celebration.
-            </p>
-        </section>
+<!-- Hero Section - Full Viewport Height -->
+<section class="relative overflow-hidden" style="height: calc(100vh - 4rem);">
+  <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-slate-900 dark:via-slate-900/80 dark:to-slate-900/50"></div>
+  <div class="absolute inset-0">
+    <div class="absolute top-20 right-10 w-72 h-72 bg-sky-200/20 dark:bg-sky-400/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute bottom-20 left-10 w-96 h-96 bg-purple-200/20 dark:bg-purple-400/10 rounded-full blur-3xl animate-pulse"></div>
+  </div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col justify-center items-center h-full">
+    <div class="inline-flex items-center px-4 py-2 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300 text-sm font-medium mb-8">
+      <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clip-rule="evenodd"></path>
+      </svg>
+      Free plan available • No credit card required
+    </div>
+    
+    <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+      Simple, Transparent 
+      <span class="bg-gradient-to-r from-sky-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">Pricing</span>
+    </h1>
+    <p class="mt-8 max-w-3xl mx-auto text-xl text-slate-600 dark:text-slate-400 leading-relaxed">
+      Sharing your event memories shouldn't be complicated, and neither should our pricing. 
+      <span class="font-semibold text-slate-800 dark:text-slate-200">Choose the plan that fits your vibe.</span>
+    </p>
+    
+    <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+      <a href="#pricing" class="group bg-gradient-to-r from-sky-600 to-blue-600 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+        <span class="flex items-center justify-center gap-2">
+          View Plans
+          <svg class="w-5 h-5 group-hover:translate-y-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
 
-        <!-- How It Works Section -->
-        <section class="text-center bg-slate-50 dark:bg-slate-900/50 rounded-xl p-8 shadow-sm mb-16">
-            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                How it Works
-            </h2>
-            <p class="mt-4 max-w-3xl mx-auto text-lg text-slate-600 dark:text-slate-400">
-                Every EversPass session gives you a private, temporary photo-sharing page accessible via a unique link and QR code. Guests can view and download photos for 24 hours before the session automatically expires, ensuring privacy and convenience.
-            </p>
-        </section>
+<!-- How It Works Section -->
+<section class="py-16 sm:py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center bg-gradient-to-br from-white to-slate-50 dark:from-slate-900/50 dark:to-slate-900/80 rounded-2xl p-8 sm:p-12 shadow-lg border border-slate-200/50 dark:border-slate-800/50">
+      <div class="flex justify-center mb-6">
+        <div class="p-4 bg-sky-100 dark:bg-sky-900/50 rounded-2xl">
+          <svg class="w-12 h-12 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+        How EversPass Works
+      </h2>
+      <p class="max-w-4xl mx-auto text-lg text-slate-600 dark:text-slate-400 leading-relaxed">
+        Every EversPass session gives you a <span class="font-semibold text-sky-600 dark:text-sky-400">private, temporary photo-sharing page</span> accessible via a unique link and QR code. Guests can view and download photos for up to 7 days before the session automatically expires, ensuring <span class="font-semibold text-emerald-600 dark:text-emerald-400">total privacy</span> and convenience.
+      </p>
+      
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-sky-500 text-white rounded-xl font-bold text-lg mb-4">1</div>
+          <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Upload Photos</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Drag & drop your event photos</p>
+        </div>
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-purple-500 text-white rounded-xl font-bold text-lg mb-4">2</div>
+          <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Share QR Code</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Guests scan to access instantly</p>
+        </div>
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-12 h-12 bg-emerald-500 text-white rounded-xl font-bold text-lg mb-4">3</div>
+          <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Auto-Delete</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400">Complete privacy guaranteed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <!-- Pricing Plans Section -->
-        <section class="mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-center text-slate-900 dark:text-white mb-12">
-                Choose Your Plan
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 justify-center">
-                <!-- Free Tier Plan -->
-                <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-8 flex flex-col justify-between transform hover:scale-105 transition-transform duration-300">
-                    <div>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Free</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-6">Perfect for personal use or trying out EversPass with small events.</p>
-                        <div class="flex items-baseline mb-8">
-                            <span class="text-5xl font-extrabold text-sky-600 dark:text-sky-400">$0</span>
-                            <span class="ml-2 text-xl font-semibold text-slate-600 dark:text-slate-400">/ month</span>
-                        </div>
-                        <ul class="space-y-4 text-slate-600 dark:text-slate-400">
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Photos only (no video support)
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                1GB total storage across all sessions
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Max 3 active sessions
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Standard 24-hour session expiration
-                            </li>
-                        </ul>
-                    </div>
-                    <!-- <a href="/signup?plan=free" class="mt-10 block w-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors duration-300 text-center">
-                        Get Started for Free
-                    </a> -->
-                </div>
-
-                <!-- Standard Monthly Plan -->
-                <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-lg border border-sky-400 dark:border-sky-600 p-8 flex flex-col justify-between relative ring-2 ring-sky-500 transform hover:scale-105 transition-transform duration-300">
-                    <div>
-                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Standard Monthly</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-6">Ideal for regular event hosts and small businesses.</p>
-                        <div class="flex items-baseline mb-8">
-                            <span class="text-5xl font-extrabold text-sky-600 dark:text-sky-400">$9.99</span>
-                            <span class="ml-2 text-xl font-semibold text-slate-600 dark:text-slate-400">/ month</span>
-                        </div>
-                        <ul class="space-y-4 text-slate-600 dark:text-slate-400">
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Photos and Videos
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                100GB total storage across all sessions
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Unlimited sessions
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Extend session expiration up to 7 days
-                            </li>
-                            <li class="flex items-start">
-                                <svg class="h-5 w-5 text-green-500 mr-2 flex-shrink-0 check-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Admin dashboard for analytics
-                            </li>
-                        </ul>
-                        <p class="mt-4 text-sm text-slate-500 dark:text-slate-400">Subscription requires creating an EversPass account.</p>
-                    </div>
-                    <!-- Disabled button with "Coming Soon" text -->
-                    <button class="mt-10 block w-full bg-sky-400 text-white font-semibold py-3 px-6 rounded-lg shadow-lg cursor-not-allowed opacity-70">
-                        Coming Soon
-                    </button>
-                </div>
+<!-- Pricing Plans Section -->
+<section id="pricing" class="py-20 sm:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+        Choose Your Plan
+      </h2>
+      <p class="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+        From intimate gatherings to epic celebrations, we've got you covered.
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+      <!-- Free Plan -->
+      <div class="group bg-white dark:bg-slate-900/80 rounded-2xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-8 sm:p-10 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex flex-col">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-slate-400 to-slate-500"></div>
+        
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Free Starter</h3>
+          <div class="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-medium rounded-full">
+            Personal
+          </div>
+        </div>
+        
+        <p class="text-slate-600 dark:text-slate-400 mb-8 text-lg">Perfect for trying out EversPass with small gatherings and personal events.</p>
+        
+        <div class="flex items-baseline mb-10">
+          <span class="text-5xl sm:text-6xl font-extrabold text-slate-900 dark:text-white">$0</span>
+          <span class="ml-3 text-xl font-semibold text-slate-600 dark:text-slate-400">forever</span>
+        </div>
+        
+        <ul class="space-y-4 mb-10 flex-grow">
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">Photos Only</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">High-quality photo sharing (no videos)</p>
             </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section>
-            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-center text-slate-900 dark:text-white mb-12">
-                Frequently Asked Questions
-            </h2>
-            <div class="max-w-3xl mx-auto space-y-6">
-                <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-6 transform hover:scale-[1.02] transition-transform duration-300">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">What happens after 24 hours?</h3>
-                    <p class="text-slate-600 dark:text-slate-400">After 24 hours, your photo session and all uploaded photos are permanently deleted from our servers. This ensures your privacy and keeps things clutter-free.</p>
-                </div>
-                <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-6 transform hover:scale-[1.02] transition-transform duration-300">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Do my guests need an account to view or download photos?</h3>
-                    <p class="text-slate-600 dark:text-slate-400">Absolutely not! That's one of EversPass's best features. Guests simply scan your QR code or click the link to instantly view and download photos directly to their device.</p>
-                </div>
-                <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-6 transform hover:scale-[1.02] transition-transform duration-300">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Can I extend a session beyond 24 hours?</h3>
-                    <p class="text-slate-600 dark:text-slate-400">The Standard plan allows you to extend session expiration up to 7 days. For the Free plan, all sessions are fixed at 24 hours to maintain our commitment to privacy and simplicity.</p>
-                </div>
-                <div class="bg-white dark:bg-slate-900/50 rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-6 transform hover:scale-[1.02] transition-transform duration-300">
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">What payment methods do you accept?</h3>
-                    <p class="text-slate-600 dark:text-slate-400">We accept all major credit cards, including Visa, MasterCard, American Express, and Discover.</p>
-                </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">1GB Storage</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">~300 high-res photos per session</p>
             </div>
-        </section>
-    </main>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">3 Active Sessions</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Perfect for occasional events</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">24-Hour Expiration</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Automatic privacy protection</p>
+            </div>
+          </li>
+        </ul>
+        
+        <a href="/sessions" class="block w-full bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-bold py-4 px-6 rounded-xl text-center hover:bg-slate-300 dark:hover:bg-slate-700 transition-all duration-300 transform hover:scale-105 mt-auto">
+          Start Free Now
+        </a>
+      </div>
+
+      <!-- Standard Plan -->
+      <div class="group bg-white dark:bg-slate-900/80 rounded-2xl shadow-xl border-2 border-sky-400 dark:border-sky-500 p-8 sm:p-10 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 relative overflow-hidden flex flex-col">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-sky-500 to-blue-600"></div>
+        
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Standard Monthly</h3>
+          <div class="px-3 py-1 bg-gradient-to-r from-sky-500 to-blue-600 text-white text-sm font-medium rounded-full">
+            Recommended
+          </div>
+        </div>
+        
+        <p class="text-slate-600 dark:text-slate-400 mb-8 text-lg">Ideal for regular event hosts, small businesses, and anyone who wants the full EversPass experience.</p>
+        
+        <div class="flex items-baseline mb-10">
+          <span class="text-5xl sm:text-6xl font-extrabold text-sky-600 dark:text-sky-400">$9.99</span>
+          <span class="ml-3 text-xl font-semibold text-slate-600 dark:text-slate-400">/ month</span>
+        </div>
+        
+        <ul class="space-y-4 mb-10 flex-grow">
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">Photos + Videos</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Full media support with HD quality</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">100GB Storage</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">~10,000 photos or 100+ videos</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">Unlimited Sessions</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Host as many events as you want</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">Up to 7-Day Expiration</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Flexible session duration</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">Analytics Dashboard</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Track views, downloads & engagement</p>
+            </div>
+          </li>
+          <li class="flex items-start">
+            <svg class="h-6 w-6 text-emerald-500 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white">Priority Support</span>
+              <p class="text-sm text-slate-600 dark:text-slate-400">Fast response when you need help</p>
+            </div>
+          </li>
+        </ul>
+        
+        <div class="mt-auto">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Requires creating an EversPass account. Cancel anytime.</p>
+          
+          <button class="block w-full bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-4 px-6 rounded-xl text-center hover:from-sky-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-not-allowed opacity-70">
+            Coming Soon
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Enterprise CTA -->
+    <div class="mt-16 text-center">
+      <div class="inline-block bg-gradient-to-r from-purple-500 to-pink-500 p-1 rounded-2xl">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-8">
+          <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-4">Need Something Bigger?</h3>
+          <p class="text-slate-600 dark:text-slate-400 mb-6">Hosting a mega-event? Wedding with 500+ guests? We've got enterprise solutions.</p>
+          <a href="mailto:enterprise@everspass.com" class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300">
+            Contact Enterprise Sales
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-20 sm:py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+        Frequently Asked Questions
+      </h2>
+      <p class="text-xl text-slate-600 dark:text-slate-400">
+        Everything you need to know about EversPass pricing.
+      </p>
+    </div>
+    
+    <div class="max-w-4xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="group bg-white dark:bg-slate-900/80 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-sky-100 dark:bg-sky-900/50 rounded-lg">
+              <svg class="w-6 h-6 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">What happens after sessions expire?</h3>
+              <p class="text-slate-600 dark:text-slate-400">After expiration, your photos are permanently deleted from our servers. This ensures complete privacy and keeps things clutter-free. Make sure guests download what they want!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group bg-white dark:bg-slate-900/80 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg">
+              <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Do guests need accounts?</h3>
+              <p class="text-slate-600 dark:text-slate-400">Absolutely not! That's the magic of EversPass. Guests simply scan your QR code or click the link to instantly view and download photos. Zero friction, maximum convenience.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group bg-white dark:bg-slate-900/80 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+              <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Can I extend sessions?</h3>
+              <p class="text-slate-600 dark:text-slate-400">With the Standard plan, you can extend sessions up to 7 days. Free plan sessions are fixed at 24 hours to maintain our privacy-first approach.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group bg-white dark:bg-slate-900/80 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-pink-100 dark:bg-pink-900/50 rounded-lg">
+              <svg class="w-6 h-6 text-pink-600 dark:text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">What payment methods do you accept?</h3>
+              <p class="text-slate-600 dark:text-slate-400">We accept all major credit cards (Visa, MasterCard, Amex, Discover) and PayPal. All payments are processed securely through Stripe.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group bg-white dark:bg-slate-900/80 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-yellow-100 dark:bg-yellow-900/50 rounded-lg">
+              <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Is there a money-back guarantee?</h3>
+              <p class="text-slate-600 dark:text-slate-400">Yes! We offer a 30-day money-back guarantee. If you're not completely satisfied with EversPass, we'll refund your subscription, no questions asked.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="group bg-white dark:bg-slate-900/80 rounded-xl shadow-lg border border-slate-200/80 dark:border-slate-800/80 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="flex items-start gap-4">
+            <div class="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg">
+              <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Can I upgrade or downgrade anytime?</h3>
+              <p class="text-slate-600 dark:text-slate-400">Absolutely! You can upgrade, downgrade, or cancel your subscription at any time. Changes take effect at your next billing cycle.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="relative py-20 sm:py-24 overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 dark:from-sky-600 dark:via-blue-600 dark:to-purple-700"></div>
+  <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.1&quot;%3E%3Ccircle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;2&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"></div>
+  
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div>
+      <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-6">
+        Ready to Simplify Your Event Sharing?
+      </h2>
+      <p class="max-w-3xl mx-auto text-xl text-blue-50 dark:text-blue-100 mb-10 leading-relaxed">
+        Join thousands of event hosts who've ditched the hassle of zip files and complicated galleries. 
+        <span class="font-semibold text-white">Start your first session today!</span>
+      </p>
+    </div>
+    
+    <div class="flex flex-col sm:flex-row justify-center gap-4">
+      <a href="/sessions" class="group inline-flex items-center gap-3 bg-white text-blue-600 font-bold py-4 px-10 rounded-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
+        <span class="text-lg">Start Free Session</span>
+        <svg class="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </a>
+      <a href="mailto:support@everspass.com" class="group inline-flex items-center gap-3 bg-white/20 backdrop-blur-sm text-white font-semibold py-4 px-8 rounded-xl hover:bg-white/30 transition-all duration-300 transform hover:scale-105 border border-white/30">
+        <span class="text-lg">Questions? Contact Us</span>
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+        </svg>
+      </a>
+    </div>
+    
+    <div class="mt-8">
+      <p class="text-blue-200 text-sm">
+        ✨ No credit card required for free plan • 🔒 30-day money back guarantee • ⚡ Cancel anytime
+      </p>
+    </div>
+  </div>
+</section>

@@ -10,6 +10,8 @@ import { ClerkProvider } from '@clerk/clerk-react';
 
 const { title, currentPage, isApp } = Astro.props;
 const isHomePage = Astro.url.pathname === '/';
+const isPricingPage = Astro.url.pathname === '/pricing';
+const isFullWidth = isHomePage || isPricingPage;
 ---
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -44,8 +46,8 @@ const isHomePage = Astro.url.pathname === '/';
       : <Navbar currentPage={currentPage} />
     }
 
-    {/* Conditional container - full width for home page, contained for others */}
-    {isHomePage
+    {/* Conditional container - full width for home and pricing pages */}
+    {isFullWidth
     ? <slot />
     : (
         <main class="pt-16">
