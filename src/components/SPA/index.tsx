@@ -68,7 +68,7 @@ const signInRoute = createRoute({
 
     return (
       <div className={`flex items-center justify-center ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-        <div className="w-full max-w-md p-8">
+        <div>
           <SignIn 
             appearance={{
               variables: {
@@ -137,7 +137,7 @@ const signUpRoute = createRoute({
 
     return (
       <div className={`flex items-center justify-center ${isDarkMode ? 'bg-slate-950' : 'bg-gray-50'}`}>
-        <div className="w-full max-w-md p-8">
+        <div>
           <SignUp 
             appearance={{
               variables: {
