@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 0s !important;
+} */
+
 @layer base {
   :root {
     --background: 0 0% 100%;
