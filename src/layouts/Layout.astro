@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar.astro';
 import { ClientRouter } from "astro:transitions";
 import App from '@/components/SPA';
 
-const { title, currentPage, isApp, isFullWidth } = Astro.props;
+const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -36,12 +36,12 @@ const { title, currentPage, isApp, isFullWidth } = Astro.props;
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
-    {isApp
+    {isAppSubdomain
       ? <AuthNavbar currentPage={currentPage} />
       : <Navbar currentPage={currentPage} />
     }
 
-    {isApp && (
+    {isAppSubdomain && (
       <main class="pt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <App client:only="react" />
@@ -49,11 +49,11 @@ const { title, currentPage, isApp, isFullWidth } = Astro.props;
       </main>
     )}
 
-    {!isApp && isFullWidth && (
+    {!isAppSubdomain && isFullWidth && (
       <slot />
     )}
 
-    {!isApp && !isFullWidth && (
+    {!isAppSubdomain && !isFullWidth && (
       <main class="pt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <slot />

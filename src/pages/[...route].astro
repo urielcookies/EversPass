@@ -3,18 +3,18 @@ import Layout from '@/layouts/Layout.astro';
 import App from '@/components/SPA';
 
 const url = Astro.url; // available in Astro 3+
-const isApp = url.hostname.startsWith('app.');
+const isAppSubdomain = url.hostname.startsWith('app.');
 // or: const isApp = url.hostname === 'app.localhost';
 
-if (!isApp) {
+if (!isAppSubdomain) {
   return new Response(null, {
     status: 404,
     statusText: "Not Found"
   });
 }
 
-console.log('isApp', isApp)
+console.log('isApp', isAppSubdomain)
 ---
-<Layout isApp={isApp}>
+<Layout isAppSubdomain={isAppSubdomain}>
   <App client:only="react" />
 </Layout>
