@@ -1,5 +1,5 @@
 // src/components/NavbarInteractive.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react'
 import { $authStore } from '@clerk/astro/client'
 
@@ -34,6 +34,7 @@ const NavbarInteractive = ({
   const { userId } = useStore($authStore);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(sharedMobileMenuState);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Subscribe to shared mobile menu state
   useEffect(() => {
@@ -49,6 +50,30 @@ const NavbarInteractive = ({
       }
     };
   }, []);
+
+  // Click outside handler for mobile menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (type === 'mobile-menu' && 
+          mobileMenuRef.current && 
+          !mobileMenuRef.current.contains(event.target as Node) &&
+          isMobileMenuOpen) {
+        
+        // Also check if the click was on the mobile menu toggle button
+        const toggleButton = document.querySelector('[data-mobile-menu-toggle]');
+        if (toggleButton && !toggleButton.contains(event.target as Node)) {
+          setSharedMobileMenuState(false);
+        }
+      }
+    };
+
+    if (type === 'mobile-menu' && isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [type, isMobileMenuOpen]);
 
   // Initialize theme from localStorage
   useEffect(() => {
@@ -140,6 +165,7 @@ const NavbarInteractive = ({
   if (type === 'mobile-menu-toggle') {
     return (
       <button
+        data-mobile-menu-toggle
         onClick={() => setSharedMobileMenuState(!isMobileMenuOpen)}
         className="inline-flex items-center justify-center p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none">
         <span className="sr-only">Open main menu</span>
@@ -173,11 +199,13 @@ const NavbarInteractive = ({
     const signupButtonClasses = "bg-sky-600 text-white hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600";
 
     return (
-      <div className={`absolute top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 p-4 lg:hidden transition-all duration-300 ease-in-out transform origin-top ${
-        isMobileMenuOpen 
-          ? 'opacity-100 scale-100 pointer-events-auto' 
-          : 'opacity-0 scale-95 pointer-events-none'
-      }`}>
+      <div 
+        ref={mobileMenuRef}
+        className={`absolute top-16 left-0 right-0 z-40 bg-white dark:bg-slate-900 p-4 lg:hidden transition-all duration-300 ease-in-out transform origin-top ${
+          isMobileMenuOpen 
+            ? 'opacity-100 scale-100 pointer-events-auto' 
+            : 'opacity-0 scale-95 pointer-events-none'
+        }`}>
         <div className="space-y-1">
           <a href="/" className={`block ${getLinkClassName("/")}`} onClick={handleLinkClick}>Home</a>
           {!userId && <a href="/sessions" className={`block ${getLinkClassName("/sessions")}`} onClick={handleLinkClick}>Sessions</a>}
