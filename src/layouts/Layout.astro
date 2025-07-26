@@ -47,7 +47,7 @@ const isFullWidth = isHomePage || isPricingPage;
     }
 
     {/* Conditional container - full width for home and pricing pages */}
-    {isFullWidth
+    {!isApp && isFullWidth
     ? <slot />
     : (
         <main class="pt-16">
