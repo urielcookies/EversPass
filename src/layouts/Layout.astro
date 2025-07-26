@@ -5,8 +5,6 @@ import AuthNavbar from '@/components/AuthNavbar.astro';
 import Navbar from '@/components/Navbar.astro';
 import { ClientRouter } from "astro:transitions";
 import App from '@/components/SPA';
-import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/astro/components'
-import { ClerkProvider } from '@clerk/clerk-react';
 
 const { title, currentPage, isApp, isFullWidth } = Astro.props;
 ---
@@ -43,15 +41,22 @@ const { title, currentPage, isApp, isFullWidth } = Astro.props;
       : <Navbar currentPage={currentPage} />
     }
 
-    {/* Simplified and more explicit layout logic */}
-    {isFullWidth ? (
-      // <!-- Full width pages -->
-      <slot />
-    ) : (
-      // <!-- Regular pages with container -->
+    {isApp && (
       <main class="pt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {isApp ? <App client:only="react" /> : <slot />}
+          <App client:only="react" />
+        </div>
+      </main>
+    )}
+
+    {!isApp && isFullWidth && (
+      <slot />
+    )}
+
+    {!isApp && !isFullWidth && (
+      <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <slot />
         </div>
       </main>
     )}
