@@ -46,18 +46,21 @@ const isFullWidth = isHomePage || isPricingPage;
       : <Navbar currentPage={currentPage} />
     }
 
-    {/* Conditional container - full width for home and pricing pages */}
-    {!isApp && isFullWidth
-    ? <slot />
-    : (
-        <main class="pt-16">
-          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {isApp
-              ? <App client:only="react" />
-              : <slot />
-            }
-          </div>
-        </main>
+    {/* Fixed conditional container logic */}
+    {isApp ? (
+      <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <App client:only="react" />
+        </div>
+      </main>
+    ) : isFullWidth ? (
+      <slot />
+    ) : (
+      <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <slot />
+        </div>
+      </main>
     )}
 
   </body>
