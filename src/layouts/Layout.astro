@@ -47,7 +47,7 @@ const isFullWidth = isHomePage || isPricingPage;
     }
 
     {/* Fixed conditional container logic */}
-    {isFullWidth
+    {!isApp && isFullWidth
       ? <slot />
       : (
         <main class="pt-16">
@@ -55,7 +55,17 @@ const isFullWidth = isHomePage || isPricingPage;
             <slot />
           </div>
         </main>
-      )}
+      )
+    }
+
+    {isApp && (
+      <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <App client:only="react" />
+        </div>
+      </main>
+      )
+    }
     <!-- {isApp ? (
       <main class="pt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
