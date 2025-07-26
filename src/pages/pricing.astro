@@ -1,8 +1,8 @@
 ---
-export const prerender = false;
+export const prerender = true;
 import PricingComponent from '../components/Pricing.astro';
 import Layout from '../layouts/Layout.astro';
 ---
-<Layout title="Pricing" currentPage="/pricing">
+<Layout title="Pricing" currentPage="/pricing" isFullWidth={true}>
 	<PricingComponent />
 </Layout>

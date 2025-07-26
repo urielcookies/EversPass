@@ -9,6 +9,6 @@ const url = Astro.url;
 const isApp = url.hostname.startsWith('app.');
 ---
 
-<Layout isApp={isApp}>
+<Layout isApp={isApp} isFullWidth={true}>
   <HomeContent />
 </Layout>
