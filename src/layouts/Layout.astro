@@ -3,7 +3,6 @@
 import '@/styles/global.css'
 import Navbar from '@/components/Navbar.astro';
 import { ClientRouter } from "astro:transitions";
-import App from '@/components/SPA';
 
 const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 ---
@@ -34,25 +33,16 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 
     <Navbar currentPage={currentPage} isAppSubdomain={isAppSubdomain} />
 
-    {isAppSubdomain && (
-      <main class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <App client:only="react" />
-        </div>
-      </main>
-    )}
-
-    {!isAppSubdomain && isFullWidth && (
-      <slot />
-    )}
-
-    {!isAppSubdomain && !isFullWidth && (
-      <main class="pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <slot />
-        </div>
-      </main>
-    )}
+    {isFullWidth
+      ? <slot />
+      : (
+          <main class="pt-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <slot />
+            </div>
+          </main>
+      )
+    }
 
   </body>
   

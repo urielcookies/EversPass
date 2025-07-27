@@ -28,23 +28,16 @@ const getLinkClassName = (page: string) => {
             <NavbarInteractive client:only="react" type="theme-toggle" isMobile={true} />
             
             <!-- Desktop Navigation Links -->
-            <div class="hidden lg:flex items-center">
-              <a href="/" class={`${getLinkClassName("/")} mr-4`}>Home</a>
-              <NavbarInteractive 
-                client:only="react" 
-                type="sessions-link" 
-                currentPage={currentPage} 
-                linkClasses={linkClasses} 
-                activeLinkClasses={activeLinkClasses} 
-                inactiveLinkClasses={inactiveLinkClasses} 
-              />
-              <a href="/pricing" class={`${getLinkClassName("/pricing")} ml-4`}>Pricing</a>
+            <div class="hidden lg:flex items-center space-x-4">
+              <a href="/" class={getLinkClassName("/")}>Home</a>
+              <a href="/sessions" class={getLinkClassName("/sessions")}>Sessions</a>
+              <a href="/pricing" class={getLinkClassName("/pricing")}>Pricing</a>
             </div>
           </>
         )}
         
         {isAppSubdomain && (
-          <!-- Theme Toggle for App Subdomain -->
+          // <!-- Theme Toggle for App Subdomain -->
           <button id="theme-toggle" class="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-50 dark:focus:ring-offset-slate-900 focus:ring-sky-500">
             <span class="sr-only">Toggle theme</span>
             <svg id="theme-toggle-light-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -86,16 +79,16 @@ const getLinkClassName = (page: string) => {
       <!-- RIGHT GROUP -->
       <div class="flex items-center flex-shrink-0">
         {isAppSubdomain ? (
-          <!-- User Button for App Subdomain -->
+          // <!-- User Button for App Subdomain -->
           <UserButton afterSignOutUrl={SITE_URL}/>
         ) : (
           <>
-            <!-- Auth buttons for desktop -->
+            {/* <!-- Auth buttons for desktop --> */}
             <div class="hidden lg:flex items-center space-x-3">
               <NavbarInteractive client:only="react" type="auth-buttons" />
             </div>
 
-            <!-- Theme Toggle for Desktop -->
+            {/* <!-- Theme Toggle for Desktop --> */}
             <NavbarInteractive client:only="react" type="theme-toggle" isMobile={false} />
             
             <!-- Mobile Menu Toggle -->

@@ -4,11 +4,21 @@ export const prerender = false; // server mode only
 
 import Layout from '@/layouts/Layout.astro';
 import HomeContent from '@/components/HomeContent.astro';
+import App from '@/components/SPA';
 
 const url = Astro.url;
 const isAppSubdomain = url.hostname.startsWith('app.');
 ---
 
 <Layout isAppSubdomain={isAppSubdomain} isFullWidth={true}>
-  <HomeContent />
+  {isAppSubdomain
+    ? (
+        <main class="pt-16">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <App client:only="react" />
+          </div>
+        </main>
+      )
+    : <HomeContent />
+  }
 </Layout>
