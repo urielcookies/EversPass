@@ -15,6 +15,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { isEmpty, isEqual } from 'lodash-es';
 import { setDataParam, setEncryptedParam } from '@/lib/encryptRole';
+import { SITE_URL } from '@/lib/constants';
 
 interface SharePageModalProps {
   isOpen: boolean;
@@ -40,7 +41,8 @@ const SharePageModal = ({ isOpen, onClose, sessionId, roleId, deviceId }: ShareP
       });
 
       // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`;
-      const shareUrl = `${window.location.origin}/sessions/photos?data=${encryptedValue}`;
+      // const shareUrl = `${window.location.origin}/sessions/photos?data=${encryptedValue}`;
+      const shareUrl = `${SITE_URL}/sessions/photos?data=${encryptedValue}`;
       setShareUrl(shareUrl);
     }
   }, [isOpen, sessionId, accessLevel]);
