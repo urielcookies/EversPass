@@ -1,5 +1,8 @@
+import SessionContent from '@/components/SessionContent/SessionContent';
+
+// add props for fetching auth status payment and extend limits
 const Home = () => {
-  return <div>Home Page</div>;
+  return <SessionContent />
 };
 
 export default Home;
