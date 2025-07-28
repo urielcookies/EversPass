@@ -7,6 +7,7 @@ import { includes } from 'lodash-es';
 
 // Import page components
 import Home from '@/components/SPA/pages/Home';
+import Photos from '@/components/SPA/pages/Photos';
 import Dashboard from '@/components/SPA/pages/Dashboard';
 import Settings from '@/components/SPA/pages/Settings';
 import SignIn from '@/components/SPA/pages/SignIn';
@@ -37,6 +38,12 @@ const homeRoute = createRoute({
   component: Home,
 });
 
+const photoRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/sessions/photos/$sessionId',
+  component: Photos,
+});
+
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/dashboard',
@@ -63,6 +70,7 @@ const signUpRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   homeRoute,
+  photoRoute,
   dashboardRoute,
   settingsRoute,
   signInRoute,

@@ -12,8 +12,14 @@ const Home = () => {
     return <div>Loading...</div>;
   }
   
-  // return <SessionContent user={user} />;
-  return <div>SessionContent</div>;
+  if (user === null) {
+    return <div>No User</div>;
+  }
+  const userData = {
+    id: user.id
+  };
+
+  return <SessionContent user={userData} />;
 };
 
 export default Home;

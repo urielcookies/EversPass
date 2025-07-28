@@ -7,10 +7,14 @@ export const onRequest = defineMiddleware((context, next) => {
   const pathname = url.pathname;
   const params = url.search;
   const SPA_PAGES = ['/', '/dashboard', '/settings', '/signin', '/signup'];
+  const SPA_PATHS = ['/sessions/photos']; // Base paths for dynamic routes
   
-  // Determine if this is app subdomain (you'll need to implement this logic)
   const isAppSubdomain = url.hostname.includes('app.');
-  if (isAppSubdomain && !SPA_PAGES.includes(pathname)) {
+  
+  // Check exact matches OR paths that start with SPA_PATHS
+  const isSPARoute = SPA_PAGES.includes(pathname) || SPA_PATHS.some(path => pathname.startsWith(path));
+  
+  if (isAppSubdomain && !isSPARoute) {
     return context.redirect(`${SITE_URL}${pathname}${params}`);
   }
 

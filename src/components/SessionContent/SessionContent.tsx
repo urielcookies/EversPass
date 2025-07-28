@@ -4,18 +4,23 @@ import { useStore } from '@nanostores/react';
 import { $sessions } from '@/stores/sessionsStore';
 import useRealtimeSessions from '@/hooks/useRealtimeSessions';
 import usePurgeExpiredLocalSessionData from '@/hooks/usePurgeExpiredLocalSessionData';
+import type { User } from '@/types/user';
 
 
-const SessionContent = () => {
+interface SessionContentProps {
+  user: User | null;
+}
+
+const SessionContent = ({ user = null }: SessionContentProps) => {
   const { sessions } = useStore($sessions);
   const {
     deviceId,
     isLoading,
     hasCreatedSessionBefore,
     setHasCreatedSessionTrueHandler
-  } = useRealtimeSessions();
+  } = useRealtimeSessions(user);
 
-  usePurgeExpiredLocalSessionData();
+  usePurgeExpiredLocalSessionData(!!user);
 
   if (isLoading) {
     return (
@@ -25,8 +30,8 @@ const SessionContent = () => {
     );
   }
 
-  return hasCreatedSessionBefore
-    ? <LoadSession deviceId={deviceId} sessions={sessions} />
+  return user || hasCreatedSessionBefore
+    ? <LoadSession user={user} deviceId={deviceId} sessions={sessions} />
     : <CreateSession
       deviceId={deviceId}
       setHasCreatedSessionTrueHandler={setHasCreatedSessionTrueHandler} />;

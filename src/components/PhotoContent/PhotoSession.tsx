@@ -36,7 +36,9 @@ import SharePageModal from './SharePageModal';
 import useSessionSubscription from '@/hooks/usePhotoSessionSubscription';
 import { navigate } from 'astro:transitions/client';
 import { encrypString, getDataParam, updateLocalSessionData } from '@/lib/encryptRole';
-import { storageLimitGB } from '@/lib/constants';
+import { APP_SITE_URL, storageLimitGB } from '@/lib/constants';
+import type { User } from '@/types/user';
+
 
 interface PhotoSessionContentProps {
   session: SessionRecord;
@@ -46,11 +48,11 @@ interface PhotoSessionContentProps {
   sessionSize: number;
   allSessionsSize: number;
   roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
+  user: User | null;
 }
 
 const PhotoSessionContent = (props: PhotoSessionContentProps) => {
-  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize, allSessionsSize, roleId } = props;
-
+  const {session, photoSession, isLoadingMore, totalPhotos, sessionSize, allSessionsSize, roleId, user } = props;
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [oneView, setOneView] = useState(false);
   const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
@@ -179,12 +181,15 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   };
 
   const navigateToSessionsHandler = () => {
-    const jsonString = JSON.stringify({
-      deviceId: session.device_id,
-    });
+    if (user) window.location.href = `${APP_SITE_URL}/`;
+    else {
+      const jsonString = JSON.stringify({
+        deviceId: session.device_id,
+      });
 
-    const encrypted = encodeURIComponent(encrypString(jsonString));
-    navigate(`/sessions?data=${encrypted}`);
+      const encrypted = encodeURIComponent(encrypString(jsonString));
+      navigate(`/sessions?data=${encrypted}`);
+    }
   };
 
   const sessionSizeInGB = allSessionsSize / (1024 ** 3);

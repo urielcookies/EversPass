@@ -23,13 +23,16 @@ import { maxSessions, storageLimitGB } from "@/lib/constants";
 import InvitedSessionsGrid from "./InvitedSessions";
 import NewSessionDialog from "./NewSessionDialog";
 import { navigate } from "astro:transitions/client";
+import type { User } from '@/types/user';
+
 
 interface LoadSessionContentProps {
   deviceId: string;
   sessions: SessionRecord[];
+  user: User | null;
 }
 
-const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => {
+const LoadSessionContent = ({ deviceId, sessions, user }: LoadSessionContentProps) => {
   const [showLimitAlert, setShowLimitAlert] = useState(false);
   const [isCreationLoading, setIsCreationLoading] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -40,7 +43,7 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
   const [key, setKey] = useState(false);
 
   const handleOpenCreateSessionDialog = () => {
-    if (sessions.length >= 3) {
+    if (sessions.length >= maxSessions) {
       setShowLimitAlert(true);
     } else {
       setIsDialogOpen(true);
@@ -72,14 +75,6 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
     try {
       setIsSessionDeleting(true);
       await deleteSessionById(sessionToDelete.id);
-      // TEMP // LATER REMOVE
-      // if (sessions.length === 1) {
-      //   const localStorageData = getDataParam('useLocalStorage');
-      //   if (!localStorageData) return;
-      //   const { deviceId, ...rest } = localStorageData;
-      //   setDataParam(rest, 'useLocalStorage');
-      // }
-      // console.log(sessions);
     } catch (error) {
       console.error("Delete failed:", error);
     } finally {
@@ -104,15 +99,16 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
       ? Math.max(0, Math.min(100, (allSessionsSizeInGB / storageLimitGB) * 100))
       : 0;
 
-  const localStorageData = getDataParam('useLocalStorage');
+  // Only get localStorage data if user is not logged in
+  const localStorageData = !user ? getDataParam('useLocalStorage') : null;
   const invitedSessions = localStorageData?.invitedSessions || null;
 
   const activeTab =
-  !isEmpty(sessions)
-    ? 'my-sessions'
-    : !isEmpty(invitedSessions) && !isEmpty(Object.keys(invitedSessions))
-    ? 'invited'
-    : 'my-sessions';
+    !isEmpty(sessions)
+      ? 'my-sessions'
+      : !user && !isEmpty(invitedSessions) && !isEmpty(Object.keys(invitedSessions))
+      ? 'invited'
+      : 'my-sessions';
 
   return (
     <Tabs defaultValue={activeTab} className="w-full">
@@ -120,9 +116,12 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
         <TabsTrigger value="my-sessions" className="flex-1">
           My Sessions
         </TabsTrigger>
-        <TabsTrigger value="invited" className="flex-1">
-          Invited
-        </TabsTrigger>
+        {/* Only show invited tab for anonymous users */}
+        {!user && (
+          <TabsTrigger value="invited" className="flex-1">
+            Invited
+          </TabsTrigger>
+        )}
       </TabsList>
 
       {/* --- My Sessions Tab --- */}
@@ -181,7 +180,8 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
         <SessionsTable
           sessions={sessions}
           isSessionDeleting={isSessionDeleting}
-          onDeleteSession={handleOpenDeleteDialog} />
+          onDeleteSession={handleOpenDeleteDialog}
+          user={user} />
 
         <NewSessionDialog
           isOpen={isDialogOpen}
@@ -234,12 +234,14 @@ const LoadSessionContent = ({ deviceId, sessions }: LoadSessionContentProps) => 
         </AlertDialog>
       </TabsContent>
 
-      {/* --- Invited Tab --- */}
-      <TabsContent value="invited">
+      {/* --- Invited Tab (only for anonymous users) --- */}
+      {!user && (
+        <TabsContent value="invited">
         <InvitedSessionsGrid
           invitedSessions={invitedSessions}
           setKey={() => setKey(!key)} />
       </TabsContent>
+      )}
     </Tabs>
   );
 };

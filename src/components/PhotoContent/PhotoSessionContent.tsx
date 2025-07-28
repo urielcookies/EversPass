@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { navigate } from 'astro:transitions/client';
+import { useNavigate } from '@tanstack/react-router';
 import { useStore } from '@nanostores/react';
 import PhotoSession from '@/components/PhotoContent/PhotoSession';
 import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';
@@ -10,16 +11,29 @@ import usePurgeExpiredLocalSessionData from '@/hooks/usePurgeExpiredLocalSession
 import findSession from '@/services/findSession';
 import { getDataParam, setDataParam, updateLocalSessionData } from '@/lib/encryptRole';
 import { isEqual } from 'lodash-es';
+import { APP_SITE_URL } from '@/lib/constants';
+import type { User } from '@/types/user';
 
-const PhotoSessionContent = () => {
+
+interface PhotoSessionContentProps {
+  user: User | null;
+  sessionId: string | null; // For logged-in users, pass sessionId directly as prop
+}
+
+const PhotoSessionContent = ({ user, sessionId }: PhotoSessionContentProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<SessionRecord | null>(null);
+  const [userRole, setUserRole] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('OWNER');
 
-  usePurgeExpiredLocalSessionData();
+  // Only purge localStorage for anonymous users
+  usePurgeExpiredLocalSessionData(!!user);
 
-  const urlData = getDataParam('useURL');
-  
-  // const { sessions, isLoading: sessionLoading } = useStore($sessions);
+  // Get data differently based on user status
+  const urlData = !user ? getDataParam('useURL') : null;
+  const effectiveSessionId = user ? sessionId : urlData?.sessionId;
+  const effectiveDeviceId = user ? user.id : urlData?.deviceId;
+  const effectiveRoleId = user ? userRole : urlData?.roleId;
+
   const {
     photos,
     isLoading: photosLoading,
@@ -34,50 +48,38 @@ const PhotoSessionContent = () => {
 
   useEffect(() => {
     (async () => {
-      const sessionIdParams = urlData?.sessionId;
-      const deviceIdParams = urlData?.deviceId;
-      const roleIdParams = urlData?.roleId;
-      if (!sessionIdParams || !deviceIdParams || !roleIdParams) return;
+      if (!effectiveSessionId || !effectiveDeviceId || !effectiveRoleId) return;
 
       setIsLoading(true);
 
-      const _session = await findSession(sessionIdParams);
-      const photoSessionExists = await checkPhotoSessionExists(sessionIdParams);
+      const _session = await findSession(effectiveSessionId);
+      const photoSessionExists = await checkPhotoSessionExists(effectiveSessionId);
 
       if (_session?.exists) {
         setSession(_session.record);
 
-        const localStorageData = getDataParam('useLocalStorage');
-        const localDeviceId = localStorageData?.deviceId;
-        const isGuestAccess = !isEqual(localDeviceId, deviceIdParams);
+        // Only handle guest access logic for anonymous users
+        if (!user) {
+          const localStorageData = getDataParam('useLocalStorage');
+          const localDeviceId = localStorageData?.deviceId;
+          const isGuestAccess = !isEqual(localDeviceId, effectiveDeviceId);
 
-        if (isGuestAccess) {
-          const existingInvitedSessions = localStorageData?.invitedSessions || {};
-          const updatedInvitedSessions = {
-            ...existingInvitedSessions,
-            [_session.record.id]: {
-              deviceId: _session.record.device_id,
-              sessionName: _session.record.name,
-              roleId: roleIdParams,
-              expire_at: _session?.record.expires_at,
-            },
-          };
+          if (isGuestAccess) {
+            const existingInvitedSessions = localStorageData?.invitedSessions || {};
+            const updatedInvitedSessions = {
+              ...existingInvitedSessions,
+              [_session.record.id]: {
+                deviceId: _session.record.device_id,
+                sessionName: _session.record.name,
+                roleId: effectiveRoleId,
+                expire_at: _session?.record.expires_at,
+              },
+            };
 
-          // ❌ BAD: This would overwrite localStorage with only invitedSessions
-          // setDataParam({
-          //   invitedSessions: updatedInvitedSessions,
-          // }, 'useLocalStorage');
-
-          // // WORKS BUT OLD WAY
-          // setDataParam({
-          //   ...localStorageData,
-          //   invitedSessions: updatedInvitedSessions,
-          // }, 'useLocalStorage');
-
-          updateLocalSessionData({ invitedSessions: updatedInvitedSessions });
+            updateLocalSessionData({ invitedSessions: updatedInvitedSessions });
+          }
         }
-      }
-      else {
+      } else {
         window.showLimitedToast?.({
           title: 'Deleted',
           message: 'Session does not exist',
@@ -85,23 +87,25 @@ const PhotoSessionContent = () => {
           color: 'red',
         });
 
-        const sessionIdParams = urlData?.sessionId;
-        if (!sessionIdParams) return;
+        // Only handle localStorage cleanup for anonymous users
+        if (!user && effectiveSessionId) {
+          const localStorageData = getDataParam('useLocalStorage');
+          const existingInvitedSessions = { ...localStorageData?.invitedSessions };
 
-        const localStorageData = getDataParam('useLocalStorage');
-        const existingInvitedSessions = { ...localStorageData?.invitedSessions };
+          // Delete the session
+          delete existingInvitedSessions?.[effectiveSessionId];
 
-        // Delete the session
-        delete existingInvitedSessions?.[sessionIdParams];
-
-        // Let the cleaner handle empty objects
-        updateLocalSessionData({
-          invitedSessions: existingInvitedSessions,
-        });
+          // Let the cleaner handle empty objects
+          updateLocalSessionData({
+            invitedSessions: existingInvitedSessions,
+          });
+        }
 
         setTimeout(() => {
-          navigate('/sessions');
+          if (user) window.location.href = `${APP_SITE_URL}/`;
+          else navigate('/sessions');
         }, 1000);
+        return;
       }
 
       if (photoSessionExists?.exists) {
@@ -111,21 +115,13 @@ const PhotoSessionContent = () => {
     })();
 
     return () => clearPhotos();
-  }, []);
+  }, [effectiveSessionId, effectiveDeviceId, effectiveRoleId, user]);
 
   useInfiniteScroll(() => {
     if (!photosLoading && !isLoadingMore && page < totalPages && session) {
       fetchNextPageForActiveSession();
     }
   });
-
-  // if (isLoading || sessionLoading || photosLoading) {
-  //   return (
-  //     <div className="text-center py-20">
-  //       <p className="text-slate-600 dark:text-slate-400">Loading Photo Session...</p>
-  //     </div>
-  //   );
-  // }
 
   if (error) {
     return (
@@ -135,8 +131,12 @@ const PhotoSessionContent = () => {
     );
   }
 
-  if (!session || !urlData?.roleId) {
-    return null;
+  if (!session || !effectiveRoleId) {
+    return (
+      <div className="text-center py-20">
+        <p className="text-slate-600 dark:text-slate-400">Loading Photo Session...</p>
+      </div>
+    );
   }
 
   return (
@@ -147,7 +147,9 @@ const PhotoSessionContent = () => {
       totalPhotos={totalItems}
       sessionSize={sessionSize}
       allSessionsSize={totalDeviceSessionsSize}
-      roleId={urlData.roleId} />
+      roleId={effectiveRoleId}
+      user={user}
+    />
   );
 };
 

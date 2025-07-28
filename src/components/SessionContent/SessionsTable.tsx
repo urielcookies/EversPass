@@ -17,11 +17,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { APP_SITE_URL } from "@/lib/constants";
+import { useNavigate } from "@tanstack/react-router";
+import type { User } from '@/types/user';
+
 
 interface SessionsTableProps {
   sessions: SessionRecord[];
   onDeleteSession: (session: SessionRecord) => void;
   isSessionDeleting: boolean;
+  user: User | null;
 }
 
 // Helper: format ms to "Xd Xh Xm Xs"
@@ -78,9 +83,9 @@ const StatusBadge = ({ status }: { status: SessionRecord['status'] }) => {
   )
 };
 
-
-const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting }: SessionsTableProps) => {
-    const [isDesktop, setIsDesktop] = useState(false);
+const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting, user }: SessionsTableProps) => {
+  const navigateSPA = useNavigate();
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
     const checkIsDesktop = () => {
@@ -136,26 +141,31 @@ const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting }: Session
 
   const handleRowClick = async (sessionId: string) => {
     if (deviceId) {
-     // Use your typed helper to encrypt and set URL param
-      const encryptedValue = setDataParam({
-        deviceId,
-        sessionId,
-        roleId: 'OWNER',
-      }, 'useURL');
-
-      if (encryptedValue) {
-        navigate(`/sessions/photos?data=${encryptedValue}`);
+      if (user) {
+        // For logged-in users, navigate directly without URL params
+        // navigate(`${APP_SITE_URL}/sessions/photos/${sessionId}`); // wont work with astro views
+        window.location.href =`${APP_SITE_URL}/sessions/photos/${sessionId}`;
       } else {
-        // Handle error case if needed
-        console.error('Failed to encrypt data param');
+        // For anonymous users, use encrypted URL params
+        const encryptedValue = setDataParam({
+          deviceId,
+          sessionId,
+          roleId: 'OWNER',
+        }, 'useURL');
+
+        if (encryptedValue) {
+          navigate(`/sessions/photos?data=${encryptedValue}`);
+        } else {
+          console.error('Failed to encrypt data param');
+        }
       }
     }
   };
 
   const formatBytesToGB = (bytes: number) => {
     if (bytes === 0) return '0.00 GB'
-    const gigabytes = bytes / (1024 ** 3); // Convert bytes to gigabytes
-    return `${gigabytes.toFixed(2)} GB`; // Format to 2 decimal places
+    const gigabytes = bytes / (1024 ** 3);
+    return `${gigabytes.toFixed(2)} GB`;
   };
 
   return (
@@ -193,7 +203,6 @@ const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting }: Session
                     e.stopPropagation();
                     onDeleteSession(session);
                   }}>
-                    {/* used to be text-slate-500 maybe switch back */}
                   <Trash2 className="h-4 w-4 text-red-600 hover:text-red-600" />
                   <span className="sr-only">Delete session</span>
                 </Button>

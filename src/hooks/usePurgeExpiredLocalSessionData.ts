@@ -2,8 +2,11 @@ import { useEffect } from 'react';
 import { getDataParam, updateLocalSessionData } from '@/lib/encryptRole';
 import { isAfter, parseISO } from 'date-fns';
 
-const usePurgeExpiredLocalSessionData = () => {
+const usePurgeExpiredLocalSessionData = (skipForUser: boolean = false) => {
   useEffect(() => {
+    // Skip localStorage operations if user is logged in
+    if (skipForUser) return;
+
     const localStorageData = getDataParam('useLocalStorage');
     if (!localStorageData) return;
 
@@ -31,7 +34,7 @@ const usePurgeExpiredLocalSessionData = () => {
       invitedSessions: updatedInvitedSessions,
       likedPhotos: updatedLikedPhotos,
     });
-  }, []);
+  }, [skipForUser]);
 };
 
 export default usePurgeExpiredLocalSessionData;
