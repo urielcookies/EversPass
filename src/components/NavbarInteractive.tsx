@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useStore } from '@nanostores/react'
 import { $authStore } from '@clerk/astro/client'
+import { APP_SITE_URL } from '@/lib/constants';
 
 interface NavbarInteractiveProps {
   type: 'theme-toggle' | 'auth-buttons' | 'mobile-menu-toggle' | 'mobile-menu' | 'sessions-link';
@@ -95,9 +96,7 @@ const NavbarInteractive = ({
   };
 
   const handleAuthRedirect = (authType: string) => {
-    const isDev = import.meta.env.DEV;
-    const baseUrl = isDev ? 'http://app.localhost:4321' : 'https://app.everspass.com';
-    window.location.href = `${baseUrl}/${authType}`;
+    window.location.href = `${APP_SITE_URL}${authType}`;
   };
 
   const getLinkClassName = (page: string) => {
