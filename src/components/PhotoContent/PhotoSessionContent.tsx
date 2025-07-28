@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { navigate } from 'astro:transitions/client';
-import { useNavigate } from '@tanstack/react-router';
 import { useStore } from '@nanostores/react';
 import PhotoSession from '@/components/PhotoContent/PhotoSession';
 import checkPhotoSessionExists from '@/services/checkPhotoSessionExists';

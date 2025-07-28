@@ -18,7 +18,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { APP_SITE_URL } from "@/lib/constants";
-import { useNavigate } from "@tanstack/react-router";
 import type { User } from '@/types/user';
 
 
@@ -84,7 +83,6 @@ const StatusBadge = ({ status }: { status: SessionRecord['status'] }) => {
 };
 
 const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting, user }: SessionsTableProps) => {
-  const navigateSPA = useNavigate();
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
