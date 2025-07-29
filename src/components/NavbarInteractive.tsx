@@ -146,12 +146,12 @@ const NavbarInteractive = ({
           <div className="flex items-center space-x-3">
             <button 
               className={`${authButtonClasses} ${loginButtonClasses}`}
-              onClick={() => handleAuthRedirect('signin')}>
+              onClick={() => handleAuthRedirect('/signin')}>
               Login
             </button>
             <button 
               className={`${authButtonClasses} ${signupButtonClasses}`}
-              onClick={() => handleAuthRedirect('signup')}>
+              onClick={() => handleAuthRedirect('/signup')}>
               Sign Up
             </button>
           </div>
