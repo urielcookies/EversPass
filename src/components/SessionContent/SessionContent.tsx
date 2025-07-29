@@ -8,7 +8,7 @@ import type { User } from '@/types/user';
 
 
 interface SessionContentProps {
-  user: User | null;
+  user?: User | null;
 }
 
 const SessionContent = ({ user = null }: SessionContentProps) => {

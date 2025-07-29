@@ -1,4 +1,3 @@
-import { ClerkProvider, useUser } from '@clerk/clerk-react'
 import { createRoute, createRootRoute, createRouter, RouterProvider, Outlet, useLocation } from '@tanstack/react-router';
 import NotFoundPage from '@/components/NotFound';
 import { useEffect } from 'react';
@@ -14,15 +13,6 @@ import SignIn from '@/components/SPA/pages/SignIn';
 import SignUp from '@/components/SPA/pages/SignUp';
 
 const Root = () => {
-  const { isSignedIn, isLoaded } = useUser();
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    if (isLoaded && !isSignedIn && !includes(['/signin', '/signup'], pathname)) {
-      window.location.href = SITE_URL;
-    }
-  }, [isLoaded]);
-
   return (
     <>
       <Outlet />
@@ -86,9 +76,7 @@ if (!PUBLISHABLE_KEY) {
 
 const App = () => {
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-      <RouterProvider router={router} />
-    </ClerkProvider>
+    <RouterProvider router={router} />
   );
 }
 
