@@ -1,22 +1,20 @@
-// src/middleware.ts
-import { defineMiddleware } from 'astro:middleware';
-import { SITE_URL } from '@/lib/constants';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/astro/server'
+import { SITE_URL } from './lib/constants'
 
-export const onRequest = defineMiddleware((context, next) => {
-  const { url, request } = context;
-  const pathname = url.pathname;
-  const params = url.search;
-  const SPA_PAGES = ['/', '/dashboard', '/settings', '/signin', '/signup'];
-  const SPA_PATHS = ['/sessions/photos']; // Base paths for dynamic routes
+const isProtectedRoute = createRouteMatcher(['/app(.*)'])
+const isPublicRoute = createRouteMatcher(['/', '/sessions(.*)', '/pricing(.*)']) // this wont work since theyre all static
+
+export const onRequest = clerkMiddleware((auth, context) => {
+  const { userId } = auth()
   
-  const isAppSubdomain = url.hostname.includes('app.');
+  // // If user is authenticated and on a public route, redirect to /app.       // this wont work since theyre all static
+  // if (userId && isPublicRoute(context.request)) {
+  //   console.log('Redirecting authenticated user to /app')
+  //   return context.redirect('/app')
+  // }
   
-  // Check exact matches OR paths that start with SPA_PATHS
-  const isSPARoute = SPA_PAGES.includes(pathname) || SPA_PATHS.some(path => pathname.startsWith(path));
-  
-  if (isAppSubdomain && !isSPARoute) {
-    return context.redirect(`${SITE_URL}${pathname}${params}`);
+  // If user is not authenticated and on a protected route, redirect to sign in
+  if (!userId && isProtectedRoute(context.request)) {
+    return context.redirect(SITE_URL)
   }
-
-  return next();
-});
+})

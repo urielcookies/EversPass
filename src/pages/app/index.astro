@@ -1,0 +1,19 @@
+---
+import SessionContent from "@/components/SessionContent/SessionContent";
+import DynamicLayout from "@/layouts/DynamicLayout.astro";
+import type { User } from "@/types/user";
+
+const { userId } = Astro.locals.auth();
+
+if (!userId) {
+  Astro.redirect('/');
+}
+
+const user: User = {
+  id: userId!,
+}
+---
+
+<DynamicLayout>
+  <SessionContent user={user} />
+</Layout>

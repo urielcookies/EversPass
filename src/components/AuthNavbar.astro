@@ -18,12 +18,8 @@ import { UserButton } from '@clerk/astro/components'
       </div>
 
       <!-- CENTER GROUP: EversPass Logo/Title -->
-      <div class="absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
-        <a 
-          href={import.meta.env.DEV ? 'http://localhost:4321' : 'https://everspass.com'}
-          class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto hover:text-sky-600 dark:hover:text-sky-400 transition-colors duration-200">
-          EversPass
-        </a>
+      <div class="hidden lg:flex absolute left-1/2 transform -translate-x-1/2 pointer-events-none">
+        <span class="text-2xl font-bold text-slate-800 dark:text-white pointer-events-auto">EversPass</span>
       </div>
 
       <!-- RIGHT GROUP: User Button -->

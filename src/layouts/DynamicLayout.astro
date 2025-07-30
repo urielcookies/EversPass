@@ -3,6 +3,7 @@
 import '@/styles/global.css'
 import Navbar from '@/components/Navbar.astro';
 import { ClientRouter } from "astro:transitions";
+import AuthNavbar from '@/components/AuthNavbar.astro';
 
 const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 ---
@@ -31,7 +32,7 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
-    <Navbar currentPage={currentPage} isAppSubdomain={isAppSubdomain} />
+    <AuthNavbar currentPage={currentPage} isAppSubdomain={isAppSubdomain} />
 
     {isFullWidth
       ? <slot />
@@ -65,40 +66,4 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
       iziToast.show(options);
     };
   </script>
-<script>
-  function waitForClerkReady(callback) {
-    if (window.Clerk && window.Clerk.loaded) {
-      callback();
-    } else {
-      setTimeout(() => waitForClerkReady(callback), 100);
-    }
-  }
-
-  async function checkUserAndRedirect() {
-    try {
-      // Await user session to be ready
-      await window.Clerk.load(); // loads current session and user
-
-      const user = window.Clerk.user;
-      console.log('User after load():', user);
-
-      const publicRoutes = ['/', '/sessions', '/pricing'];
-      const pathname = window.location.pathname;
-      const isPublicRoute = publicRoutes.includes(pathname) ||
-        publicRoutes.some(route => pathname.startsWith(route + '/'));
-
-      if (user && isPublicRoute) {
-        console.log('Redirecting signed-in user to /app');
-        window.location.href = '/app';
-      } else {
-        console.log('No redirect needed');
-      }
-    } catch (e) {
-      console.error('Error loading Clerk user:', e);
-    }
-  }
-
-  waitForClerkReady(checkUserAndRedirect);
-</script>
-
 </html>
