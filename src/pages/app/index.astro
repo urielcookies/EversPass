@@ -15,5 +15,5 @@ const user: User = {
 ---
 
 <DynamicLayout>
-  <SessionContent user={user} />
+  <SessionContent client:only="react" user={user} />
 </Layout>
