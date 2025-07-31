@@ -3,7 +3,7 @@ import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import AuthNavbar from '@/components/AuthNavbar.astro';
 
-const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
+const { title } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
@@ -21,18 +21,13 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
-    <AuthNavbar currentPage={currentPage} isAppSubdomain={isAppSubdomain} />
+    <AuthNavbar />
 
-    {isFullWidth
-      ? <slot />
-      : (
-          <main class="pt-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <slot />
-            </div>
-          </main>
-      )
-    }
+    <main class="pt-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <slot />
+      </div>
+    </main>
 
   </body>
   
