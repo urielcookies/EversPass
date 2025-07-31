@@ -41,6 +41,12 @@
     --clerk-text: #1e293b;
     --clerk-card-bg: #ffffff;
     --clerk-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+
+    /* Additional UserButton variables */
+    --clerk-text-secondary: #64748b;
+    --clerk-border: #e2e8f0;
+    --clerk-neutral: #f1f5f9;
+    --clerk-hover-bg: #f8fafc;
   }
   .dark {
     --background: 224 71.4% 4.1%;
@@ -74,6 +80,12 @@
     --clerk-text: #f1f5f9;
     --clerk-card-bg: #0f172a;
     --clerk-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
+
+    /* Additional UserButton dark variables */
+    --clerk-text-secondary: #94a3b8;
+    --clerk-border: #334155;
+    --clerk-neutral: #1e293b;
+    --clerk-hover-bg: #334155;
   }
 }
 

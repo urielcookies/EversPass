@@ -1,6 +1,55 @@
 ---
 import { SITE_URL } from '@/lib/constants';
 import { UserButton } from '@clerk/astro/components'
+
+// Enhanced appearance config for UserButton
+const userButtonAppearanceConfig = {
+  variables: {
+    colorPrimary: '#0ea5e9',
+    colorBackground: 'var(--clerk-bg)',
+    colorInputBackground: 'var(--clerk-input-bg)', 
+    colorInputText: 'var(--clerk-text)',
+    colorText: 'var(--clerk-text)',
+    borderRadius: '0.5rem',
+    colorTextOnPrimaryBackground: '#ffffff',
+    colorTextSecondary: 'var(--clerk-text-secondary)',
+    colorNeutral: 'var(--clerk-neutral)',
+  },
+  elements: {
+    card: {
+      backgroundColor: 'var(--clerk-card-bg)',
+      boxShadow: 'var(--clerk-shadow)',
+      border: '1px solid var(--clerk-border)',
+    },
+    avatarBox: {
+      border: '2px solid var(--clerk-border)',
+    },
+    userButtonPopoverCard: {
+      backgroundColor: 'var(--clerk-card-bg)',
+      border: '1px solid var(--clerk-border)',
+    },
+    userButtonPopoverActionButton: {
+      color: 'var(--clerk-text)',
+      '&:hover': {
+        backgroundColor: 'var(--clerk-hover-bg)',
+        color: 'var(--clerk-text)',
+      },
+    },
+    userPreview: {
+      backgroundColor: 'var(--clerk-card-bg)',
+    },
+    userPreviewMainIdentifier: {
+      color: 'var(--clerk-text)',
+    },
+    userPreviewSecondaryIdentifier: {
+      color: 'var(--clerk-text-secondary)',
+    },
+    userButtonPopoverFooter: {
+      backgroundColor: 'var(--clerk-card-bg)',
+      borderTop: '1px solid var(--clerk-border)',
+    },
+  },
+};
 ---
 
 <nav id="main-nav" class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-200/50 dark:border-slate-800/50">
@@ -24,8 +73,12 @@ import { UserButton } from '@clerk/astro/components'
 
       <!-- RIGHT GROUP: User Button -->
       <div class="flex items-center flex-shrink-0">
-        <!-- User Button (visible on all screen sizes) -->
-        <UserButton afterSignOutUrl={SITE_URL}/>
+        <!-- User Button with enhanced styling -->
+        <UserButton 
+          afterSignOutUrl={SITE_URL} 
+          appearance={userButtonAppearanceConfig}
+          showName={false}
+        />
       </div>
     </div>
   </div>
