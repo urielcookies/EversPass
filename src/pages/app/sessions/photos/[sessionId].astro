@@ -20,6 +20,6 @@ const userData: User = {
   id: userId!,
 }
 ---
-<DynamicLayout title="Photo Session" currentPage="/photos">
+<DynamicLayout title="Photo Session">
   <PhotoSessionContent client:only="react" user={userData} sessionId={sessionId} />
 </DynamicLayout>
