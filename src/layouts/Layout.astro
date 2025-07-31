@@ -65,6 +65,14 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
       iziToast.show(options);
     };
   </script>
+
+<!-- In your layout file, add this script first -->
+<script type="module">
+  import { processURLDataAndSave } from '/src/scripts/urlProcessor.js';
+  window.processURLDataAndSave = processURLDataAndSave;
+</script>
+
+<!-- Then your Clerk script -->
 <script>
   function waitForClerkReady(callback) {
     if (window.Clerk && window.Clerk.loaded) {
@@ -76,18 +84,30 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 
   async function checkUserAndRedirect() {
     try {
-      // Await user session to be ready
-      await window.Clerk.load(); // loads current session and user
-
+      await window.Clerk.load();
       const user = window.Clerk.user;
       console.log('User after load():', user);
 
       const publicRoutes = ['/', '/sessions', '/pricing'];
       const pathname = window.location.pathname;
+      
       const isPublicRoute = publicRoutes.includes(pathname) ||
         publicRoutes.some(route => pathname.startsWith(route + '/'));
 
       if (user && isPublicRoute) {
+        // Process URL data immediately if it's a photo session with data
+        if (pathname.includes('/sessions/photos')) {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.has('data') && window.processURLDataAndSave) {
+            const success = window.processURLDataAndSave();
+            if (success) {
+              console.log('URL data processed successfully, redirecting to /app');
+            } else {
+              console.log('Failed to process URL data, redirecting anyway');
+            }
+          }
+        }
+        
         console.log('Redirecting signed-in user to /app');
         window.location.href = '/app';
       } else {

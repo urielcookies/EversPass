@@ -1,0 +1,25 @@
+---
+import DynamicLayout from '@/layouts/DynamicLayout.astro';
+import PhotoSessionContent from '@/components/PhotoContent/PhotoSessionContent';
+import type { User } from '@/types/user';
+
+// Get the sessionId from the URL parameters
+const { sessionId } = Astro.params;
+const { userId } = Astro.locals.auth();
+
+// You can also validate the sessionId here if needed
+if (!userId) {
+  return Astro.redirect('/');
+}
+
+if (!sessionId) {
+  return Astro.redirect('/app');
+}
+
+const userData: User = {
+  id: userId!,
+}
+---
+<DynamicLayout title="Photo Session" currentPage="/photos">
+  <PhotoSessionContent client:only="react" user={userData} sessionId={sessionId} />
+</DynamicLayout>

@@ -10,29 +10,21 @@ import usePurgeExpiredLocalSessionData from '@/hooks/usePurgeExpiredLocalSession
 import findSession from '@/services/findSession';
 import { getDataParam, setDataParam, updateLocalSessionData } from '@/lib/encryptRole';
 import { isEqual } from 'lodash-es';
-import { APP_SITE_URL } from '@/lib/constants';
 import type { User } from '@/types/user';
-
 
 interface PhotoSessionContentProps {
   user: User | null;
-  sessionId: string | null; // For logged-in users, pass sessionId directly as prop
+  sessionId?: string;
 }
 
 const PhotoSessionContent = ({ user, sessionId }: PhotoSessionContentProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState<SessionRecord | null>(null);
-  const [userRole, setUserRole] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('OWNER');
 
-  // Only purge localStorage for anonymous users
-  usePurgeExpiredLocalSessionData(!!user);
+  usePurgeExpiredLocalSessionData();
 
-  // Get data differently based on user status
-  const urlData = !user ? getDataParam('useURL') : null;
-  const effectiveSessionId = user ? sessionId : urlData?.sessionId;
-  const effectiveDeviceId = user ? user.id : urlData?.deviceId;
-  const effectiveRoleId = user ? userRole : urlData?.roleId;
-
+  const urlData = getDataParam('useURL');
+  
   const {
     photos,
     isLoading: photosLoading,
@@ -47,74 +39,106 @@ const PhotoSessionContent = ({ user, sessionId }: PhotoSessionContentProps) => {
 
   useEffect(() => {
     (async () => {
-      if (!effectiveSessionId || !effectiveDeviceId || !effectiveRoleId) return;
+      const sessionIdParams = urlData?.sessionId;
+      const deviceIdParams = urlData?.deviceId;
+      const roleIdParams = urlData?.roleId;
 
-      setIsLoading(true);
-
-      const _session = await findSession(effectiveSessionId);
-      const photoSessionExists = await checkPhotoSessionExists(effectiveSessionId);
-
-      if (_session?.exists) {
-        setSession(_session.record);
-
-        // Only handle guest access logic for anonymous users
-        if (!user) {
-          const localStorageData = getDataParam('useLocalStorage');
-          const localDeviceId = localStorageData?.deviceId;
-          const isGuestAccess = !isEqual(localDeviceId, effectiveDeviceId);
-
-          if (isGuestAccess) {
-            const existingInvitedSessions = localStorageData?.invitedSessions || {};
-            const updatedInvitedSessions = {
-              ...existingInvitedSessions,
-              [_session.record.id]: {
-                deviceId: _session.record.device_id,
-                sessionName: _session.record.name,
-                roleId: effectiveRoleId,
-                expire_at: _session?.record.expires_at,
-              },
-            };
-
-            updateLocalSessionData({ invitedSessions: updatedInvitedSessions });
-          }
-        }
-      } else {
-        window.showLimitedToast?.({
-          title: 'Deleted',
-          message: 'Session does not exist',
-          position: window.innerWidth <= 768 ? 'topCenter' : 'topRight',
-          color: 'red',
-        });
-
-        // Only handle localStorage cleanup for anonymous users
-        if (!user && effectiveSessionId) {
-          const localStorageData = getDataParam('useLocalStorage');
-          const existingInvitedSessions = { ...localStorageData?.invitedSessions };
-
-          // Delete the session
-          delete existingInvitedSessions?.[effectiveSessionId];
-
-          // Let the cleaner handle empty objects
-          updateLocalSessionData({
-            invitedSessions: existingInvitedSessions,
-          });
-        }
-
-        setTimeout(() => {
-          if (user) window.location.href = `${APP_SITE_URL}/`;
-          else navigate('/sessions');
-        }, 1000);
+      // For logged-in users: sessionId is provided as prop
+      // For anonymous users: must have all URL params
+      const effectiveSessionId = sessionId || sessionIdParams;
+      const isLoggedInUser = !!user && !!sessionId;
+      
+      if (!effectiveSessionId) {
+        console.log('No session ID available');
         return;
       }
 
-      if (photoSessionExists?.exists) {
-        await fetchPhotoSession(photoSessionExists.session_id, 1);
+      // Anonymous users need complete URL params
+      if (!isLoggedInUser && (!sessionIdParams || !deviceIdParams || !roleIdParams)) {
+        console.log('Anonymous user missing required URL params');
+        return;
       }
-      setIsLoading(false);
+
+      setIsLoading(true);
+
+      try {
+        const _session = await findSession(effectiveSessionId);
+        const photoSessionExists = await checkPhotoSessionExists(effectiveSessionId);
+
+        if (_session?.exists) {
+          setSession(_session.record);
+
+          // Only handle guest access logic for anonymous users
+          // Note: If URL processor ran successfully, this might be redundant
+          if (!isLoggedInUser) {
+            const localStorageData = getDataParam('useLocalStorage');
+            const localDeviceId = localStorageData?.deviceId;
+            
+            // Check if URL processor already saved this session
+            const existingInvitedSession = localStorageData?.invitedSessions?.[effectiveSessionId];
+            
+            if (!existingInvitedSession) {
+              // URL processor didn't run or failed, so handle it here as fallback
+              const isGuestAccess = !isEqual(localDeviceId, deviceIdParams);
+
+              if (isGuestAccess && roleIdParams) {
+                const existingInvitedSessions = localStorageData?.invitedSessions || {};
+                const updatedInvitedSessions = {
+                  ...existingInvitedSessions,
+                  [_session.record.id]: {
+                    deviceId: _session.record.device_id,
+                    sessionName: urlData?.sessionName || _session.record.name,
+                    roleId: roleIdParams,
+                    expire_at: urlData?.expire_at || _session?.record.expires_at,
+                  },
+                };
+
+                updateLocalSessionData({ invitedSessions: updatedInvitedSessions });
+                console.log('Fallback: Saved session data from component');
+              }
+            } else {
+              console.log('URL processor already saved session data');
+            }
+          }
+        } else {
+          // Session doesn't exist
+          window.showLimitedToast?.({
+            title: 'Deleted',
+            message: 'Session does not exist',
+            position: window.innerWidth <= 768 ? 'topCenter' : 'topRight',
+            color: 'red',
+          });
+
+          // Clean up invited sessions only for anonymous users
+          if (!isLoggedInUser && sessionIdParams) {
+            const localStorageData = getDataParam('useLocalStorage');
+            const existingInvitedSessions = { ...localStorageData?.invitedSessions };
+            delete existingInvitedSessions?.[sessionIdParams];
+            
+            updateLocalSessionData({
+              invitedSessions: existingInvitedSessions,
+            });
+          }
+
+          setTimeout(() => {
+            if (user) navigate('/app');
+            else navigate('/sessions');
+          }, 1000);
+          return;
+        }
+
+        if (photoSessionExists?.exists) {
+          await fetchPhotoSession(photoSessionExists.session_id, 1);
+        }
+      } catch (error) {
+        console.error('Error loading session:', error);
+      } finally {
+        setIsLoading(false);
+      }
     })();
 
     return () => clearPhotos();
-  }, [effectiveSessionId, effectiveDeviceId, effectiveRoleId, user]);
+  }, [sessionId, user]); // Include both sessionId and user in dependencies
 
   useInfiniteScroll(() => {
     if (!photosLoading && !isLoadingMore && page < totalPages && session) {
@@ -130,12 +154,22 @@ const PhotoSessionContent = ({ user, sessionId }: PhotoSessionContentProps) => {
     );
   }
 
+  // Determine effective role based on access type
+  let effectiveRoleId: 'VIEWER' | 'EDITOR' | 'OWNER' | undefined;
+  
+  if (urlData?.roleId) {
+    // Anyone accessing via URL data (invited sessions OR anonymous own sessions)
+    effectiveRoleId = urlData.roleId;
+  } else if (user) {
+    // Logged-in user accessing their own session (no URL data)
+    effectiveRoleId = 'OWNER';
+  } else {
+    // No valid role available
+    effectiveRoleId = undefined;
+  }
+  
   if (!session || !effectiveRoleId) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-slate-600 dark:text-slate-400">Loading Photo Session...</p>
-      </div>
-    );
+    return null;
   }
 
   return (

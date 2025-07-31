@@ -100,13 +100,15 @@ const LoadSessionContent = ({ deviceId, sessions, user }: LoadSessionContentProp
       : 0;
 
   // Only get localStorage data if user is not logged in
-  const localStorageData = !user ? getDataParam('useLocalStorage') : null;
+  // const localStorageData = !user ? getDataParam('useLocalStorage') : null;
+  const localStorageData = getDataParam('useLocalStorage') || null;
   const invitedSessions = localStorageData?.invitedSessions || null;
 
   const activeTab =
     !isEmpty(sessions)
       ? 'my-sessions'
-      : !user && !isEmpty(invitedSessions) && !isEmpty(Object.keys(invitedSessions))
+      // : !user && !isEmpty(invitedSessions) && !isEmpty(Object.keys(invitedSessions))
+      : !isEmpty(invitedSessions) && !isEmpty(Object.keys(invitedSessions))
       ? 'invited'
       : 'my-sessions';
 
@@ -117,7 +119,12 @@ const LoadSessionContent = ({ deviceId, sessions, user }: LoadSessionContentProp
           My Sessions
         </TabsTrigger>
         {/* Only show invited tab for anonymous users */}
-        {!user && (
+        {/* {!user && (
+          <TabsTrigger value="invited" className="flex-1">
+            Invited
+          </TabsTrigger>
+        )} */}
+        {(
           <TabsTrigger value="invited" className="flex-1">
             Invited
           </TabsTrigger>
@@ -235,13 +242,20 @@ const LoadSessionContent = ({ deviceId, sessions, user }: LoadSessionContentProp
       </TabsContent>
 
       {/* --- Invited Tab (only for anonymous users) --- */}
-      {!user && (
+      {/* {!user && (
         <TabsContent value="invited">
         <InvitedSessionsGrid
           invitedSessions={invitedSessions}
           setKey={() => setKey(!key)} />
       </TabsContent>
-      )}
+      )} */}
+
+      <TabsContent value="invited">
+        <InvitedSessionsGrid
+          user={user}
+          invitedSessions={invitedSessions}
+          setKey={() => setKey(!key)} />
+      </TabsContent>
     </Tabs>
   );
 };

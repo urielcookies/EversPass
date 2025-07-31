@@ -181,7 +181,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
   };
 
   const navigateToSessionsHandler = () => {
-    if (user) window.location.href = `${APP_SITE_URL}/`;
+    if (user) navigate('/app');
     else {
       const jsonString = JSON.stringify({
         deviceId: session.device_id,
@@ -263,7 +263,64 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
           <div className="inline-flex flex-col gap-2 mt-4 sm:mt-0 w-full sm:w-[360px]">
             {isEqual(roleId, 'OWNER') ? (
               <>
-                {/* Share (full width) */}
+                {user ? (
+                  <>
+                    {/* Logged-in Owner: Share (full width) + Sessions + Upload (side-by-side) */}
+                    <Button
+                      onClick={handleOpenShareModal}
+                      variant="primary-cta"
+                      className="w-full">
+                      <Share2 className="mr-2 h-4 w-4" />
+                      <span className="truncate">Share</span>
+                    </Button>
+
+                    {/* Sessions + Upload side-by-side */}
+                    <div className="flex gap-2">
+                      <Button
+                        variant="primary-cta"
+                        onClick={navigateToSessionsHandler}
+                        className="w-full">
+                        <Table2 className="mr-2 h-4 w-4" />
+                        <span className="truncate">Sessions</span>
+                      </Button>
+                      {progressBarValue < 100 && (
+                        <Button
+                          variant="primary-cta"
+                          onClick={handleOpenUploadModal}
+                          className="w-full">
+                          <Upload className="mr-2 h-4 w-4" />
+                          <span className="truncate">Upload</span>
+                        </Button>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Anonymous Owner: Share + Upload side-by-side */}
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleOpenShareModal}
+                        variant="primary-cta"
+                        className="w-full">
+                        <Share2 className="mr-2 h-4 w-4" />
+                        <span className="truncate">Share</span>
+                      </Button>
+                      {progressBarValue < 100 && (
+                        <Button
+                          variant="primary-cta"
+                          onClick={handleOpenUploadModal}
+                          className="w-full">
+                          <Upload className="mr-2 h-4 w-4" />
+                          <span className="truncate">Upload</span>
+                        </Button>
+                      )}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : isEqual(roleId, 'EDITOR') ? (
+              <>
+                {/* Editor: Share (full width) + Sessions + Upload (side-by-side) */}
                 <Button
                   onClick={handleOpenShareModal}
                   variant="primary-cta"
@@ -271,16 +328,18 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
                   <Share2 className="mr-2 h-4 w-4" />
                   <span className="truncate">Share</span>
                 </Button>
-
+                
                 {/* Sessions + Upload side-by-side */}
                 <div className="flex gap-2">
-                  <Button
-                    variant="primary-cta"
-                    onClick={navigateToSessionsHandler}
-                    className="w-full">
-                    <Table2 className="mr-2 h-4 w-4" />
-                    <span className="truncate">Sessions</span>
-                  </Button>
+                  {user && (
+                    <Button
+                      variant="primary-cta"
+                      onClick={navigateToSessionsHandler}
+                      className="w-full">
+                      <Table2 className="mr-2 h-4 w-4" />
+                      <span className="truncate">Sessions</span>
+                    </Button>
+                  )}
                   {progressBarValue < 100 && (
                     <Button
                       variant="primary-cta"
@@ -292,35 +351,37 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
                   )}
                 </div>
               </>
-            ) : isEqual(roleId, 'EDITOR') ? (
-              // Editor: Share + Upload side-by-side
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleOpenShareModal}
-                  variant="primary-cta"
-                  className="w-full">
-                  <Share2 className="mr-2 h-4 w-4" />
-                  <span className="truncate">Share</span>
-                </Button>
-                {progressBarValue < 100 && (
+            ) : (
+              <>
+                {/* Viewer: Sessions + Share side-by-side (if logged in), or just Share */}
+                {user ? (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="primary-cta"
+                      onClick={navigateToSessionsHandler}
+                      className="w-full">
+                      <Table2 className="mr-2 h-4 w-4" />
+                      <span className="truncate">Sessions</span>
+                    </Button>
+                    
+                    <Button
+                      onClick={handleOpenShareModal}
+                      variant="primary-cta"
+                      className="w-full">
+                      <Share2 className="mr-2 h-4 w-4" />
+                      <span className="truncate">Share</span>
+                    </Button>
+                  </div>
+                ) : (
                   <Button
+                    onClick={handleOpenShareModal}
                     variant="primary-cta"
-                    onClick={handleOpenUploadModal}
                     className="w-full">
-                    <Upload className="mr-2 h-4 w-4" />
-                    <span className="truncate">Upload</span>
+                    <Share2 className="mr-2 h-4 w-4" />
+                    <span className="truncate">Share</span>
                   </Button>
                 )}
-              </div>
-            ) : (
-              // Viewer: Share only
-              <Button
-                onClick={handleOpenShareModal}
-                variant="primary-cta"
-                className="w-full">
-                <Share2 className="mr-2 h-4 w-4" />
-                <span className="truncate">Share</span>
-              </Button>
+              </>
             )}
 
             {/* Sort Dropdown */}
@@ -402,7 +463,10 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
         onClose={handleCloseShareModal}
         sessionId={session.id}
         roleId={roleId}
-        deviceId={session.device_id}/>
+        sessionName={session.name}
+        expireAt={session.expires_at}
+        deviceId={session.device_id}
+        />
     </main>
   );
 };

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
+import type { User } from "@/types/user";
 
 type SessionData = {
   sessionName: string;
@@ -23,10 +24,11 @@ type SessionData = {
 type InvitedSessionsGridProps = {
   invitedSessions: Record<string, SessionData> | null;
   setKey: () => void;
+  user : User | null;
 };
 
 const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
-  const { invitedSessions, setKey } = props;
+  const { invitedSessions, setKey, user } = props;
 
   const handleInvitedSession = (sessionId: string) => {
     const data = getDataParam("useLocalStorage");
@@ -45,7 +47,7 @@ const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
   const navigatePhotoHandler = (
     deviceId: string,
     sessionId: string,
-    roleId: "VIEWER" | "EDITOR" | "OWNER"
+    roleId: "VIEWER" | "EDITOR" | "OWNER",
   ) => {
     const encryptedValue = setDataParam(
       {
@@ -57,7 +59,9 @@ const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
     );
 
     if (encryptedValue) {
-      navigate(`/sessions/photos?data=${encryptedValue}`);
+      if (user) navigate(`/app/sessions/photos/${sessionId}?data=${encryptedValue}`);
+      else navigate(`/sessions/photos?data=${encryptedValue}`);
+      
     } else {
       console.error("Failed to encrypt data param");
     }
@@ -128,13 +132,13 @@ const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
               </CardContent>
               <CardFooter className="pt-4">
                 <Button
-                  onClick={() =>
+                  onClick={() => {
                     navigatePhotoHandler(
                       sessionData.deviceId,
                       sessionId,
                       sessionData.roleId
                     )
-                  }
+                  }}
                   variant="primary-cta"
                   className="w-full"
                 >

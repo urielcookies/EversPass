@@ -5,7 +5,7 @@ import { isAfter, parseISO } from 'date-fns';
 const usePurgeExpiredLocalSessionData = (skipForUser: boolean = false) => {
   useEffect(() => {
     // Skip localStorage operations if user is logged in
-    if (skipForUser) return;
+    // if (skipForUser) return;
 
     const localStorageData = getDataParam('useLocalStorage');
     if (!localStorageData) return;
@@ -34,7 +34,8 @@ const usePurgeExpiredLocalSessionData = (skipForUser: boolean = false) => {
       invitedSessions: updatedInvitedSessions,
       likedPhotos: updatedLikedPhotos,
     });
-  }, [skipForUser]);
+  }, []);
+  // }, [skipForUser]);
 };
 
 export default usePurgeExpiredLocalSessionData;

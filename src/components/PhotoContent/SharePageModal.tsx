@@ -21,31 +21,41 @@ interface SharePageModalProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
+  sessionName: string;
+  expireAt: string;
   roleId: 'VIEWER' | 'EDITOR' | 'OWNER';
   deviceId: string;
 }
 
-const SharePageModal = ({ isOpen, onClose, sessionId, roleId, deviceId }: SharePageModalProps) => {
+const SharePageModal = ({ 
+  isOpen, 
+  onClose, 
+  sessionId, 
+  sessionName, 
+  expireAt,
+  roleId, 
+  deviceId 
+}: SharePageModalProps) => {
   const [shareUrl, setShareUrl] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [accessLevel, setAccessLevel] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('VIEWER');
 
-  // Update shareUrl when modal opens, using everspass.com host
+  // Update shareUrl when modal opens, including session name and expiry
   useEffect(() => {
     if (isOpen) {
       const encryptedValue = setDataParam({
         sessionId,
+        sessionName,
+        expire_at: expireAt,
         roleId: accessLevel,
         deviceId,
       });
 
-      // const shareUrl = `https://everspass.com/sessions/photos?data=${encrypted}`;
-      // const shareUrl = `${window.location.origin}/sessions/photos?data=${encryptedValue}`;
       const shareUrl = `${SITE_URL}/sessions/photos?data=${encryptedValue}`;
       setShareUrl(shareUrl);
     }
-  }, [isOpen, sessionId, accessLevel]);
+  }, [isOpen, sessionId, sessionName, expireAt, accessLevel, deviceId]);
 
   // Generate QR code when shareUrl changes
   useEffect(() => {

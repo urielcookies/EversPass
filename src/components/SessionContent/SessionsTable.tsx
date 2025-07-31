@@ -142,7 +142,8 @@ const SessionsTable = ({ sessions, onDeleteSession, isSessionDeleting, user }: S
       if (user) {
         // For logged-in users, navigate directly without URL params
         // navigate(`${APP_SITE_URL}/sessions/photos/${sessionId}`); // wont work with astro views
-        window.location.href =`${APP_SITE_URL}/sessions/photos/${sessionId}`;
+        // window.location.href =`${APP_SITE_URL}/sessions/photos/${sessionId}`;
+        navigate(`/app/sessions/photos/${sessionId}`);
       } else {
         // For anonymous users, use encrypted URL params
         const encryptedValue = setDataParam({

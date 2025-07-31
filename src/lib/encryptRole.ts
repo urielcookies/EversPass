@@ -28,6 +28,8 @@ interface EncryptedParamInput {
 interface SharedDataURL {
   deviceId: string;
   sessionId?: string;
+  sessionName?: string;
+  expire_at?: string;
   roleId?: 'VIEWER' | 'EDITOR' | 'OWNER';
 }
 

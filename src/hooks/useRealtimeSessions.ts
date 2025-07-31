@@ -60,10 +60,7 @@ const useRealtimeSessions = (user: User | null = null) => {
     }
   };
 
-  const clearData = () => {
-    // Skip URL manipulation if user is logged in
-    if (user) return;
-    
+  const clearData = () => {    
     const currentUrl = new URL(window.location.href);
     currentUrl.search = '';
     window.history.replaceState({}, '', currentUrl.toString());
@@ -72,6 +69,7 @@ const useRealtimeSessions = (user: User | null = null) => {
   useEffect(() => {
     (async () => {
       // Skip URL param setting if user is logged in
+      if (user) clearData();
       if (stateDeviceId && !user) {
         setDataParam({ deviceId: stateDeviceId }, 'useURL');
       }
