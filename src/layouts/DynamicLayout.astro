@@ -2,6 +2,7 @@
 import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import AuthNavbar from '@/components/AuthNavbar.astro';
+import ClientScripts from '@/components/ClientScripts.astro';
 
 const { title } = Astro.props;
 ---
@@ -12,12 +13,6 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>{title || 'EversPass'}</title>
     <ClientRouter />
-
-    <!-- Theme application script -->
-    <script type="module">
-      import { initThemeSystem } from '/src/scripts/theme.ts';
-      initThemeSystem();
-    </script>
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
@@ -31,14 +26,11 @@ const { title } = Astro.props;
 
   </body>
   
+  <!-- Client Scripts Component handles all JavaScript -->
+  <ClientScripts isAuth={true} />
+  
   <!-- Toast notifications -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
   <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
-  
-  <!-- Toast system initialization -->
-  <script type="module">
-    import { initToastSystem } from '/src/scripts/toast.ts';
-    initToastSystem();
-  </script>
 
 </html>

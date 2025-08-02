@@ -1,0 +1,31 @@
+---
+// src/components/ClientScripts.astro
+interface Props {
+  isAuth?: boolean;
+}
+
+const { isAuth = false } = Astro.props;
+---
+
+<script type="module" define:vars={{ isAuth }}>
+  import { initThemeSystem } from '/src/scripts/theme.ts';
+  import { initToastSystem } from '/src/scripts/toast.ts';
+  
+  // Always load theme and toast
+  window.initThemeSystem = initThemeSystem;
+  window.initToastSystem = initToastSystem;
+  
+  initThemeSystem();
+  initToastSystem();
+
+  // Load auth-related scripts only for non-auth pages
+  if (!isAuth) {
+    const { initClerkRedirect } = await import('/src/scripts/clerkRedirect.ts');
+    const { processURLDataAndSave } = await import('/src/scripts/urlProcessor.ts');
+    
+    window.initClerkRedirect = initClerkRedirect;
+    window.processURLDataAndSave = processURLDataAndSave;
+    
+    initClerkRedirect();
+  }
+</script>
