@@ -2,18 +2,32 @@
 // src/layouts/Layout.astro
 import '@/styles/global.css'
 import Navbar from '@/components/Navbar.astro';
-import ClientScripts from '@/components/ClientScripts.astro';
 import { ClientRouter } from "astro:transitions";
 
 const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 ---
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth dark">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>{title || 'EversPass'}</title>
     <ClientRouter />
+
+    {/* Theme application script */}
+    <script is:inline>
+      const applyTheme = () => {
+        const theme = localStorage.getItem('theme') || 'dark';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      };
+
+      applyTheme();
+      document.addEventListener('astro:after-swap', applyTheme);
+    </script>
   </head>
   <body class="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-200 antialiased">
 
@@ -32,11 +46,79 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
 
   </body>
   
-  <!-- Client Scripts Component handles all JavaScript -->
-  <ClientScripts />
-  
   <!-- Toast notifications -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
   <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+  <script is:inline>
+    const MAX_IZITOASTS = 2;
+
+    window.showLimitedToast = (options) => {
+      const toasts = document.querySelectorAll('.iziToast');
+
+      if (toasts.length >= MAX_IZITOASTS) {
+        const oldest = toasts[0];
+        if (oldest) {
+          iziToast.hide({ transitionOut: 'fadeOutUp' }, oldest);
+        }
+      }
+
+      iziToast.show(options);
+    };
+  </script>
+
+<!-- In your layout file, add this script first -->
+<script type="module">
+  import { processURLDataAndSave } from '/src/scripts/urlProcessor.js';
+  window.processURLDataAndSave = processURLDataAndSave;
+</script>
+
+<!-- Then your Clerk script -->
+<script>
+  function waitForClerkReady(callback) {
+    if (window.Clerk && window.Clerk.loaded) {
+      callback();
+    } else {
+      setTimeout(() => waitForClerkReady(callback), 100);
+    }
+  }
+
+  async function checkUserAndRedirect() {
+    try {
+      await window.Clerk.load();
+      const user = window.Clerk.user;
+      console.log('User after load():', user);
+
+      const publicRoutes = ['/', '/sessions', '/pricing'];
+      const pathname = window.location.pathname;
+      
+      const isPublicRoute = publicRoutes.includes(pathname) ||
+        publicRoutes.some(route => pathname.startsWith(route + '/'));
+
+      if (user && isPublicRoute) {
+        // Process URL data immediately if it's a photo session with data
+        if (pathname.includes('/sessions/photos')) {
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.has('data') && window.processURLDataAndSave) {
+            const success = window.processURLDataAndSave();
+            if (success) {
+              console.log('URL data processed successfully, redirecting to /app');
+            } else {
+              console.log('Failed to process URL data, redirecting anyway');
+            }
+          }
+        }
+        
+        console.log('Redirecting signed-in user to /app');
+        window.location.href = '/app';
+      } else {
+        console.log('No redirect needed');
+      }
+    } catch (e) {
+      console.error('Error loading Clerk user:', e);
+    }
+  }
+
+  waitForClerkReady(checkUserAndRedirect);
+</script>
 
 </html>
