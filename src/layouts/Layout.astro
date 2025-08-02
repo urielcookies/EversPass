@@ -67,8 +67,8 @@ const { title, currentPage, isAppSubdomain, isFullWidth } = Astro.props;
   </script>
 
 <!-- In your layout file, add this script first -->
-<script type="module">
-  import { processURLDataAndSave } from '/src/scripts/urlProcessor.ts';
+<script>
+  import { processURLDataAndSave } from '@/scripts/urlProcessor';
   window.processURLDataAndSave = processURLDataAndSave;
 </script>
 
