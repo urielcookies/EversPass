@@ -13,7 +13,7 @@ import { isEqual } from 'lodash-es';
 import type { User } from '@/types/user';
 
 interface PhotoSessionContentProps {
-  user: User | null;
+  user?: User | null;
   sessionId?: string;
 }
 
@@ -181,7 +181,7 @@ const PhotoSessionContent = ({ user, sessionId }: PhotoSessionContentProps) => {
       sessionSize={sessionSize}
       allSessionsSize={totalDeviceSessionsSize}
       roleId={effectiveRoleId}
-      user={user}
+      user={user || null}
     />
   );
 };
