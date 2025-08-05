@@ -59,9 +59,9 @@ const InvitedSessionsGrid: React.FC<InvitedSessionsGridProps> = (props) => {
     );
 
     if (encryptedValue) {
-      if (user) navigate(`/app/sessions/photos/${sessionId}?data=${encryptedValue}`);
+      if (user) navigate(`/app/sessions/invited?data=${encryptedValue}`);
       else navigate(`/sessions/photos?data=${encryptedValue}`);
-      
+
     } else {
       console.error("Failed to encrypt data param");
     }

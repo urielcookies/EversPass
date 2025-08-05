@@ -57,14 +57,30 @@ async function checkUserAndRedirect(): Promise<void> {
 
 function handleAuthenticatedUser(): void {
   const pathname: string = window.location.pathname;
-  if (pathname.includes('/sessions/photos')) {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('data') && window.processURLDataAndSave) {
-      const success = window.processURLDataAndSave();
-      console.log(success ? 'URL data processed successfully' : 'Failed to process URL data');
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Check if this is a shareable photos link with data
+  if (pathname.includes('/sessions/photos') && urlParams.has('data')) {
+    const encryptedValue = urlParams.get('data');
+    
+    // Handle potential null value
+    if (!encryptedValue) {
+      console.error('Data parameter is empty');
+      return;
     }
+    
+    console.log('Detected shareable photos link - redirecting to app with data');
+    
+    // URL encode the encrypted value to prevent corruption
+    const encodedValue = encodeURIComponent(encryptedValue);
+    const redirectUrl = `/app/sessions/invited?data=${encodedValue}`;
+    
+    console.log('Redirect URL:', redirectUrl);
+    window.location.href = redirectUrl;
+    return;
   }
   
+  // For all other authenticated cases, redirect to /app
   console.log('Redirecting authenticated user to /app');
   window.location.href = '/app';
 }
