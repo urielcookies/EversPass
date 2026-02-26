@@ -391,7 +391,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
                       e.stopPropagation();
                       handleToggleLike(photo.id);
                     }}
-                    className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
+                    className="bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 dark:text-white">
                     <Heart
                       className={`!h-6 !w-6 transition-colors duration-200 ${
                         getIsLiked(photo.id)
@@ -417,7 +417,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
                       // Use the original (full) image_url for preview/download
                       window.open(photo.image_url, '_blank');
                     }}
-                    className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
+                    className="bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 dark:text-white">
                     <ExternalLink className="!h-6 !w-6" />
                     <span className="sr-only">Preview</span>
                   </Button>
@@ -430,7 +430,7 @@ const PhotoGrid = (props: PhotoGridProps) => {
                       // Use the original (full) image_url for download
                       downloadImage(photo.image_url, photo.originalFilename);
                     }}
-                    className="bg-transparent hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-700 dark:text-white">
+                    className="bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 dark:text-white">
                     <Download className="!h-6 !w-6" />
                     <span className="sr-only">Download</span>
                   </Button>
