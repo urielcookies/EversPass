@@ -24,3 +24,6 @@ pnpm-debug.log*
 .idea/
 
 # src/lib/encryptRole.ts
+
+# personal notes
+notes.txt
