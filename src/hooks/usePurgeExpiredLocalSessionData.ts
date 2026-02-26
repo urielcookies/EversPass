@@ -24,7 +24,7 @@ const usePurgeExpiredLocalSessionData = (skipForUser: boolean = false) => {
       ? Object.fromEntries(
           Object.entries(localStorageData.likedPhotos).filter(([_, photoData]) => {
             const expired = photoData.expire_at && !isAfter(parseISO(photoData.expire_at), now);
-            const empty = photoData.likes.length === 0;
+            const empty = !photoData.likes || photoData.likes.length === 0;
             return !expired && !empty;
           })
         )
