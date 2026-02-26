@@ -16,6 +16,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { isEmpty, isEqual } from 'lodash-es';
 import { setDataParam, setEncryptedParam } from '@/lib/encryptRole';
 import { SITE_URL } from '@/lib/constants';
+import { shortenUrl } from '@/services/shortenUrl';
 
 interface SharePageModalProps {
   isOpen: boolean;
@@ -27,16 +28,19 @@ interface SharePageModalProps {
   deviceId: string;
 }
 
-const SharePageModal = ({ 
-  isOpen, 
-  onClose, 
-  sessionId, 
-  sessionName, 
+
+const SharePageModal = ({
+  isOpen,
+  onClose,
+  sessionId,
+  sessionName,
   expireAt,
-  roleId, 
-  deviceId 
+  roleId,
+  deviceId
 }: SharePageModalProps) => {
   const [shareUrl, setShareUrl] = useState('');
+  const [shortUrl, setShortUrl] = useState('');
+  const [isShortening, setIsShortening] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [accessLevel, setAccessLevel] = useState<'VIEWER' | 'EDITOR' | 'OWNER'>('VIEWER');
@@ -52,17 +56,25 @@ const SharePageModal = ({
         deviceId,
       });
 
-      const shareUrl = `${SITE_URL}/sessions/photos?data=${encryptedValue}`;
-      setShareUrl(shareUrl);
+      const fullUrl = `${SITE_URL}/sessions/photos?data=${encryptedValue}`;
+      setShareUrl(fullUrl);
+      setShortUrl('');
+      setIsShortening(true);
+
+      shortenUrl(fullUrl)
+        .then(setShortUrl)
+        .catch(() => setShortUrl(fullUrl))
+        .finally(() => setIsShortening(false));
     }
   }, [isOpen, sessionId, sessionName, expireAt, accessLevel, deviceId]);
 
-  // Generate QR code when shareUrl changes
+  // Generate QR code when shortUrl (or fallback shareUrl) changes
   useEffect(() => {
+    const urlToEncode = shortUrl || shareUrl;
     const generateQr = async () => {
-      if (shareUrl) {
+      if (urlToEncode) {
         try {
-          const url = await qrcode.toDataURL(shareUrl, {
+          const url = await qrcode.toDataURL(urlToEncode, {
             errorCorrectionLevel: 'H',
             width: 200,
             margin: 1,
@@ -77,21 +89,24 @@ const SharePageModal = ({
       }
     };
     generateQr();
-  }, [shareUrl]);
+  }, [shortUrl, shareUrl]);
 
   useEffect(() => {
     if (!isOpen) {
       setShareUrl('');
+      setShortUrl('');
+      setIsShortening(false);
       setAccessLevel('VIEWER');
       setQrCodeDataUrl(null);
     }
   }, [isOpen]);
 
-  // Copy shareUrl to clipboard
+  // Copy shortUrl (or fallback shareUrl) to clipboard
   const handleCopy = async () => {
-    if (shareUrl) {
+    const urlToCopy = shortUrl || shareUrl;
+    if (urlToCopy) {
       try {
-        await navigator.clipboard.writeText(shareUrl);
+        await navigator.clipboard.writeText(urlToCopy);
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
       } catch {
@@ -172,7 +187,8 @@ const SharePageModal = ({
         <div className="flex items-center space-x-2">
           <Input
             id="share-link"
-            value={shareUrl}
+            value={isShortening ? '' : (shortUrl || shareUrl)}
+            placeholder={isShortening ? 'Shortening...' : ''}
             disabled
             autoComplete="off"
             className="text-xs"
