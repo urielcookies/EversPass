@@ -171,7 +171,7 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
 
   const getIsLiked = (photoId: string) => {
     const data = getDataParam('useLocalStorage');
-    return data?.likedPhotos?.[session.id]?.likes.includes(photoId) ?? false;
+    return data?.likedPhotos?.[session.id]?.likes?.includes(photoId) ?? false;
   };
 
   const formatBytesToGB = (bytes: number) => {
