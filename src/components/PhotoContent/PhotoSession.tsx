@@ -130,6 +130,8 @@ const PhotoSessionContent = (props: PhotoSessionContentProps) => {
         expire_at: expirationDate,
         likes: [],
       };
+    } else if (!data.likedPhotos[sessionId].likes) {
+      data.likedPhotos[sessionId].likes = [];
     }
 
     const likedPhotos = data.likedPhotos[sessionId].likes;
