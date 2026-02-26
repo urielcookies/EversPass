@@ -385,13 +385,13 @@ const PhotoGrid = (props: PhotoGridProps) => {
                 {/* Left side: Like button */}
                 <div className="flex items-center">
                   <Button
-                    variant="ghost"
+                    variant="icon-ghost"
                     size="icon"
                     onClick={e => {
                       e.stopPropagation();
                       handleToggleLike(photo.id);
                     }}
-                    className="bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 dark:text-white">
+                    className="text-gray-700 dark:text-white">
                     <Heart
                       className={`!h-6 !w-6 transition-colors duration-200 ${
                         getIsLiked(photo.id)
@@ -410,27 +410,27 @@ const PhotoGrid = (props: PhotoGridProps) => {
                 {/* Right side: Preview + Download */}
                 <div className="ml-auto flex items-center gap-2">
                   <Button
-                    variant="ghost"
+                    variant="icon-ghost"
                     size="icon"
                     onClick={e => {
                       e.stopPropagation();
                       // Use the original (full) image_url for preview/download
                       window.open(photo.image_url, '_blank');
                     }}
-                    className="bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 dark:text-white">
+                    className="text-gray-700 dark:text-white">
                     <ExternalLink className="!h-6 !w-6" />
                     <span className="sr-only">Preview</span>
                   </Button>
 
                   <Button
-                    variant="ghost"
+                    variant="icon-ghost"
                     size="icon"
                     onClick={e => {
                       e.stopPropagation();
                       // Use the original (full) image_url for download
                       downloadImage(photo.image_url, photo.originalFilename);
                     }}
-                    className="bg-transparent hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-gray-700 dark:text-white">
+                    className="text-gray-700 dark:text-white">
                     <Download className="!h-6 !w-6" />
                     <span className="sr-only">Download</span>
                   </Button>
