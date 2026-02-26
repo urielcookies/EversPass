@@ -10,9 +10,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^9.3.0",
-    "@astrojs/react": "^4.3.0",
-    "@astrojs/sitemap": "^3.4.2",
+    "@astrojs/node": "^9.5.4",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.7.0",
     "@clerk/astro": "^2.10.9",
     "@clerk/clerk-react": "^5.35.4",
     "@nanostores/react": "^1.0.0",
@@ -30,7 +30,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
-    "astro": "^5.12.0",
+    "astro": "^5.18.0",
     "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
