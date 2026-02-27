@@ -1,0 +1,9 @@
+---
+export const prerender = true;
+import Layout from '@/layouts/Layout.astro';
+import HowToUseComponent from '@/components/HowToUse.astro';
+---
+
+<Layout title="How to Use" currentPage="/how-to-use" isFullWidth={true} description="Learn how to use EversPass — create a session, upload photos, share a QR code, and let guests download in seconds.">
+  <HowToUseComponent />
+</Layout>

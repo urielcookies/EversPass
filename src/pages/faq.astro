@@ -1,0 +1,9 @@
+---
+export const prerender = true;
+import Layout from '@/layouts/Layout.astro';
+import FAQComponent from '@/components/FAQ.astro';
+---
+
+<Layout title="FAQ" currentPage="/faq" isFullWidth={true} description="Frequently asked questions about EversPass — how sessions work, privacy, billing, and more.">
+  <FAQComponent />
+</Layout>

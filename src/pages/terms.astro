@@ -1,0 +1,9 @@
+---
+export const prerender = true;
+import Layout from '@/layouts/Layout.astro';
+import TermsOfUseComponent from '@/components/TermsOfUse.astro';
+---
+
+<Layout title="Terms of Use" currentPage="/terms" isFullWidth={true} description="EversPass Terms of Use — the rules governing your use of the EversPass photo-sharing platform.">
+  <TermsOfUseComponent />
+</Layout>
