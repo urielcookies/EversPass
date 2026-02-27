@@ -9,6 +9,9 @@ interface FileUploadResult {
   details?: any;
   status_code?: number;
   reason?: string;
+  quota_bytes?: number;
+  used_bytes?: number;
+  file_size_bytes?: number;
 }
 
 interface UploadResponse {

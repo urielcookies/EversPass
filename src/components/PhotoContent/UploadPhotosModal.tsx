@@ -6,7 +6,7 @@ import {
   useEffect,
   type Dispatch,
 } from 'react';
-import { Loader2, Upload, XCircle } from 'lucide-react';
+import { AlertTriangle, Loader2, Upload, XCircle } from 'lucide-react';
 import {
   Dialog,
   DialogClose,
@@ -19,7 +19,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { type SessionRecord } from '@/stores/sessionsStore';
-import { uploadPhotosForSession, type UploadResponse } from '@/services/upload-photos';
+import { uploadPhotosForSession, type UploadResponse, type FileUploadResult } from '@/services/upload-photos';
+import { storageLimitGB } from '@/lib/constants';
 import type { NewlyCreated } from '@/hooks/usePhotoSessionSubscription';
 
 // This type should ideally be defined in a shared types file if used elsewhere
@@ -31,23 +32,30 @@ interface UploadPhotosModalProps {
   isOpen: boolean;
   onClose: () => void;
   session: SessionRecord | null;
+  deviceUsedBytes: number;
   createdRecordsState: {
     newlyCreated: NewlyCreated | null;
     setNewlyCreated: Dispatch<React.SetStateAction<NewlyCreated | null>>;
   }
 }
 
-const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: UploadPhotosModalProps) => {
+const UploadPhotosModal = ({ isOpen, onClose, session, deviceUsedBytes, createdRecordsState }: UploadPhotosModalProps) => {
   const [selectedFiles, setSelectedFiles] = useState<FileWithPreview[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [quotaFailedFiles, setQuotaFailedFiles] = useState<string[]>([]);
+
+  const FREE_TIER_QUOTA_BYTES = storageLimitGB * 1024 ** 3;
+  const isStorageFull = deviceUsedBytes >= FREE_TIER_QUOTA_BYTES;
+  const storageUsedPercent = Math.round((deviceUsedBytes / FREE_TIER_QUOTA_BYTES) * 100);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Clear selected files when the modal opens or closes
+  // Clear selected files and quota errors when the modal opens or closes
   useEffect(() => {
     handleClearSelectedFiles();
+    setQuotaFailedFiles([]);
   }, [isOpen]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +121,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
     totalFilesSelectedRef.current = selectedFiles.length;
     event.preventDefault();
     setIsUploading(true);
+    setQuotaFailedFiles([]);
 
     if (!session?.id || selectedFiles.length === 0) {
       alert('Error: Session not found or no files selected.');
@@ -126,15 +135,24 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
         files: selectedFiles,
       });
 
-      if (result) onClose(); // Close modal on successful upload
-      else alert('Upload failed: No response received from server.');
-      
+      if (result) {
+        const quotaRejected = result.failed_uploads.filter(
+          (f: FileUploadResult) => f.error === 'Storage quota exceeded'
+        );
+        if (quotaRejected.length > 0) {
+          setQuotaFailedFiles(quotaRejected.map((f: FileUploadResult) => f.filename));
+        } else {
+          onClose();
+        }
+      } else {
+        alert('Upload failed: No response received from server.');
+      }
     } catch (error: any) {
       console.error('Error during photo upload:', error);
       alert(error.message || 'Failed to upload photos. Please try again.');
     } finally {
       handleClearSelectedFiles();
-      totalFilesSelectedRef.current = 0
+      totalFilesSelectedRef.current = 0;
     }
   };
 
@@ -175,6 +193,34 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
             Select photos or videos from your device to upload to this session.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Pre-upload storage warning */}
+        {isStorageFull ? (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>Storage full. Upgrade your plan to upload more.</span>
+          </div>
+        ) : storageUsedPercent >= 80 ? (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>You're almost out of storage ({storageUsedPercent}% used).</span>
+          </div>
+        ) : null}
+
+        {/* Post-upload quota rejection errors */}
+        {quotaFailedFiles.length > 0 && (
+          <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm">
+            <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+            <div>
+              <p className="font-medium">Not enough storage space. Upgrade your plan to upload more.</p>
+              <ul className="mt-1 list-disc list-inside space-y-0.5">
+                {quotaFailedFiles.map(name => (
+                  <li key={name} className="truncate">{name}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
         <form onSubmit={handleUploadSubmit} className="flex flex-col flex-grow min-h-0">
           <div className="grid gap-4 py-4 flex-shrink-0">
             <input
@@ -263,7 +309,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
 
             <Button
               type="submit"
-              disabled={selectedFiles.length === 0 || isUploading}
+              disabled={selectedFiles.length === 0 || isUploading || isStorageFull}
               variant="primary-cta">
               {isUploading ? (
                 <>
