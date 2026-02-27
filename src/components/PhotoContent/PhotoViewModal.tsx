@@ -37,7 +37,7 @@ const PhotoViewModal = ({
   roleId,
 }: PhotoViewModalProps) => {
   if (!isOpen || !activePhoto) return null;
-  const { id: photoId, image_url, originalFilename } = activePhoto;
+  const { id: photoId, image_url, thumbnail_800_url, originalFilename, media_type } = activePhoto;
 
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -98,10 +98,19 @@ const PhotoViewModal = ({
         </DialogHeader>
 
         <div className="flex-grow flex items-center justify-center p-2 overflow-hidden">
-          <img
-            src={image_url}
-            alt="Enlarged session photo"
-            className="max-w-full max-h-full object-contain" />
+          {media_type === 'video' ? (
+            <video
+              src={image_url}
+              poster={thumbnail_800_url}
+              controls
+              className="max-w-full max-h-full object-contain"
+            />
+          ) : (
+            <img
+              src={image_url}
+              alt="Enlarged session photo"
+              className="max-w-full max-h-full object-contain" />
+          )}
         </div>
 
         <DialogFooter className="!flex !justify-between !items-center !w-full !mt-4 !px-4">

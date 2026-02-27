@@ -3,12 +3,18 @@ import { BACKEND_API } from "@/lib/constants";
 
 interface PhotoRecord {
   id: string;
+  media_type: 'photo' | 'video';
   originalFilename: string;
   image_url: string;
+  thumbnail_420_url: string;
+  thumbnail_800_url: string;
+  thumbnail_1200_url: string;
   likes: number;
   created: string;
   session_id: string;
   size: number;
+  width?: number | null;
+  height?: number | null;
 }
 interface PagedPhotoResponse {
   page: number;

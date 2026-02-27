@@ -235,17 +235,18 @@ import {
 // Ensure these fields exist in the response from get_session_photos
 export interface PhotoRecord {
   id: string;
-  image_url: string; // Original (full-size) image URL
-  thumbnail_420_url: string; // URL for 420x420 thumbnail
-  thumbnail_800_url: string; // URL for 800x800 thumbnail
-  thumbnail_1200_url: string; // URL for 1200x1200 thumbnail
+  media_type: 'photo' | 'video';
+  image_url: string; // Original (full-size) image OR raw video file URL
+  thumbnail_420_url: string; // URL for 420x420 thumbnail / video poster frame
+  thumbnail_800_url: string; // URL for 800x800 thumbnail / video poster frame
+  thumbnail_1200_url: string; // URL for 1200x1200 thumbnail / video poster frame
   likes: number;
   created: string;
   session_id: string;
   originalFilename: string;
   size: number;
-  width?: number; // Optional: Original image width from PocketBase metadata
-  height?: number; // Optional: Original image height from PocketBase metadata
+  width?: number | null; // null for videos
+  height?: number | null; // null for videos
 }
 
 interface PhotoGridProps {
@@ -351,10 +352,11 @@ const PhotoGrid = (props: PhotoGridProps) => {
                 )}
               </div>
 
-              {/* Image for oneView (Larger, responsive images) */}
+              {/* Media for oneView */}
               <div
                 className="flex-grow flex items-center justify-center bg-black"
                 onClick={() => {
+                  if (photo.media_type === 'video') return; // let video controls handle clicks
                   setSelectedPhotoId(photo.id);
                   if (window.innerWidth <= 768) {
                     setOneView(true);
@@ -362,22 +364,25 @@ const PhotoGrid = (props: PhotoGridProps) => {
                     handleOpenPhotoViewModal(photo);
                   }
                 }}>
-                <img
-                  // Use srcset for responsive loading based on screen size/resolution
-                  // Assuming photo.width is the original width, use it for the 'w' descriptor
-                  srcSet={`${photo.thumbnail_800_url} 800w, ${photo.thumbnail_1200_url} 1200w, ${photo.image_url} ${photo.width || 2000}w`}
-                  // Define sizes to tell the browser how wide the image will be at different breakpoints
-                  // Adjust these values to match your actual CSS breakpoints and how the image is displayed
-                  sizes="(max-width: 768px) 80vw, (max-width: 1200px) 70vw, 900px" // Example: 80% viewport width on small screens, 70% on medium, max 900px on large
-                  src={photo.thumbnail_800_url} // Fallback for browsers not supporting srcset, or if no match
-                  alt={photo.originalFilename || 'Session photo'}
-                  className="max-w-full max-h-[80vh] object-contain cursor-pointer"
-                  // Add fetchPriority for the currently selected/viewed photo for LCP optimization
-                  fetchPriority={selectedPhotoId === photo.id ? 'high' : 'auto'}
-                  // Add width and height for CLS (if available from backend)
-                  width={photo.width}
-                  height={photo.height}
-                />
+                {photo.media_type === 'video' ? (
+                  <video
+                    src={photo.image_url}
+                    poster={photo.thumbnail_800_url}
+                    controls
+                    className="max-w-full max-h-[80vh] object-contain"
+                  />
+                ) : (
+                  <img
+                    srcSet={`${photo.thumbnail_800_url} 800w, ${photo.thumbnail_1200_url} 1200w, ${photo.image_url} ${photo.width || 2000}w`}
+                    sizes="(max-width: 768px) 80vw, (max-width: 1200px) 70vw, 900px"
+                    src={photo.thumbnail_800_url}
+                    alt={photo.originalFilename || 'Session photo'}
+                    className="max-w-full max-h-[80vh] object-contain cursor-pointer"
+                    fetchPriority={selectedPhotoId === photo.id ? 'high' : 'auto'}
+                    width={photo.width ?? undefined}
+                    height={photo.height ?? undefined}
+                  />
+                )}
               </div>
 
               {/* Actions */}
@@ -448,15 +453,24 @@ const PhotoGrid = (props: PhotoGridProps) => {
                 }
               }}
               className="relative aspect-square cursor-pointer">
-              {/* Image for grid view (Thumbnails, lazy loaded) */}
-              <img
-                src={photo.thumbnail_800_url} // Changed from thumbnail_420_url
-                alt={photo.originalFilename || 'Session photo'}
-                className="w-full h-full object-cover"
-                loading="lazy"
-                width={photo.width ? Math.min(photo.width, 800) : 800} // Changed from 420 to 800
-                height={photo.height ? Math.min(photo.height, 800) : 800} // Changed from 420 to 800
-              />
+              {photo.media_type === 'video' ? (
+                <div className="absolute inset-0 bg-slate-800 flex items-center justify-center">
+                  <div className="bg-black/60 rounded-full p-3">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={photo.thumbnail_800_url}
+                  alt={photo.originalFilename || 'Session photo'}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  width={photo.width ? Math.min(photo.width, 800) : 800}
+                  height={photo.height ? Math.min(photo.height, 800) : 800}
+                />
+              )}
             </div>
           )}
         </div>

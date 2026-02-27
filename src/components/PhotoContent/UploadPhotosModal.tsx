@@ -170,9 +170,9 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
           else onClose();
         }}>
         <DialogHeader className="flex-shrink-0">
-          <DialogTitle>Upload Photos to {session?.name || 'Session'}</DialogTitle>
+          <DialogTitle>Upload to {session?.name || 'Session'}</DialogTitle>
           <DialogDescription>
-            Select photos from your device to upload to this session.
+            Select photos or videos from your device to upload to this session.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleUploadSubmit} className="flex flex-col flex-grow min-h-0">
@@ -182,7 +182,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
               ref={fileInputRef}
               onChange={handleFileChange}
               multiple
-              accept="image/*"
+              accept="image/*,video/*"
               className="hidden"
             />
             <Button
@@ -190,7 +190,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
               onClick={() => fileInputRef.current?.click()}
               variant="primary-cta"
               disabled={isUploading}>
-              <Upload className="mr-2 h-4 w-4" /> Select Photos
+              <Upload className="mr-2 h-4 w-4" /> Select Photos & Videos
             </Button>
           </div>
 
@@ -210,17 +210,26 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
                   <div
                     key={file.name}
                     className="relative aspect-square rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700">
-                    <img
-                      src={file.preview}
-                      alt={file.name}
-                      className="w-full h-full object-cover"
-                      onError={e => {
-                        const target = e.target as HTMLImageElement;
-                        target.onerror = null;
-                        target.src = 'https://placehold.co/150x150/CCCCCC/000000?text=Error';
-                        target.alt = `Could not load ${file.name}`;
-                      }}
-                    />
+                    {file.type.startsWith('video/') ? (
+                      <div className="w-full h-full bg-slate-800 flex flex-col items-center justify-center gap-1">
+                        <svg className="w-8 h-8 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <span className="text-xs text-slate-400 px-1 truncate max-w-full">{file.name}</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={file.preview}
+                        alt={file.name}
+                        className="w-full h-full object-cover"
+                        onError={e => {
+                          const target = e.target as HTMLImageElement;
+                          target.onerror = null;
+                          target.src = 'https://placehold.co/150x150/CCCCCC/000000?text=Error';
+                          target.alt = `Could not load ${file.name}`;
+                        }}
+                      />
+                    )}
                     <Button
                       type="button"
                       variant="destructive"
@@ -262,7 +271,7 @@ const UploadPhotosModal = ({ isOpen, onClose, session, createdRecordsState }: Up
                 </>
               ) : (
                 `Confirm Upload (${selectedFiles.length} ${
-                  selectedFiles.length === 1 ? 'photo' : 'photos'
+                  selectedFiles.length === 1 ? 'file' : 'files'
                 })`
               )}
             </Button>
